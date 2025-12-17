@@ -1172,6 +1172,169 @@
             text-align: center;
         }
 
+        /* Contact Links */
+        .contact-link {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .contact-link:hover {
+            color: var(--primary);
+        }
+
+        /* AI Assistant Styles */
+        .ai-assistant-btn {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+        .ai-assistant-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+
+        .ai-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-header {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        .ai-chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 120px);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ai-message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+
+        .ai-message.bot {
+            align-self: flex-start;
+        }
+
+        .ai-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ai-message.bot .ai-avatar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .ai-message.user .ai-avatar {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+        }
+
+        .ai-bubble {
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .ai-message.bot .ai-bubble {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-top-right-radius: 6px;
+        }
+
+        .ai-message.user .ai-bubble {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border-top-left-radius: 6px;
+        }
+
+        .ai-input-container {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            background: var(--bg-card);
+        }
+
+        .ai-input-container input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            background: var(--bg-glass);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .ai-input-container input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .ai-send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .ai-typing {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+        }
+
+        .ai-typing span {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+
+        .ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
         /* Engineering Section */
         .engineering-section {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.05)) !important;
@@ -2225,6 +2388,38 @@
                     <i class="fas fa-arrow-left arrow-icon"></i>
                 </button>
             </div>
+
+            <div class="sidebar-section">
+                <button class="open-resources-btn" onclick="openVideosPanel()">
+                    <i class="fas fa-video"></i>
+                    <span>فيديوهات تعليمية</span>
+                    <i class="fas fa-arrow-left arrow-icon"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <button class="open-resources-btn" onclick="openHelpPanel()">
+                    <i class="fas fa-question-circle"></i>
+                    <span>كيفية استخدام الموقع</span>
+                    <i class="fas fa-arrow-left arrow-icon"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <button class="open-resources-btn" onclick="openContactPanel()">
+                    <i class="fas fa-envelope"></i>
+                    <span>تواصل معنا</span>
+                    <i class="fas fa-arrow-left arrow-icon"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <button class="open-resources-btn ai-assistant-btn" onclick="openAIAssistant()">
+                    <i class="fas fa-robot"></i>
+                    <span>المساعد الذكي</span>
+                    <i class="fas fa-arrow-left arrow-icon"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -2398,6 +2593,156 @@
         </div>
     </div>
 
+    <!-- Videos Panel -->
+    <div class="resources-panel-overlay" id="videosPanelOverlay" onclick="closeVideosPanel()"></div>
+    <div class="resources-panel" id="videosPanel">
+        <div class="resources-panel-header">
+            <button class="close-resources-btn" onclick="closeVideosPanel()"><i class="fas fa-times"></i></button>
+            <div class="resources-panel-title">🎬 فيديوهات تعليمية</div>
+            <div class="resources-panel-subtitle">فيديوهات محدثة باستمرار</div>
+        </div>
+        <div class="resources-panel-content">
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">💡</span>
+                    <span class="resource-title">نصائح وإرشادات</span>
+                </div>
+                <div class="resource-items" id="videosContainer">
+                    <div class="resource-item loading-videos"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الفيديوهات...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div class="resources-panel-overlay" id="helpPanelOverlay" onclick="closeHelpPanel()"></div>
+    <div class="resources-panel" id="helpPanel">
+        <div class="resources-panel-header">
+            <button class="close-resources-btn" onclick="closeHelpPanel()"><i class="fas fa-times"></i></button>
+            <div class="resources-panel-title">❓ كيفية استخدام الموقع</div>
+            <div class="resources-panel-subtitle">دليل سريع للتصفح</div>
+        </div>
+        <div class="resources-panel-content">
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">1️⃣</span>
+                    <span class="resource-title">اختر شعبتك</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-hand-pointer"></i> اضغط على شعبتك من القائمة العلوية</div>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">2️⃣</span>
+                    <span class="resource-title">اختر المادة</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-mouse-pointer"></i> اضغط على بطاقة المادة المطلوبة</div>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">3️⃣</span>
+                    <span class="resource-title">تحميل الملفات</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-download"></i> اضغط "فتح الملفات" لفتح Google Drive</div>
+                    <div class="resource-item"><i class="fas fa-cloud-download-alt"></i> حمّل الملفات مباشرة من Drive</div>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">⭐</span>
+                    <span class="resource-title">المفضلة</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-heart"></i> اضغط على القلب لإضافة المادة للمفضلة</div>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">🔍</span>
+                    <span class="resource-title">البحث</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-search"></i> استخدم مربع البحث للعثور على مادة معينة</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Panel -->
+    <div class="resources-panel-overlay" id="contactPanelOverlay" onclick="closeContactPanel()"></div>
+    <div class="resources-panel" id="contactPanel">
+        <div class="resources-panel-header">
+            <button class="close-resources-btn" onclick="closeContactPanel()"><i class="fas fa-times"></i></button>
+            <div class="resources-panel-title">📞 تواصل معنا</div>
+            <div class="resources-panel-subtitle">نحن هنا لمساعدتك</div>
+        </div>
+        <div class="resources-panel-content">
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">📧</span>
+                    <span class="resource-title">البريد الإلكتروني</span>
+                </div>
+                <div class="resource-items">
+                    <a href="mailto:boukhariabdallahyasser@gmail.com" class="resource-item contact-link">
+                        <i class="fas fa-envelope"></i> boukhariabdallahyasser@gmail.com
+                    </a>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">📱</span>
+                    <span class="resource-title">وسائل التواصل</span>
+                </div>
+                <div class="resource-items">
+                    <a href="https://www.instagram.com/sz.xyd" target="_blank" class="resource-item contact-link">
+                        <i class="fab fa-instagram"></i> Instagram
+                    </a>
+                    <a href="https://www.facebook.com/share/1BsK1JzqK7/?mibextid=wwXIfr" target="_blank" class="resource-item contact-link">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                </div>
+            </div>
+            <div class="resource-category">
+                <div class="resource-header">
+                    <span class="resource-emoji">💬</span>
+                    <span class="resource-title">اقتراحات وملاحظات</span>
+                </div>
+                <div class="resource-items">
+                    <div class="resource-item"><i class="fas fa-comment-dots"></i> نرحب بجميع اقتراحاتكم لتحسين الموقع</div>
+                    <div class="resource-item"><i class="fas fa-bug"></i> أبلغنا عن أي مشكلة تواجهك</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Panel -->
+    <div class="resources-panel-overlay" id="aiPanelOverlay" onclick="closeAIAssistant()"></div>
+    <div class="resources-panel ai-panel" id="aiPanel">
+        <div class="resources-panel-header ai-header">
+            <button class="close-resources-btn" onclick="closeAIAssistant()"><i class="fas fa-times"></i></button>
+            <div class="resources-panel-title">🤖 المساعد الذكي</div>
+            <div class="resources-panel-subtitle">اسألني أي سؤال دراسي!</div>
+        </div>
+        <div class="ai-chat-container">
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message bot">
+                    <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="ai-bubble">مرحباً! 👋 أنا مساعدك الذكي. اسألني أي سؤال عن الدروس أو البكالوريا وسأساعدك!</div>
+                </div>
+            </div>
+            <div class="ai-input-container">
+                <input type="text" id="aiInput" placeholder="اكتب سؤالك هنا..." onkeypress="if(event.key==='Enter')sendAIMessage()">
+                <button class="ai-send-btn" onclick="sendAIMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-header" id="modalHeader">
@@ -2488,7 +2833,7 @@
                 </div>
                 <div class="input-group">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="signupConfirmPassword" placeholder="تأكيد كلمة المرور" autocomplete="new-password">
+                    <input type="password" id="signupConfirmPassword" placeholder="تأكي�� كلمة المرور" autocomplete="new-password">
                 </div>
             </div>
             <button class="auth-submit-btn" onclick="handleSignup()">
@@ -3282,7 +3627,7 @@
                 if (isAvailable) {
                     openModal(subject);
                 } else {
-                    showToast('هذه المادة قيد التحضير، ستتوفر قريباً إن شاء الله', 'warning');
+                    showToast('هذه المادة قيد التحضير، ��تتوفر قريباً إن شاء الله', 'warning');
                 }
             };
 
@@ -3399,9 +3744,12 @@
         // ========== Stats ==========
         function updateStats() {
             const subjects = getSubjectsForBranch();
-            const available = subjects.filter(s => s.url !== null).length;
-            const preparing = subjects.filter(s => s.url === null).length;
-            document.getElementById('statTotal').textContent = subjects.length;
+            // استثناء الملخصات والاختبارات ومواضيع البكالوريا من الإحصائيات
+            const excludedIds = ['summaries_math', 'summaries_science', 'summaries_tech', 'summaries_lit', 'summaries_lang', 'summaries_eco', 'exams', 'bac_math'];
+            const filteredSubjects = subjects.filter(s => !excludedIds.includes(s.id));
+            const available = filteredSubjects.filter(s => s.url !== null).length;
+            const preparing = filteredSubjects.filter(s => s.url === null).length;
+            document.getElementById('statTotal').textContent = filteredSubjects.length;
             document.getElementById('statAvailable').textContent = available;
             document.getElementById('statPreparing').textContent = preparing;
             document.getElementById('statFavorites').textContent = favorites.length;
@@ -3445,6 +3793,229 @@
         function closeResourcesPanel() {
             document.getElementById('resourcesPanel').classList.remove('show');
             document.getElementById('resourcesPanelOverlay').classList.remove('show');
+        }
+
+        // ========== Videos Panel ==========
+        const VIDEOS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHVBvdfHx7d-j0LMU8rPXIAxGbf3QQ4WxT_duxZdaZ95w6W8wvF5Kw7OuKh55_cTTeWMdIKpRGIZpL/pub?output=csv'; // رابط Google Sheet للفيديوهات
+
+        // فيديوهات احتياطية
+        const defaultVideos = [
+            { title: 'كيفية المراجعة الفعّالة', icon: 'fa-lightbulb', url: '' },
+            { title: 'إدارة الوقت قبل البكالوريا', icon: 'fa-clock', url: '' },
+            { title: 'تقنيات الحفظ السريع', icon: 'fa-brain', url: '' },
+            { title: 'التحكم في التوتر والقلق', icon: 'fa-heart', url: '' },
+            { title: 'كيفية إعداد جدول مراجعة', icon: 'fa-calendar-check', url: '' },
+            { title: 'نصائح لأيام الامتحان', icon: 'fa-pen', url: '' }
+        ];
+
+        function openVideosPanel() {
+            document.getElementById('videosPanel').classList.add('show');
+            document.getElementById('videosPanelOverlay').classList.add('show');
+            loadVideosFromSheet();
+        }
+
+        function closeVideosPanel() {
+            document.getElementById('videosPanel').classList.remove('show');
+            document.getElementById('videosPanelOverlay').classList.remove('show');
+        }
+
+        async function loadVideosFromSheet() {
+            const container = document.getElementById('videosContainer');
+
+            if (!VIDEOS_SHEET_URL) {
+                renderVideos(defaultVideos);
+                return;
+            }
+
+            const proxyUrls = [
+                'https://api.allorigins.win/raw?url=' + encodeURIComponent(VIDEOS_SHEET_URL),
+                'https://corsproxy.io/?' + encodeURIComponent(VIDEOS_SHEET_URL),
+                VIDEOS_SHEET_URL
+            ];
+
+            for (const proxyUrl of proxyUrls) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) continue;
+
+                    const csvText = await response.text();
+                    if (!csvText.includes('title')) continue;
+
+                    const lines = csvText.split('\n');
+                    const videos = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        const parts = line.split(',');
+                        if (parts.length >= 2) {
+                            const title = parts[0].trim();
+                            const url = parts.slice(1).join(',').trim().replace(/^"|"$/g, '');
+                            if (title) {
+                                videos.push({ title, icon: 'fa-play-circle', url });
+                            }
+                        }
+                    }
+
+                    if (videos.length > 0) {
+                        renderVideos(videos);
+                        return;
+                    }
+                } catch (error) {
+                    continue;
+                }
+            }
+
+            renderVideos(defaultVideos);
+        }
+
+        function renderVideos(videos) {
+            const container = document.getElementById('videosContainer');
+            container.innerHTML = '';
+
+            videos.forEach(video => {
+                const item = document.createElement('div');
+                item.className = 'resource-item video-item';
+                if (video.url && video.url.startsWith('http')) {
+                    item.style.cursor = 'pointer';
+                    item.onclick = () => window.open(video.url, '_blank');
+                    item.innerHTML = `<i class="fas ${video.icon}"></i> ${video.title} <i class="fas fa-external-link-alt" style="margin-right: auto; font-size: 0.7rem; opacity: 0.6;"></i>`;
+                } else {
+                    item.innerHTML = `<i class="fas ${video.icon}"></i> ${video.title} <span style="margin-right: auto; font-size: 0.7rem; opacity: 0.6;">(قريباً)</span>`;
+                }
+                container.appendChild(item);
+            });
+        }
+
+        // ========== Help Panel ==========
+        function openHelpPanel() {
+            document.getElementById('helpPanel').classList.add('show');
+            document.getElementById('helpPanelOverlay').classList.add('show');
+        }
+
+        function closeHelpPanel() {
+            document.getElementById('helpPanel').classList.remove('show');
+            document.getElementById('helpPanelOverlay').classList.remove('show');
+        }
+
+        // ========== Contact Panel ==========
+        function openContactPanel() {
+            document.getElementById('contactPanel').classList.add('show');
+            document.getElementById('contactPanelOverlay').classList.add('show');
+        }
+
+        function closeContactPanel() {
+            document.getElementById('contactPanel').classList.remove('show');
+            document.getElementById('contactPanelOverlay').classList.remove('show');
+        }
+
+        // ========== AI Assistant ==========
+        function openAIAssistant() {
+            document.getElementById('aiPanel').classList.add('show');
+            document.getElementById('aiPanelOverlay').classList.add('show');
+        }
+
+        function closeAIAssistant() {
+            document.getElementById('aiPanel').classList.remove('show');
+            document.getElementById('aiPanelOverlay').classList.remove('show');
+        }
+
+        // Register AI handler
+        if (window.Poe) {
+            window.Poe.registerHandler('ai-handler', (result) => {
+                const msg = result.responses[0];
+                const messagesContainer = document.getElementById('aiMessages');
+
+                // Remove typing indicator
+                const typingIndicator = messagesContainer.querySelector('.ai-typing-message');
+                if (typingIndicator) typingIndicator.remove();
+
+                if (msg.status === 'error') {
+                    addAIMessage('عذراً، حدث خطأ. حاول مرة أخرى.', 'bot');
+                } else if (msg.status === 'incomplete' || msg.status === 'complete') {
+                    // Update or add bot message
+                    let botMessage = messagesContainer.querySelector(`[data-msg-id="${msg.messageId}"]`);
+                    if (!botMessage) {
+                        botMessage = document.createElement('div');
+                        botMessage.className = 'ai-message bot';
+                        botMessage.dataset.msgId = msg.messageId;
+                        botMessage.innerHTML = `
+                            <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                            <div class="ai-bubble"></div>
+                        `;
+                        messagesContainer.appendChild(botMessage);
+                    }
+                    botMessage.querySelector('.ai-bubble').textContent = msg.content;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+        }
+
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addAIMessage(message, 'user');
+            input.value = '';
+
+            // Add typing indicator
+            const messagesContainer = document.getElementById('aiMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-message bot ai-typing-message';
+            typingDiv.innerHTML = `
+                <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                <div class="ai-bubble">
+                    <div class="ai-typing">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Send to AI
+            if (window.Poe) {
+                try {
+                    await window.Poe.sendUserMessage(
+                        `@Claude-Sonnet-4.5 أنت مساعد تعليمي للطلاب الجزائريين المقبلين على شهادة البكالوريا 2026. أجب بالعربية بشكل مختصر ومفيد. السؤال: ${message}`,
+                        {
+                            handler: 'ai-handler',
+                            stream: true,
+                            openChat: false
+                        }
+                    );
+                } catch (error) {
+                    // Remove typing indicator
+                    const typingIndicator = messagesContainer.querySelector('.ai-typing-message');
+                    if (typingIndicator) typingIndicator.remove();
+                    addAIMessage('عذراً، لا يمكن الاتصال بالمساعد الذكي حالياً.', 'bot');
+                }
+            } else {
+                // Fallback if Poe API not available
+                setTimeout(() => {
+                    const typingIndicator = messagesContainer.querySelector('.ai-typing-message');
+                    if (typingIndicator) typingIndicator.remove();
+                    addAIMessage('مرحباً! المساعد الذكي متاح فقط داخل منصة Poe. للاستفادة منه، افتح الموقع من خلال Poe.', 'bot');
+                }, 1500);
+            }
+        }
+
+        function addAIMessage(text, type) {
+            const messagesContainer = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${type}`;
+
+            const icon = type === 'bot' ? 'fa-robot' : 'fa-user';
+            messageDiv.innerHTML = `
+                <div class="ai-avatar"><i class="fas ${icon}"></i></div>
+                <div class="ai-bubble">${text}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         // ========== Login Gate ==========
