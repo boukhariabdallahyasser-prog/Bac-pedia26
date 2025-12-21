@@ -3041,7 +3041,7 @@
                 icon: 'fas fa-file-alt',
                 color: 'linear-gradient(135deg, #f59e0b, #d97706)',
                 desc: 'ملخصات جميع المواد لشعبة الرياضيات',
-                url: null,
+                url: 'https://drive.google.com/drive/folders/1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n',
                 branches: ['math']
             },
             summaries_science: {
@@ -3128,13 +3128,42 @@
                 url: null,
                 branches: ['tech']
             },
-            tech_subject: {
-                name: 'الهندسة',
-                icon: 'fas fa-drafting-compass',
-                color: 'linear-gradient(135deg, #64748b, #475569)',
-                desc: 'دروس الهندسة والتكنولوجيا',
+            // ===== مواد الهندسة لكل تخصص =====
+            tech_electrical: {
+                name: 'الهندسة الكهربائية',
+                icon: 'fas fa-bolt',
+                color: 'linear-gradient(135deg, #eab308, #ca8a04)',
+                desc: 'دروس الهندسة الكهربائية',
+                url: 'https://drive.google.com/drive/folders/1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC',
+                branches: ['tech'],
+                subBranchOnly: 'electrical'
+            },
+            tech_civil: {
+                name: 'الهندسة المدنية',
+                icon: 'fas fa-hard-hat',
+                color: 'linear-gradient(135deg, #78716c, #57534e)',
+                desc: 'دروس الهندسة المدنية',
                 url: null,
-                branches: ['tech']
+                branches: ['tech'],
+                subBranchOnly: 'civil'
+            },
+            tech_mechanical: {
+                name: 'الهندسة الميكانيكية',
+                icon: 'fas fa-cogs',
+                color: 'linear-gradient(135deg, #64748b, #475569)',
+                desc: 'دروس الهندسة الميكانيكية',
+                url: null,
+                branches: ['tech'],
+                subBranchOnly: 'mechanical'
+            },
+            tech_process: {
+                name: 'هندسة الطرائق',
+                icon: 'fas fa-flask',
+                color: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                desc: 'دروس هندسة الطرائق',
+                url: null,
+                branches: ['tech'],
+                subBranchOnly: 'process'
             },
             philo_tech: {
                 name: 'الفلسفة',
@@ -3537,7 +3566,15 @@
 
         function getSubjectsForBranch() {
             return Object.entries(allSubjects)
-                .filter(([id, sub]) => sub.branches.includes(currentBranch))
+                .filter(([id, sub]) => {
+                    // Check if subject belongs to current branch
+                    if (!sub.branches.includes(currentBranch)) return false;
+
+                    // Check if subject is limited to specific sub-branch
+                    if (sub.subBranchOnly && sub.subBranchOnly !== currentSubBranch) return false;
+
+                    return true;
+                })
                 .map(([id, sub]) => {
                     let subjectData = { id, ...sub };
 
@@ -3627,7 +3664,7 @@
                 if (isAvailable) {
                     openModal(subject);
                 } else {
-                    showToast('هذه المادة قيد التحضير، ��تتوفر قريباً إن شاء الله', 'warning');
+                    showToast('هذه المادة قيد التحضير، ستتوفر قريباً إن شاء الله', 'warning');
                 }
             };
 
@@ -3667,7 +3704,14 @@
                 loader.classList.add('show');
                 setTimeout(() => {
                     loader.classList.remove('show');
-                    window.open(currentModalSubject.url, '_blank');
+                    // Use anchor tag for better mobile support
+                    const link = document.createElement('a');
+                    link.href = currentModalSubject.url;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                     closeModal();
                 }, 1000);
             }
@@ -3875,16 +3919,24 @@
             container.innerHTML = '';
 
             videos.forEach(video => {
-                const item = document.createElement('div');
-                item.className = 'resource-item video-item';
                 if (video.url && video.url.startsWith('http')) {
+                    // Use anchor tag for better mobile support
+                    const item = document.createElement('a');
+                    item.className = 'resource-item video-item';
+                    item.href = video.url;
+                    item.target = '_blank';
+                    item.rel = 'noopener noreferrer';
                     item.style.cursor = 'pointer';
-                    item.onclick = () => window.open(video.url, '_blank');
+                    item.style.textDecoration = 'none';
+                    item.style.color = 'inherit';
                     item.innerHTML = `<i class="fas ${video.icon}"></i> ${video.title} <i class="fas fa-external-link-alt" style="margin-right: auto; font-size: 0.7rem; opacity: 0.6;"></i>`;
+                    container.appendChild(item);
                 } else {
+                    const item = document.createElement('div');
+                    item.className = 'resource-item video-item';
                     item.innerHTML = `<i class="fas ${video.icon}"></i> ${video.title} <span style="margin-right: auto; font-size: 0.7rem; opacity: 0.6;">(قريباً)</span>`;
+                    container.appendChild(item);
                 }
-                container.appendChild(item);
             });
         }
 
@@ -4097,7 +4149,7 @@
             if (window.Poe) {
                 try {
                     await window.Poe.sendUserMessage(
-                        `@Claude-Sonnet-4.5 أنت مساعد تعليمي للطلاب الجزائريي�� المقبلين على شهادة البكالوريا 2026. أجب بالعربية بشكل مختصر ومفيد. السؤال: ${message}`,
+                        `@Claude-Sonnet-4.5 أنت مساعد تعليمي للطلاب الجزائريين المقبلين على شهادة البكالوريا 2026. أجب بالعربية بشكل مختصر ومفيد. السؤال: ${message}`,
                         {
                             handler: 'ai-handler',
                             stream: true,
