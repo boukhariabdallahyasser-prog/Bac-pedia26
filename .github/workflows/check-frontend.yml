@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "api/ai.js"
+      - "supabase/schema.sql"
       - "scripts/check-frontend.mjs"
       - ".github/workflows/check-frontend.yml"
   pull_request:
