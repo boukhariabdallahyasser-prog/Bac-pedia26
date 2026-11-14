@@ -84,9 +84,11 @@ revoke all on public.student_profiles from anon, authenticated;
 grant select on public.student_profiles to authenticated;
 grant update (last_activity_at) on public.student_profiles to authenticated;
 
+drop policy if exists "Students can read own profile" on public.student_profiles;
 create policy "Students can read own profile"
 on public.student_profiles for select to authenticated
 using ((select auth.uid()) = user_id);
+drop policy if exists "Students can update own activity" on public.student_profiles;
 create policy "Students can update own activity"
 on public.student_profiles for update to authenticated
 using ((select auth.uid()) = user_id)
@@ -103,6 +105,7 @@ begin
 end;
 $$;
 revoke all on function public.sync_student_profile_from_auth() from public, anon, authenticated;
+drop trigger if exists on_auth_user_profile_sync on auth.users;
 create trigger on_auth_user_profile_sync
 after insert or update of email, raw_user_meta_data on auth.users
 for each row execute function public.sync_student_profile_from_auth();
@@ -119,6 +122,7 @@ begin
 end;
 $$;
 revoke all on function public.sync_student_profile_from_progress() from public, anon, authenticated;
+drop trigger if exists on_student_progress_profile_sync on public.student_progress;
 create trigger on_student_progress_profile_sync
 after insert or update of data on public.student_progress
 for each row execute function public.sync_student_profile_from_progress();
