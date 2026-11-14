@@ -463,7 +463,7 @@
   <nav class="bottom-nav" id="bottomNav"></nav>
   <div class="modal" id="subjectModal">
     <div class="modal-head" id="modalHead"><button class="round-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button><div style="font-size:2rem" id="modalIcon"><i class="fa-solid fa-book"></i></div><div class="modal-title" id="modalTitle">المادة</div><p id="modalDesc" style="opacity:.85;margin-top:4px"></p></div>
-    <div class="modal-body"><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
+    <div class="modal-body"><div id="subjectSubfolders" style="max-height:35vh;overflow:auto;margin-bottom:12px"></div><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
   </div>
   <div class="toast-area" id="toastArea"></div>
   <script>
@@ -478,7 +478,7 @@
       mockBacUrl: 'https://drive.google.com/drive/folders/1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk',
       aiMode: 'direct',
       aiProvider: 'gemini',
-      aiApiKey: 'AIzaSyBZyGOICmYcZvSyC2ramhnmJgkaxklSwdY',
+      aiApiKey: '',
       aiEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
       aiResponsesEndpoint: '',
       aiModels: ['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'],
@@ -626,7 +626,7 @@
     function applyBackupUrls(){Object.entries(backupUrls).forEach(([id,url])=>{if(allSubjects[id])allSubjects[id].url=url||null;});}
     function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],nx=text[i+1];if(ch==='"'&&q&&nx==='"'){cell+='"';i++;}else if(ch==='"'){q=!q;}else if(ch===','&&!q){row.push(cell);cell='';}else if((ch==='\n'||ch==='\r')&&!q){if(cell||row.length){row.push(cell);rows.push(row);row=[];cell='';}if(ch==='\r'&&nx==='\n')i++;}else cell+=ch;}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
     function parsePubHtml(text){const doc=new DOMParser().parseFromString(text,'text/html');const table=doc.querySelector('table');if(!table)return[];return Array.from(table.querySelectorAll('tr')).map(tr=>Array.from(tr.children).map(td=>td.textContent.trim())).filter(r=>r.length);}
-    async function refreshFromDatabase(show=false){const urls=[CONFIG.dbCsvUrl,'https://api.allorigins.win/raw?url='+encodeURIComponent(CONFIG.dbCsvUrl),'https://corsproxy.io/?'+encodeURIComponent(CONFIG.dbCsvUrl),CONFIG.dbHtmlUrl,'https://api.allorigins.win/raw?url='+encodeURIComponent(CONFIG.dbHtmlUrl)];for(const url of urls){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)continue;const text=await res.text();let rows=/<table|<html/i.test(text)?parsePubHtml(text):parseCsv(text);const headerIndex=rows.findIndex(r=>normalize(r.join(',')).includes('id')&&normalize(r.join(',')).includes('url'));if(headerIndex<0)continue;let count=0;rows.slice(headerIndex+1).forEach(r=>{const id=String(r[0]||'').trim();const link=String(r.slice(1).join(',')||'').trim();if(allSubjects[id]){allSubjects[id].url=link&&link.startsWith('http')?link:null;if(allSubjects[id].url)count++;}});allSubjects.mock_bac.url=allSubjects.mock_bac.url||CONFIG.mockBacUrl;renderAll();if(show)showToast('تم تحديث الروابط بنجاح','success');return true;}catch(e){console.warn(e)}}applyBackupUrls();renderAll();if(show)showToast('تم تجهيز الروابط الاحتياطية','warning');return false;}
+    async function refreshFromDatabase(show=false){const urls=[CONFIG.dbCsvUrl,'https://api.allorigins.win/raw?url='+encodeURIComponent(CONFIG.dbCsvUrl),'https://corsproxy.io/?'+encodeURIComponent(CONFIG.dbCsvUrl),CONFIG.dbHtmlUrl,'https://api.allorigins.win/raw?url='+encodeURIComponent(CONFIG.dbHtmlUrl)];for(const url of urls){try{const res=await fetch(url,{cache:'no-store'});if(!res.ok)continue;const text=await res.text();let rows=/<table|<html/i.test(text)?parsePubHtml(text):parseCsv(text);const headerIndex=rows.findIndex(r=>normalize(r.join(',')).includes('id')&&normalize(r.join(',')).includes('url'));if(headerIndex<0)continue;let count=0;rows.slice(headerIndex+1).forEach(r=>{const id=String(r[0]||'').trim();const link=String(r.slice(1).join(',')||'').trim();if(allSubjects[id]&&!backupUrls[id]&&/^https:\/\/drive\.google\.com\/drive\/folders\/[A-Za-z0-9_-]+(?:[?#].*)?$/.test(link)){allSubjects[id].url=link;count++;}});allSubjects.mock_bac.url=allSubjects.mock_bac.url||CONFIG.mockBacUrl;renderAll();if(show)showToast('تم تحديث الروابط بنجاح','success');return true;}catch(e){console.warn(e)}}applyBackupUrls();renderAll();if(show)showToast('تم تجهيز الروابط الاحتياطية','warning');return false;}
     function showPage(id){
       if(!pages.some(p=>p[0]===id))id='home';
       if(id==='files'){
@@ -750,9 +750,11 @@
       const typeText=isResource?'مورد عام':`${prog}% تقدم`;
       return`<article class="card subject-card ${isResource?'resource-card':''}" style="--accent-grad:${s.color}" onclick="openSubjectById('${s.id}')"><div class="subject-top"><div class="subject-icon"><i class="${s.icon}"></i></div><div class="subject-actions"><button class="round-btn ${fav?'active':''}" onclick="event.stopPropagation();toggleFavorite('${s.id}')"><i class="${fav?'fa-solid':'fa-regular'} fa-heart"></i></button><button class="round-btn" onclick="event.stopPropagation();shareSubject('${s.id}')"><i class="fa-solid fa-share-nodes"></i></button></div></div><div class="subject-name">${escapeHtml(s.name)}</div><p class="subject-desc">${escapeHtml(s.desc)}</p>${progressHtml}<div class="subject-footer"><span class="badge ${ok?'ok':'wait'}">${ok?'متاحة':'قيد التحضير'}</span><span class="soft">${typeText}</span></div></article>`;
     }
-    function openSubjectById(id){const s={id,...allSubjects[id],name:subjectLabel(id),desc:subjectDesc(id)};if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}currentModalSubject=s;$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');}
+    const knownSubjectFolders={"math_math":[["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"]],"natural_math":[["نصوص علمية","13M7tPzxRcng3c1XpO-BXG_ti_zlmV481"],["المنهجية","1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY"]],"arabic_sci":[["الدروس","1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk"],["التطبيقات","1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM"]],"french_sci":[["الدروس","11UjJzruGDNXKoPMwnBV31O23x3CZ70CM"],["التمارين","16EFEC71B81BpRy1nrazmGk32s8PFEMJH"]],"english_sci":[["الدروس","18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM"],["التمارين","12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7"]],"history_sci":[["الدروس","1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9"],["ملخصات","1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo"]],"islamic":[["الدروس","1OHMj2ks5L3ZRXSrP09SDYBIpbLXcMK1A"],["التمارين","19hdtiqy_sNvkcB--i-L8073ZzPVQK55p"]],"philo_sci":[["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"],["المقالات","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"]]};
+    function renderSubjectFolders(id){const root=document.getElementById('subjectSubfolders');if(!root)return;root.replaceChildren();const folders=knownSubjectFolders[id]||[];if(!folders.length){root.textContent='افتح مجلد المادة في Google Drive لعرض الملفات.';return;}const h=document.createElement('h3');h.textContent='أقسام المادة';root.appendChild(h);for(const [name,folderId] of folders){const a=document.createElement('a');a.className='resource-item';a.textContent='📁 '+name;a.href='https://drive.google.com/drive/folders/'+folderId;a.target='_blank';a.rel='noopener noreferrer';root.appendChild(a);}}
+    function openSubjectById(id){const s={id,...allSubjects[id],name:subjectLabel(id),desc:subjectDesc(id)};if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');}
     function closeModal(){$('#modalOverlay').classList.remove('show');$('#subjectModal').classList.remove('show');currentModalSubject=null;}
-    function openCurrentDrive(){if(!currentModalSubject?.url)return;const a=document.createElement('a');a.href=currentModalSubject.url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();closeModal();}
+    function openCurrentDrive(){if(!currentModalSubject?.url)return;const a=document.createElement('a');a.href=currentModalSubject.url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();closeModal();}
     function shareCurrentSubject(){if(currentModalSubject)copyText(currentModalSubject.url,'تم نسخ الرابط');}
     function shareSubject(id){const s=allSubjects[id];if(s?.url)copyText(s.url,'تم نسخ الرابط');else showToast('لا يوجد رابط بعد','warning');}
     function toggleFavorite(id){const i=state.favorites.indexOf(id);if(i>=0){state.favorites.splice(i,1);showToast('تمت الإزالة من المفضلة','info')}else{state.favorites.push(id);showToast('تمت الإضافة للمفضلة','success')}saveState();renderSubjects();}
@@ -1212,11 +1214,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       showPage('home');
       closeLoginGate();
     }
-    function initSession(){
-      renderSession();
-      // Always show the entry screen first. After login or guest mode, the student lands on Home.
-      openLoginGate();
-    }
+    function initSession(){state.guest=true;state.user={name:'زائر',mode:'guest'};renderSession();closeLoginGate();}
     window.addEventListener('error',e=>{console.warn('Website error handled:',e.message);});
     window.addEventListener('unhandledrejection',e=>{console.warn('Promise error handled:',e.reason);});
 
