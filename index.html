@@ -1638,7 +1638,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
       if(authLoading)return;
       const email=($('#loginEmailInput')?.value||'').trim();
-      if(!/^\\S+@\\S+\\.\\S+$/.test(email)){showToast('اكتب بريدك الإلكتروني أولاً','warning');return;}
+      if(!/^\S+@\S+\.\S+$/.test(email)){showToast('اكتب بريدك الإلكتروني أولاً','warning');return;}
       setAuthBusy(true);
       try{
         const {error}=await auth.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
