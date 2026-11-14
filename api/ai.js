@@ -1,5 +1,15 @@
 // Vercel serverless function. Set GEMINI_API_KEY in Vercel project environment variables.
 const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','flashcards','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
+// Best-effort per-runtime protection. For a hard cross-instance quota, use a shared store.
+const usageStore=globalThis.__bacPediaAiUsage||(globalThis.__bacPediaAiUsage=new Map());
+function checkRateLimit(userId){
+  const now=Date.now(),windowMs=10*60*1000,limit=12;
+  let entry=usageStore.get(userId);
+  if(!entry||now-entry.startedAt>=windowMs){entry={startedAt:now,count:0};usageStore.set(userId,entry);}
+  entry.count++;
+  if(entry.count>limit)return Math.max(1,Math.ceil((windowMs-(now-entry.startedAt))/1000));
+  return 0;
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -20,6 +30,9 @@ export default async function handler(req,res){
   }catch(error){
     return res.status(503).json({error:'Unable to verify session'});
   }
+  const retryAfter=checkRateLimit(user.id);
+  if(retryAfter){res.setHeader('Retry-After',String(retryAfter));return res.status(429).json({error:'AI usage limit reached. Please try again later.'});}
+  if(Number(req.headers['content-length']||0)>32000)return res.status(413).json({error:'Request too large'});
   if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'AI service is not configured. Set GEMINI_API_KEY in Vercel.'});
   const {agent,prompt}=req.body||{};
   if(!allowedAgents.has(agent)||typeof prompt!=='string'||!prompt.trim()||prompt.length>14000)return res.status(400).json({error:'Invalid agent or prompt'});
