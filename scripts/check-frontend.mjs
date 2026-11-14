@@ -22,6 +22,8 @@ try{
     'id="passwordRecoveryPanel"',
     'function togglePasswordVisibility(inputId,button)',
     'function updatePasswordStrength()',
+    'let recoveryFlow=',
+    'history.replaceState(null',
     'email_confirmed_at'
   ];
   for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
