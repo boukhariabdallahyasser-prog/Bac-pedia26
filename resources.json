@@ -1,0 +1,1957 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-14",
+  "rootFolder": {
+    "id": "1mBeGIoLuQFItpGmalbVJFmLnp9L-O-Jx",
+    "url": "https://drive.google.com/drive/folders/1mBeGIoLuQFItpGmalbVJFmLnp9L-O-Jx"
+  },
+  "source": "Google Drive connector listing (authenticated view); anonymous access has not been verified.",
+  "visibilityStatus": "access_not_verified",
+  "subjects": {
+    "math_math": {
+      "id": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",
+      "title": "رياضيات",
+      "type": "folder",
+      "driveId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",
+      "url": "https://drive.google.com/drive/folders/1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",
+      "categories": [
+        {
+          "id": "1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g",
+          "title": "مواضيع مراقبة المستوى",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW",
+          "title": "مواضيع فصلية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk",
+          "title": "المكتسبات القبلية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz",
+          "title": "المتتاليات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo",
+          "title": "القسمة في زاد",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp",
+          "title": "الدوال",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu",
+          "title": "الاحتمالات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        },
+        {
+          "id": "1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh",
+          "title": "الأعداد المركبة",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh",
+          "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
+        }
+      ]
+    },
+    "physics_math": {
+      "id": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG",
+      "title": "الفيزياء",
+      "type": "folder",
+      "driveId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG",
+      "url": "https://drive.google.com/drive/folders/1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG",
+      "categories": [
+        {
+          "id": "1WN-QTl5MmimXXwr21CIMjNUpk9uWh5xl",
+          "title": "البروتوكولات التجريبية لجميع الوحدات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1WN-QTl5MmimXXwr21CIMjNUpk9uWh5xl",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1vrk2Hql6hUuxRyPF3NyqNQEzIN1QLFQE",
+          "title": "الأسئلة الشائعة لكل وحدة",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1vrk2Hql6hUuxRyPF3NyqNQEzIN1QLFQE",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1AV6oQkQzHUKAYwQkywusDnMmOA1kniEY",
+          "title": "المكتسبات القبلية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1AV6oQkQzHUKAYwQkywusDnMmOA1kniEY",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "13Hu_SwVxUOU4vYdTbSKP6XFts0uDqCmy",
+          "title": "التحويلات والوحدات والبروتوكولات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/13Hu_SwVxUOU4vYdTbSKP6XFts0uDqCmy",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "18Os3FNWnql9vA1DnTWFOVBLZ5AhPJIrt",
+          "title": "الوحدة 01 المتابعة الزمنية لتحول كيميائي",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/18Os3FNWnql9vA1DnTWFOVBLZ5AhPJIrt",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1nn6vpTOEuPx4kIxwv6hDkEzw2veDI8Pm",
+          "title": "مواضيع فصلية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1nn6vpTOEuPx4kIxwv6hDkEzw2veDI8Pm",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "12gVVclm51E7IVy8X9N58WVUbycbfYig_",
+          "title": "كتب ومراجع",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/12gVVclm51E7IVy8X9N58WVUbycbfYig_",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1CpPpowg1cTGjFUjW9V2ahrkowbIW4bzg",
+          "title": "مواضيع مراقبة المستوى",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1CpPpowg1cTGjFUjW9V2ahrkowbIW4bzg",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "167qqFJ-82R19r26i9lEVlaZ26YSLaUgD",
+          "title": "الوحدة 02 تطور جملة ميكانيكية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/167qqFJ-82R19r26i9lEVlaZ26YSLaUgD",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "12a__3HLKDDV_uWv8X_k2mSXbW0bpR1Wo",
+          "title": "الوحدة 03 الظواهر الكهربائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/12a__3HLKDDV_uWv8X_k2mSXbW0bpR1Wo",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1TkV4rQ41atx8eReP3CpAIMjWQldU6gIz",
+          "title": "تمارين المراجعة الشاملة",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1TkV4rQ41atx8eReP3CpAIMjWQldU6gIz",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        },
+        {
+          "id": "1oAg3y3jIZgtO-SoXJJcO0LrumNWhf_CS",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1oAg3y3jIZgtO-SoXJJcO0LrumNWhf_CS",
+          "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
+        }
+      ]
+    },
+    "natural_math": {
+      "id": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",
+      "title": "علوم",
+      "type": "folder",
+      "driveId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",
+      "url": "https://drive.google.com/drive/folders/1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",
+      "categories": [
+        {
+          "id": "13M7tPzxRcng3c1XpO-BXG_ti_zlmV481",
+          "title": "نصوص علمية وملفات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/13M7tPzxRcng3c1XpO-BXG_ti_zlmV481",
+          "parentId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
+        },
+        {
+          "id": "10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn",
+          "parentId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
+        },
+        {
+          "id": "1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY",
+          "title": "منهجية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY",
+          "parentId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
+        },
+        {
+          "id": "19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5",
+          "title": "تمارين + بكالوريات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5",
+          "parentId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
+        }
+      ]
+    },
+    "arabic_sci": {
+      "id": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",
+      "title": "لغة عربية",
+      "type": "folder",
+      "driveId": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",
+      "url": "https://drive.google.com/drive/folders/19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",
+      "categories": [
+        {
+          "id": "1nmG088y658tdbXtLpsjMt79lRK-dRdbs",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1nmG088y658tdbXtLpsjMt79lRK-dRdbs",
+          "parentId": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ"
+        },
+        {
+          "id": "1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk",
+          "title": "دروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk",
+          "parentId": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ"
+        },
+        {
+          "id": "1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM",
+          "title": "تطبيقات ومواضيع",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM",
+          "parentId": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ"
+        }
+      ]
+    },
+    "french_sci": {
+      "id": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",
+      "title": "لغة فرنسية",
+      "type": "folder",
+      "driveId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",
+      "url": "https://drive.google.com/drive/folders/1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",
+      "categories": [
+        {
+          "id": "11UjJzruGDNXKoPMwnBV31O23x3CZ70CM",
+          "title": "دروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/11UjJzruGDNXKoPMwnBV31O23x3CZ70CM",
+          "parentId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN"
+        },
+        {
+          "id": "16EFEC71B81BpRy1nrazmGk32s8PFEMJH",
+          "title": "مواضيع وتمارين",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/16EFEC71B81BpRy1nrazmGk32s8PFEMJH",
+          "parentId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN"
+        },
+        {
+          "id": "1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q",
+          "title": "مصطلحات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q",
+          "parentId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN"
+        },
+        {
+          "id": "10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB",
+          "parentId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN"
+        }
+      ]
+    },
+    "english_sci": {
+      "id": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",
+      "title": "لغة انجليزية",
+      "type": "folder",
+      "driveId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",
+      "url": "https://drive.google.com/drive/folders/1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",
+      "categories": [
+        {
+          "id": "1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y",
+          "title": "Paragraphs",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y",
+          "parentId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C"
+        },
+        {
+          "id": "1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO",
+          "title": "مصطلحات",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO",
+          "parentId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C"
+        },
+        {
+          "id": "12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7",
+          "title": "مواضيع وتمارين",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7",
+          "parentId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C"
+        },
+        {
+          "id": "18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM",
+          "title": "دروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM",
+          "parentId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C"
+        }
+      ]
+    },
+    "history_sci": {
+      "id": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",
+      "title": "تاريخ وجغرافيا",
+      "type": "folder",
+      "driveId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",
+      "url": "https://drive.google.com/drive/folders/1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",
+      "categories": [
+        {
+          "id": "1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A",
+          "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
+        },
+        {
+          "id": "1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY",
+          "title": "منهجية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY",
+          "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
+        },
+        {
+          "id": "1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo",
+          "title": "ملخصات ودروس PDF",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo",
+          "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
+        },
+        {
+          "id": "1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9",
+          "title": "الدروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9",
+          "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
+        },
+        {
+          "id": "1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh",
+          "title": "التطبيقات والتمارين",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh",
+          "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
+        }
+      ]
+    },
+    "islamic": {
+      "id": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk",
+      "title": "شريعة",
+      "type": "folder",
+      "driveId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk",
+      "url": "https://drive.google.com/drive/folders/1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk",
+      "categories": [
+        {
+          "id": "1WNSLXbprV__yMqqNLHdMWcO2e7r67QIT",
+          "title": "مواضيع المراجعة النهائية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1WNSLXbprV__yMqqNLHdMWcO2e7r67QIT",
+          "parentId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk"
+        },
+        {
+          "id": "1_MVnd4jCdHutVO5YhYXc_JNTdwA3vOMT",
+          "title": "ملخصات ودروس PDF",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1_MVnd4jCdHutVO5YhYXc_JNTdwA3vOMT",
+          "parentId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk"
+        },
+        {
+          "id": "1OHMj2ks5L3ZRXSrP09SDYBIpbLXcMK1A",
+          "title": "الدروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1OHMj2ks5L3ZRXSrP09SDYBIpbLXcMK1A",
+          "parentId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk"
+        },
+        {
+          "id": "19hdtiqy_sNvkcB--i-L8073ZzPVQK55p",
+          "title": "التطبيقات والتمارين",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/19hdtiqy_sNvkcB--i-L8073ZzPVQK55p",
+          "parentId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk"
+        }
+      ]
+    },
+    "philo_sci": {
+      "id": "1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",
+      "title": "فلسفة",
+      "type": "folder",
+      "driveId": "1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",
+      "url": "https://drive.google.com/drive/folders/1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",
+      "categories": [
+        {
+          "id": "1dXQhrcFALjqCkql3OuahzexX5yFzGHuK",
+          "title": "مقالات فلسفية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1dXQhrcFALjqCkql3OuahzexX5yFzGHuK",
+          "parentId": "1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA"
+        },
+        {
+          "id": "1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T",
+          "title": "الدروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T",
+          "parentId": "1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA"
+        }
+      ]
+    },
+    "exams": {
+      "id": "exams",
+      "title": "اختبارات وفروض لجميع المواد",
+      "type": "folder",
+      "driveId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+      "url": "https://drive.google.com/drive/folders/1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+      "items": [
+        {
+          "id": "1-ZDRdRbMu3IUt6mI0IlfjxO0OGhBKfrM",
+          "title": "BacBlanc-Fr.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1-ZDRdRbMu3IUt6mI0IlfjxO0OGhBKfrM/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1r9XGAC0gP-isCHWs3_i9BZCmhubMX-oK",
+          "title": "Devoir1-Ar.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1r9XGAC0gP-isCHWs3_i9BZCmhubMX-oK/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1QxPIUKBCTAjdCj4uveoDQZH9bO0EMRg_",
+          "title": "Compo1-Ar.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1QxPIUKBCTAjdCj4uveoDQZH9bO0EMRg_/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1EuGpQh4hq6m_-py8yMMh_MAVZNRCeUM2",
+          "title": "Copy of باقة الامتياز - علوم ط - شعبة رياضيات - نافع بكالوريا 2023.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1EuGpQh4hq6m_-py8yMMh_MAVZNRCeUM2/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1eS4QgssZ2uRcd-YXvkyAqL7vX5yZbYNL",
+          "title": "Devoir1-Sci.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1eS4QgssZ2uRcd-YXvkyAqL7vX5yZbYNL/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1hGTgnK7136-yBEggzQHxIDLasDUR9e0n",
+          "title": "Devoir1-islam.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1hGTgnK7136-yBEggzQHxIDLasDUR9e0n/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1pQcrpaRrSxEPu4JiO4fNZqSxnh_jmFLo",
+          "title": "Compo1-islam.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1pQcrpaRrSxEPu4JiO4fNZqSxnh_jmFLo/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1DB9wIxkGaMBXef07EUPqnjzUpiUIy3ZX",
+          "title": "Devoir1-Hg.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1DB9wIxkGaMBXef07EUPqnjzUpiUIy3ZX/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1e-otlF1RC3lXP0DVPjdRyfyfCHe6O8Jx",
+          "title": "Compo1-Hg.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1e-otlF1RC3lXP0DVPjdRyfyfCHe6O8Jx/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1-vnPhbLwYsMGz4ggVUIfrSfzJ0GmPCSp",
+          "title": "Devoir1-Ang.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1-vnPhbLwYsMGz4ggVUIfrSfzJ0GmPCSp/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1_nyTlfX7WGJmh8Ah0AmRx4GhNJvF60Ca",
+          "title": "Devoir2-Phys.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1_nyTlfX7WGJmh8Ah0AmRx4GhNJvF60Ca/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1bBML3XSRmqDr0Hogg0HLQ3dhl4Vb3VWQ",
+          "title": "Compo1-Phys.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1bBML3XSRmqDr0Hogg0HLQ3dhl4Vb3VWQ/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1cwkIPBk8qMPSkDtO8fteHeG8mwaXuECC",
+          "title": "Compo1-Maths.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1cwkIPBk8qMPSkDtO8fteHeG8mwaXuECC/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1HzZQHZtTELAIS9xkPXrSPV8ThaqS_6Wi",
+          "title": "Devoir2-Maths.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1HzZQHZtTELAIS9xkPXrSPV8ThaqS_6Wi/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1h9aKqTSkaIAC38pX22LGkgLeW1ZJdE58",
+          "title": "Devoir1-Maths.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1h9aKqTSkaIAC38pX22LGkgLeW1ZJdE58/view?usp=drivesdk",
+          "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
+          "availability": "listed_in_drive"
+        }
+      ]
+    },
+    "bac_math": {
+      "id": "bac_math",
+      "title": "مواضيع البكالوريا شعبة رياضيات جميع المواد",
+      "type": "folder",
+      "driveId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+      "url": "https://drive.google.com/drive/folders/1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+      "categories": [
+        {
+          "id": "math_bac",
+          "title": "مادة الرياضيات",
+          "type": "folder",
+          "driveId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+          "url": "https://drive.google.com/drive/folders/1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "16s7vebmfJErMbE186cPFr9vOznQ0SkAB",
+              "title": "2022.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/16s7vebmfJErMbE186cPFr9vOznQ0SkAB/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1aotoCFICdLfmxBrCHV-6Dkyq3bzsf7Zj",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1aotoCFICdLfmxBrCHV-6Dkyq3bzsf7Zj/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1fo2EiH1F0j1I7D11V94E_3Klrb5IovJ0",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1fo2EiH1F0j1I7D11V94E_3Klrb5IovJ0/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "12mKbzjqmpVgbnk_oGSYf9wUw9Dys5wCG",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12mKbzjqmpVgbnk_oGSYf9wUw9Dys5wCG/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "121wk3E3R06wnu-vi_Kyh3MFgJHBjQzt_",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/121wk3E3R06wnu-vi_Kyh3MFgJHBjQzt_/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "19spo4Ymxik-Snh-0BfHI12WS7PeUwmsZ",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/19spo4Ymxik-Snh-0BfHI12WS7PeUwmsZ/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ji8bru61s-RofTSUn2yNGOmODcNVjpqk",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ji8bru61s-RofTSUn2yNGOmODcNVjpqk/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1UaLPAFaHuLJkt5oQpVEjcppiZKF55ma_",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1UaLPAFaHuLJkt5oQpVEjcppiZKF55ma_/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1GCBgPlrmbJ_6ZBLL5lLfR0qt38Gjcssk",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1GCBgPlrmbJ_6ZBLL5lLfR0qt38Gjcssk/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1LxEOCMHFqvfBTC4qFu6wpFxr3aXVxptj",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1LxEOCMHFqvfBTC4qFu6wpFxr3aXVxptj/view?usp=drivesdk",
+              "parentId": "1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "history_bac",
+          "title": "مادة الاجتماعيات",
+          "type": "folder",
+          "driveId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+          "url": "https://drive.google.com/drive/folders/1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "12yQ0NT316bAfg5RkOIfjVjwjEBKTm0kc",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12yQ0NT316bAfg5RkOIfjVjwjEBKTm0kc/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1iaVfcm-AbTRpRCLn0TDsHJJ-aH44pD0T",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1iaVfcm-AbTRpRCLn0TDsHJJ-aH44pD0T/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZUKo7Dc0_1ccyqiMkSO5ioTIk2lwsXj-",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZUKo7Dc0_1ccyqiMkSO5ioTIk2lwsXj-/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1xDHR9pXdCba3XV2PGJ5_Cv60G3h_Ikih",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1xDHR9pXdCba3XV2PGJ5_Cv60G3h_Ikih/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1h4n15x6RwOdQ0YvSiT1QN61U1zP66TJI",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1h4n15x6RwOdQ0YvSiT1QN61U1zP66TJI/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "17lvF8bhT7GlGIm9ziHF-SOqmU19X3F60",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/17lvF8bhT7GlGIm9ziHF-SOqmU19X3F60/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "18FYmN6Rn61c5tcjs5jJU8N2ydujM4qxp",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/18FYmN6Rn61c5tcjs5jJU8N2ydujM4qxp/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1wZqlEJSqaUlnF77Y_ClsM02EmKdZUNa2",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1wZqlEJSqaUlnF77Y_ClsM02EmKdZUNa2/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1BUKp5xvr9C8KfAVQBYPHXveLsEGy32a9",
+              "title": "2016 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1BUKp5xvr9C8KfAVQBYPHXveLsEGy32a9/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1z2rnkGILkFc1i14x6ogCUcRMCYeIjB6z",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1z2rnkGILkFc1i14x6ogCUcRMCYeIjB6z/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1NHN4zQTOUufeCc4a-jU_CimJDpjtO2kO",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1NHN4zQTOUufeCc4a-jU_CimJDpjtO2kO/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1NP4DD6Scxj5iM_be1tQP0TKC99p_KJF3",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1NP4DD6Scxj5iM_be1tQP0TKC99p_KJF3/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1VIneTYU_DMqRbh7mi0k82HoJ72K3plg1",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1VIneTYU_DMqRbh7mi0k82HoJ72K3plg1/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "17l48J-Ypf3enokgB7jRmOzD5PJ0Y1hkN",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/17l48J-Ypf3enokgB7jRmOzD5PJ0Y1hkN/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZEMj_aIFpytBZxD5QtPW-Nq_q-C2CRLU",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZEMj_aIFpytBZxD5QtPW-Nq_q-C2CRLU/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1b8-am2XgxDMG1ScOz992QJ70-417eNnj",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1b8-am2XgxDMG1ScOz992QJ70-417eNnj/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1EmN5v3aaCgOk_48RQx-D69-I0Xdja2pF",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1EmN5v3aaCgOk_48RQx-D69-I0Xdja2pF/view?usp=drivesdk",
+              "parentId": "1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "english_bac",
+          "title": "مادة اللغة الإنجليزية",
+          "type": "folder",
+          "driveId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+          "url": "https://drive.google.com/drive/folders/1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "1sYqh5c36TYcSN_-n8BcEfLrHsyDqxlrW",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1sYqh5c36TYcSN_-n8BcEfLrHsyDqxlrW/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "11raaTwHpIUmIY8yepuGgkxWtNgO3jHyv",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/11raaTwHpIUmIY8yepuGgkxWtNgO3jHyv/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "17TpCYXlG3ndHXvJdTzNKqAw2Khc5LuBB",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/17TpCYXlG3ndHXvJdTzNKqAw2Khc5LuBB/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Ixh-RpBZZwFtRmsgZrZ31uTZMqBfwwty",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Ixh-RpBZZwFtRmsgZrZ31uTZMqBfwwty/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1zX8nykmfKcsKmPKMu73-mDLU70qLpHnW",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1zX8nykmfKcsKmPKMu73-mDLU70qLpHnW/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ASTe-zuPq5qbKIvMqPwKDfMSNlZq_pxH",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ASTe-zuPq5qbKIvMqPwKDfMSNlZq_pxH/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1tRVf9Ijo7zC0rsDGIcnnxVWkBgDiHyWe",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1tRVf9Ijo7zC0rsDGIcnnxVWkBgDiHyWe/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "19el61pVxujEe35XpsqVxR3qxef8sxigr",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/19el61pVxujEe35XpsqVxR3qxef8sxigr/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1lahb92FzF7g9FWCECVfDm_pEx4v7bg6T",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1lahb92FzF7g9FWCECVfDm_pEx4v7bg6T/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1uesQEhFVj9OB2ddoDLYNff4O7lk7FNTq",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1uesQEhFVj9OB2ddoDLYNff4O7lk7FNTq/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1j47uhDskUxa18EI5uapr_hurg5asZCGL",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1j47uhDskUxa18EI5uapr_hurg5asZCGL/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Tke0Ilp6-hh1zvkzwM4-A-lbCBO8I1Lx",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Tke0Ilp6-hh1zvkzwM4-A-lbCBO8I1Lx/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZpCaAnu-Y58Y-1mwLS-j15GLM8eN93d7",
+              "title": "2016 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZpCaAnu-Y58Y-1mwLS-j15GLM8eN93d7/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1WmW3diqFYwYJyZjNd0GgUrFLkqJfjVrE",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1WmW3diqFYwYJyZjNd0GgUrFLkqJfjVrE/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1XfAk4_BmOtwfuTH_iLAw2KIXEPmGYVYp",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1XfAk4_BmOtwfuTH_iLAw2KIXEPmGYVYp/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1z9BHzIsfL0wSpQCXE5ieSTVEbpPgdS-2",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1z9BHzIsfL0wSpQCXE5ieSTVEbpPgdS-2/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1jt0grSlAGmjV8HfSawk4lWZItIzPAjWS",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1jt0grSlAGmjV8HfSawk4lWZItIzPAjWS/view?usp=drivesdk",
+              "parentId": "1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "islamic_bac",
+          "title": "مادة الشريعة الإسلامية",
+          "type": "folder",
+          "driveId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+          "url": "https://drive.google.com/drive/folders/1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "12hJOJJvYmuQynmJkBLqkUZYz3Mm__rEp",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12hJOJJvYmuQynmJkBLqkUZYz3Mm__rEp/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1gOzvCmdFZbnC9gAdRUMdaJs58kNj-N_I",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1gOzvCmdFZbnC9gAdRUMdaJs58kNj-N_I/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ADaQOLqhvEq55YWRxaG_vhryHML9wpzn",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ADaQOLqhvEq55YWRxaG_vhryHML9wpzn/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1P6DrOKpWYI-gyle7JmrsUp_4d_Bh5aXT",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1P6DrOKpWYI-gyle7JmrsUp_4d_Bh5aXT/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1iOKlydFLM2qWojtIcbFvlf7XjVlpumYB",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1iOKlydFLM2qWojtIcbFvlf7XjVlpumYB/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1r2F5UuNM1-UiinFrc3tcVwSModm5-i9E",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1r2F5UuNM1-UiinFrc3tcVwSModm5-i9E/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "19tRm5NdjNQSF7iYfXNFbVHysSHSJG3kf",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/19tRm5NdjNQSF7iYfXNFbVHysSHSJG3kf/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1URc0_jI45PEtDGuFxOnWcBOa4uaIn3WW",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1URc0_jI45PEtDGuFxOnWcBOa4uaIn3WW/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "15Cxk6uM4gtAX2xd5erIwGe6ZWS_0PGhO",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/15Cxk6uM4gtAX2xd5erIwGe6ZWS_0PGhO/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1qy7vgU2lFMOdDakA1oc62Sw0FrXklC8f",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1qy7vgU2lFMOdDakA1oc62Sw0FrXklC8f/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1KwzfhEUydgLfN6eGd5GUO5OYfDEFbVni",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1KwzfhEUydgLfN6eGd5GUO5OYfDEFbVni/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1mfpYTUt795HtCN9q0dqIWXPK9i4mPcKu",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1mfpYTUt795HtCN9q0dqIWXPK9i4mPcKu/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1lQ8FZFf4h-Uc1UDTO42Q26x5btr6ohhM",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1lQ8FZFf4h-Uc1UDTO42Q26x5btr6ohhM/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1wUQDLnCxGBD_PvFXHpiKdSciWfZ5sCaJ",
+              "title": "2017 Exceptionnel.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1wUQDLnCxGBD_PvFXHpiKdSciWfZ5sCaJ/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "19aX3CKAkEPS_bjLnazsbmhmtSmapP5PL",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/19aX3CKAkEPS_bjLnazsbmhmtSmapP5PL/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1xzdoleHbUTXBHArOeeoafC0X8jjSUtQ9",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1xzdoleHbUTXBHArOeeoafC0X8jjSUtQ9/view?usp=drivesdk",
+              "parentId": "1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "arabic_bac",
+          "title": "مادة اللغة العربية وآدابها",
+          "type": "folder",
+          "driveId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+          "url": "https://drive.google.com/drive/folders/1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "14Mk5JogK21eHgRy-O39obddEQeEkXcUm",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/14Mk5JogK21eHgRy-O39obddEQeEkXcUm/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1pF01y4KmDtc_s-amdAZhsmTP9p46uCNs",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1pF01y4KmDtc_s-amdAZhsmTP9p46uCNs/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1rQp-co0xm-bwIvICadJSn6IoCGj3o9WD",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1rQp-co0xm-bwIvICadJSn6IoCGj3o9WD/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1i0uNTUfnZJmrbvuU4JMzqU_8mNx2GE9n",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1i0uNTUfnZJmrbvuU4JMzqU_8mNx2GE9n/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "16zw5O0acrV7UCkFwj5T_Q7MIk6Hboz3t",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/16zw5O0acrV7UCkFwj5T_Q7MIk6Hboz3t/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1yueXK05OoY5s4WjpIyqBfLba3xrbcZHp",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1yueXK05OoY5s4WjpIyqBfLba3xrbcZHp/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1OmakLEWZieFXAI_cxmTHzEqH441P8IBI",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1OmakLEWZieFXAI_cxmTHzEqH441P8IBI/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1_O9NLD_ChjbHjkgi_MgBCIKMSvwFa7qB",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1_O9NLD_ChjbHjkgi_MgBCIKMSvwFa7qB/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1UI4lipgSwwrgfqhsdIomV7f7lLIvIfgD",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1UI4lipgSwwrgfqhsdIomV7f7lLIvIfgD/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ezpHVpXBAkrjwSQxKOwUxlGOty0mg7hh",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ezpHVpXBAkrjwSQxKOwUxlGOty0mg7hh/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1pGaWAxxsIpzuALQSkNMTzEB8TjxK0mJD",
+              "title": "2022.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1pGaWAxxsIpzuALQSkNMTzEB8TjxK0mJD/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZVT8zDd_INOL44oU-RDuiF16Rq8zpE7-",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZVT8zDd_INOL44oU-RDuiF16Rq8zpE7-/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1SXEbKjsBYEx_4jDXkIejPNpdNug9PZbp",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1SXEbKjsBYEx_4jDXkIejPNpdNug9PZbp/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1SV-6tjuKkPBLQAXi68DlW9RBbvi8eAMc",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1SV-6tjuKkPBLQAXi68DlW9RBbvi8eAMc/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZqZWPn56HUDco2x5ZeZdwJcim2N53Ymr",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZqZWPn56HUDco2x5ZeZdwJcim2N53Ymr/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1aR_6VpR_V8mj9IbIv0kLYf4BbjJhRIV0",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1aR_6VpR_V8mj9IbIv0kLYf4BbjJhRIV0/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1QYDEsq8bTn7X911B5AJTbVIrZt5bAVV8",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1QYDEsq8bTn7X911B5AJTbVIrZt5bAVV8/view?usp=drivesdk",
+              "parentId": "1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "physics_bac",
+          "title": "مادة العلوم الفيزيائية",
+          "type": "folder",
+          "driveId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+          "url": "https://drive.google.com/drive/folders/1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "18EzcXZzp8U_t09RWfgxeFjLJzB1aloOr",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/18EzcXZzp8U_t09RWfgxeFjLJzB1aloOr/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1-eEVLmI6D6_ZvN8RMMZ-TKB2a-T7fMt1",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1-eEVLmI6D6_ZvN8RMMZ-TKB2a-T7fMt1/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "122KZ5kkn48n_-JG21E8X1eyNlznTgexo",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/122KZ5kkn48n_-JG21E8X1eyNlznTgexo/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Jjull_JLu5mV5U-0Ik1HB7jvWZmS2feT",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Jjull_JLu5mV5U-0Ik1HB7jvWZmS2feT/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1fOQnmvbekchKSLqvzGYlx9eFtXMvaVyf",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1fOQnmvbekchKSLqvzGYlx9eFtXMvaVyf/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "13bZ8RZ73KOnfcazxtintJ2-Mjs45mCJL",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/13bZ8RZ73KOnfcazxtintJ2-Mjs45mCJL/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1miXJXWfJrpQ7XSa3n_9nsYT60V5K4mMy",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1miXJXWfJrpQ7XSa3n_9nsYT60V5K4mMy/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1VlG4qrZBzQQOXIyONYISJZozmkgYMXmh",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1VlG4qrZBzQQOXIyONYISJZozmkgYMXmh/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "16xEpuoEi8LJN_lbvnJUZ9VwF4Yh2NE4V",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/16xEpuoEi8LJN_lbvnJUZ9VwF4Yh2NE4V/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1_t06bMCWGputRWOtW-eMk3mABd4LLnKw",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1_t06bMCWGputRWOtW-eMk3mABd4LLnKw/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Js6UFzntAWSDyGO6tlQ3xlNQdRXMH2vm",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Js6UFzntAWSDyGO6tlQ3xlNQdRXMH2vm/view?usp=drivesdk",
+              "parentId": "1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "natural_bac",
+          "title": "مادة علوم الطبيعة والحياة",
+          "type": "folder",
+          "driveId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+          "url": "https://drive.google.com/drive/folders/1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "1nFHD10Pq0c3xbUw2VuB_VoczZoOgpDEY",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1nFHD10Pq0c3xbUw2VuB_VoczZoOgpDEY/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1JZvyoIllsxoZtJhnOoHaPD0-D930F7xi",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1JZvyoIllsxoZtJhnOoHaPD0-D930F7xi/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1I-XxQvvrRA-FWjjXTKKboD4nhiNsLN9S",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1I-XxQvvrRA-FWjjXTKKboD4nhiNsLN9S/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "19vkmPSSChrmET6hSjx9LpYlN7dn5KQl3",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/19vkmPSSChrmET6hSjx9LpYlN7dn5KQl3/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "15VVbOFN3ghQ5I7ocTovJp-Phh93GV3nb",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/15VVbOFN3ghQ5I7ocTovJp-Phh93GV3nb/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1m7xhCPE5Hoo8HDIU_GXbEYDYFP0XiGd4",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1m7xhCPE5Hoo8HDIU_GXbEYDYFP0XiGd4/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1gQf9OcMGIGTniAmqKpUbY4HIUte1lQgV",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1gQf9OcMGIGTniAmqKpUbY4HIUte1lQgV/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1D5JFIVwhthKfjOvwt1Z_7Pk5JfzSmeVQ",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1D5JFIVwhthKfjOvwt1Z_7Pk5JfzSmeVQ/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "11yT9sZ_R_KYOAeN1FVIvl1V6bZe_cPKs",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/11yT9sZ_R_KYOAeN1FVIvl1V6bZe_cPKs/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1yrb5HByWQc8p8TaPdF1Huzfyjvojw0uV",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1yrb5HByWQc8p8TaPdF1Huzfyjvojw0uV/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1hMqwckyaZV3rJxU4xfo7jxaOmU4zOV0m",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1hMqwckyaZV3rJxU4xfo7jxaOmU4zOV0m/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1gTKM8SRoTuzObyxDjHXufeLAG18mKNdh",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1gTKM8SRoTuzObyxDjHXufeLAG18mKNdh/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1uT3BUgHsYpAqM8ezaXYfet-ghmVvUTi5",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1uT3BUgHsYpAqM8ezaXYfet-ghmVvUTi5/view?usp=drivesdk",
+              "parentId": "1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "philosophy_bac",
+          "title": "مادة الفلسفة",
+          "type": "folder",
+          "driveId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+          "url": "https://drive.google.com/drive/folders/14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "1am5_mF61USnxBmxWkAkYdWEZ-ifon1Lh",
+              "title": "2023.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1am5_mF61USnxBmxWkAkYdWEZ-ifon1Lh/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Me7hvT34VGqPiI2u0g42SYENtFZnS25I",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Me7hvT34VGqPiI2u0g42SYENtFZnS25I/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ToXh3byxVnvNugxQqmw1tgE1L7HMLZf2",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ToXh3byxVnvNugxQqmw1tgE1L7HMLZf2/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1xHzNHWHPm_l8FETw8xnHnEZ13G-pqO1Q",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1xHzNHWHPm_l8FETw8xnHnEZ13G-pqO1Q/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "14WelqB4YkGSr_t3pZHon8m-kBr9-tVkF",
+              "title": "2016 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/14WelqB4YkGSr_t3pZHon8m-kBr9-tVkF/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "14ym7LNa4znQxGy2sa5k5r6-DfiVwjUmJ",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/14ym7LNa4znQxGy2sa5k5r6-DfiVwjUmJ/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1g1q8MoCNWLVglImxRYxY37IUExuf_FTG",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1g1q8MoCNWLVglImxRYxY37IUExuf_FTG/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1yIRoxX3uZjQx9qccnfp4IGQzijWtwP0_",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1yIRoxX3uZjQx9qccnfp4IGQzijWtwP0_/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "11LtGl45nxxwXVDVpS6ce65HNi7S4G9w7",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/11LtGl45nxxwXVDVpS6ce65HNi7S4G9w7/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "12NIlUffrnGfv4Lhsl_KX3JPPZEmq_wbQ",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12NIlUffrnGfv4Lhsl_KX3JPPZEmq_wbQ/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1JbPbW7NYbYSbDGbQwBMI2XN5vXlt9KGp",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1JbPbW7NYbYSbDGbQwBMI2XN5vXlt9KGp/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1-ul7UTiswqZ_jLhCnyhICHEHNGFFqk6-",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1-ul7UTiswqZ_jLhCnyhICHEHNGFFqk6-/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1npx7pyim3f3h1u-D3wo_Y69T8-4J5O2q",
+              "title": "2022.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1npx7pyim3f3h1u-D3wo_Y69T8-4J5O2q/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1BRHgO48BPBZFoMbU_yYvld0FdBTrEr1M",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1BRHgO48BPBZFoMbU_yYvld0FdBTrEr1M/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1wBcaJoM9SSuToaDGLM-P6bom2YX9CMan",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1wBcaJoM9SSuToaDGLM-P6bom2YX9CMan/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "13tS97t72cv_66H9bp_dQDzTOhZXg6YOq",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/13tS97t72cv_66H9bp_dQDzTOhZXg6YOq/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1tGS_GpFjrxZ5r957vQAPoh7pxTYZL7OU",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1tGS_GpFjrxZ5r957vQAPoh7pxTYZL7OU/view?usp=drivesdk",
+              "parentId": "14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB",
+              "availability": "listed_in_drive"
+            }
+          ]
+        },
+        {
+          "id": "french_bac",
+          "title": "مادة اللغة الفرنسية",
+          "type": "folder",
+          "driveId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+          "url": "https://drive.google.com/drive/folders/1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+          "parentId": "1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",
+          "items": [
+            {
+              "id": "10h9XyPeqHFLOIHD4XMSIObqojPJ5BKLO",
+              "title": "2020.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/10h9XyPeqHFLOIHD4XMSIObqojPJ5BKLO/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1EKjSnQF3qqgjCi1KosWpmis8K3eppYD_",
+              "title": "2021.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1EKjSnQF3qqgjCi1KosWpmis8K3eppYD_/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1UVCT6zg6nf2YM4crCQQhOMTfGm5Zsyat",
+              "title": "2009.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1UVCT6zg6nf2YM4crCQQhOMTfGm5Zsyat/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1phCef7VRqJ9I9BXSnzirBAnqW4Z_2lqm",
+              "title": "2010.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1phCef7VRqJ9I9BXSnzirBAnqW4Z_2lqm/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1EGh-DEZmDF2CqGkbShD52inzL-QCwaoc",
+              "title": "2011.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1EGh-DEZmDF2CqGkbShD52inzL-QCwaoc/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "114uX3mSZ5yZoHf-m3EfqOLLREtkQF9pC",
+              "title": "2012.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/114uX3mSZ5yZoHf-m3EfqOLLREtkQF9pC/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1GJQ7SxioO4wmw99LSH0eOP4wthqkNNPD",
+              "title": "2013.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1GJQ7SxioO4wmw99LSH0eOP4wthqkNNPD/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1IsbVguHTnzfjnG12t2Zv4XjdoAkQqziO",
+              "title": "2014.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1IsbVguHTnzfjnG12t2Zv4XjdoAkQqziO/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1TFX2yXtCghcyipCfiLqM4vk6xPNk7xbx",
+              "title": "2015.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1TFX2yXtCghcyipCfiLqM4vk6xPNk7xbx/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1kqOv94dU7-atpFkA2xyV7zg3jSvrfvAA",
+              "title": "2016 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1kqOv94dU7-atpFkA2xyV7zg3jSvrfvAA/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ugwYP7nnPpuhVkthHT1B-_YciGOHmBWp",
+              "title": "2016.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ugwYP7nnPpuhVkthHT1B-_YciGOHmBWp/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Iz56VMndAOTWJ0IhQdEm5p20OO-J2_XP",
+              "title": "2017 (02).pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Iz56VMndAOTWJ0IhQdEm5p20OO-J2_XP/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1A2X33uZa6LaL5omc9YXsfzYYnRAko0Ef",
+              "title": "2017.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1A2X33uZa6LaL5omc9YXsfzYYnRAko0Ef/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1lgExFKXFyu3hHmPs_Aml6UwcCwbtaeHT",
+              "title": "2018.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1lgExFKXFyu3hHmPs_Aml6UwcCwbtaeHT/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1bYhajZL-nIRGysowk-80nV_wfuPXHagX",
+              "title": "2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1bYhajZL-nIRGysowk-80nV_wfuPXHagX/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1y9R84uz4eNh1fwcqmnp3eg7xlkTPjFkQ",
+              "title": "2008.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1y9R84uz4eNh1fwcqmnp3eg7xlkTPjFkQ/view?usp=drivesdk",
+              "parentId": "1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY",
+              "availability": "listed_in_drive"
+            }
+          ]
+        }
+      ]
+    },
+    "summaries_math": {
+      "id": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n",
+      "title": "الملخصات",
+      "type": "folder",
+      "driveId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n",
+      "url": "https://drive.google.com/drive/folders/1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n",
+      "categories": [
+        {
+          "id": "1IuvsyqsxxvqU2ZkZU61Pn4YxQsysHOC_",
+          "title": "علوم",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1IuvsyqsxxvqU2ZkZU61Pn4YxQsysHOC_",
+          "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
+        },
+        {
+          "id": "1oCmAfUvhV7Sktm5e92mtkziCf05xx1Hn",
+          "title": "تاريخ وجغرافيا",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1oCmAfUvhV7Sktm5e92mtkziCf05xx1Hn",
+          "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
+        },
+        {
+          "id": "1327kpLDzfzncCw2f7MOigMtTa5Gqu5LS",
+          "title": "فلسفة",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1327kpLDzfzncCw2f7MOigMtTa5Gqu5LS",
+          "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
+        },
+        {
+          "id": "1q7VSOtPLNnelI_5SRdDrM4DJ89Y4n2_H",
+          "title": "إنجليزية",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1q7VSOtPLNnelI_5SRdDrM4DJ89Y4n2_H",
+          "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
+        },
+        {
+          "id": "1ONi6wATikmlOCGJ_F7BVY29schWOLvXs",
+          "title": "فيزياء",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1ONi6wATikmlOCGJ_F7BVY29schWOLvXs",
+          "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
+        }
+      ]
+    },
+    "tech_subject": {
+      "id": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+      "title": "التكنولوجيا",
+      "type": "folder",
+      "driveId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+      "url": "https://drive.google.com/drive/folders/1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+      "categories": [
+        {
+          "id": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "title": "ملخصات ودروس",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+        },
+        {
+          "id": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+          "title": "مواضيع",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+        },
+        {
+          "id": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+          "title": "تمارين",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+        },
+        {
+          "id": "1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
+          "title": "كتب",
+          "type": "folder",
+          "url": "https://drive.google.com/drive/folders/1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Folder IDs and direct children are copied from Google Drive listing results, not inferred.",
+    "The manifest is a verified partial inventory, not a recursive full-drive crawl.",
+    "Drive connector listing does not prove public/anonymous access."
+  ]
+}
