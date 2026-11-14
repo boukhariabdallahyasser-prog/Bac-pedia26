@@ -126,3 +126,11 @@ drop trigger if exists on_student_progress_profile_sync on public.student_progre
 create trigger on_student_progress_profile_sync
 after insert or update of data on public.student_progress
 for each row execute function public.sync_student_profile_from_progress();
+
+-- Backfill profile rows for users who existed before this schema was applied.
+insert into public.student_profiles (user_id, full_name, email, branch, specialization, last_activity_at)
+select u.id, coalesce(u.raw_user_meta_data->>'full_name',''), u.email,
+       p.data->>'branch', p.data->>'subBranch', coalesce(p.updated_at, now())
+from auth.users u
+left join public.student_progress p on p.user_id = u.id
+on conflict (user_id) do nothing;
