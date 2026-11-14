@@ -1659,7 +1659,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         if(error)throw error;
         authCooldownUntil=Date.now()+60000;
         if(data.session&&data.user?.email_confirmed_at){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
-        else{if(data.session)await auth.auth.signOut();$('#loginEmailInput').value=email;$('#signupPassInput').value='';$('#signupPassConfirmInput').value='';switchLoginTab('login');showAuthNotice('تم إنشاء طلب الحساب. افتح رسالة التأكيد في بريدك الإلكتروني ثم سجّل الدخول.','success');showToast('راجع بريدك الإلكتروني لتأكيد الحساب','success')}
+        else{if(data.session)await auth.auth.signOut();$('#loginEmailInput').value=email;$('#signupPassInput').value='';$('#signupPassConfirmInput').value='';switchLoginTab('login');showAuthNotice('تم استلام طلب التسجيل. تحقق من رسالة التأكيد في بريدك الإلكتروني قبل تسجيل الدخول.','success');showToast('تحقق من بريدك الإلكتروني','success')}
       }catch(e){if(/rate limit|429|too many requests/i.test(String(e?.message||'')))authCooldownUntil=Date.now()+120000;showAuthNotice(authErrorMessage(e),'warning');showToast(authErrorMessage(e),'danger')}
       finally{setAuthBusy(false)}
     }
