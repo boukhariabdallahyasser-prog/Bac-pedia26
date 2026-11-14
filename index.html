@@ -291,6 +291,66 @@
       *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
       #bgCanvas{display:none!important}
     }
+
+    /* Bac-pedia 3.0 visual system — visible layout redesign */
+    :root{--primary:#7357ff;--primary-dark:#5438d9;--primary-light:#b7a8ff;--secondary:#ff648a;--accent:#ffc36b;--bg-main:#090e1b;--bg-card:#131b2d;--bg-glass:#192238;--border:rgba(164,183,225,.13);--text-main:#f6f7ff;--text-sub:#b5c0d7;--text-muted:#8e9dbb;--sidebar:270px;--radius:20px}
+    body.light-mode{--bg-main:#f4f6fc;--bg-card:#ffffff;--bg-glass:#f0f3fb;--border:#e2e8f4;--text-main:#172238;--text-sub:#52627d;--text-muted:#697b97}
+    body{background:var(--bg-main);background-image:radial-gradient(ellipse 65% 45% at 75% -15%,rgba(115,87,255,.14),transparent)}
+    #bgCanvas{opacity:.16}
+    .app-shell{gap:0}
+    .sidebar{padding:24px 16px;background:#101729;border-left:1px solid var(--border);box-shadow:none;gap:20px}
+    body.light-mode .sidebar{background:#fff}
+    .sidebar-brand{border:0;background:transparent;padding:7px 4px}
+    .brand-icon{border-radius:17px;animation:none;background:#7357ff;box-shadow:0 8px 25px rgba(115,87,255,.25)}
+    .brand-title{font-size:1.15rem;background:none;color:var(--text-main)}
+    .nav-btn{background:transparent;border-color:transparent;border-radius:12px;padding:13px 15px;font-size:.95rem}
+    .nav-btn:hover{transform:none;background:var(--bg-glass);box-shadow:none}
+    .nav-btn.active{background:rgba(115,87,255,.19);border-color:rgba(115,87,255,.25);color:#bcb1ff}
+    .nav-btn.active i{color:#bcb1ff}
+    .main{max-width:1540px;padding:24px clamp(18px,3vw,45px) 100px}
+    .topbar{position:relative;top:auto;background:transparent;backdrop-filter:none;border:0;box-shadow:none;padding:6px 0 18px;border-radius:0}
+    .top-title h2{font-size:clamp(1.4rem,2.4vw,2rem)}
+    .top-title p{font-size:.9rem}
+    .ctrl-btn{background:var(--bg-card);border-radius:13px}
+    .hero{display:block;min-height:0;padding:clamp(26px,4vw,52px);background:linear-gradient(112deg,#33216d 0%,#423096 51%,#6b3887 100%);border:0;border-radius:25px;box-shadow:0 20px 45px rgba(43,24,104,.22)}
+    .hero::after{inset:auto -5% -65% 25%;height:100%;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 65%);filter:none}
+    .hero-content{max-width:100%}
+    .hero h1,.light-mode .hero h1{font-size:clamp(2.1rem,4.8vw,3.8rem);line-height:1.25;background:none;color:#fff;letter-spacing:0}
+    .hero p{color:#e0dafa;max-width:700px}
+    .hero .kicker{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.23)}
+    .hero .time-box{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.17);border-radius:12px}
+    .hero .time-box strong{background:none;color:#fff}
+    .hero .time-box span{color:#ddd5ff}
+    .hero .year-progress{background:rgba(255,255,255,.2)}
+    .hero .year-progress span{background:#ffc36b}
+    .hero .btn.primary{background:#fff;color:#38257c}
+    .hero .btn.success{background:#ffc36b;color:#302052}
+    .hero .btn:not(.primary):not(.success){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
+    .section-head h2{font-size:clamp(1.3rem,2.5vw,1.8rem)}
+    .card{background:var(--bg-card);border:1px solid var(--border);box-shadow:0 6px 22px rgba(0,0,0,.07)}
+    .quick-card{padding:22px;align-items:flex-start;min-height:135px}
+    .quick-icon{border-radius:14px;width:50px;height:50px;background:rgba(115,87,255,.14);color:#ac9bff;box-shadow:none}
+    .quick-card:nth-child(2) .quick-icon{background:rgba(20,184,166,.14);color:#2dd4bf}
+    .quick-card:nth-child(3) .quick-icon{background:rgba(255,100,138,.14);color:#fb8cab}
+    .subject-card{min-height:195px}
+    .subject-icon{box-shadow:none}
+    .new-home-panel{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:18px}
+    .new-home-panel .card{padding:24px}
+    .home-eyebrow{font-size:.8rem;color:var(--text-muted);font-weight:800;margin-bottom:9px}
+    .home-stat-value{font-size:2.7rem;font-family:Cairo;font-weight:900;line-height:1.3;color:var(--text-main)}
+    .home-progress-track{height:11px;background:var(--bg-glass);border-radius:100px;overflow:hidden;margin:15px 0}
+    .home-progress-fill{height:100%;background:linear-gradient(90deg,#7357ff,#ff648a);border-radius:100px;transition:width .3s}
+    .home-panel-link{display:inline-flex;gap:8px;align-items:center;margin-top:12px;color:var(--primary-light);font-weight:900;cursor:pointer}
+    .ai-connection-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border:1px solid var(--border);border-radius:16px;background:var(--bg-card);margin:14px 0;flex-wrap:wrap}
+    .ai-connection-banner strong{font-size:.93rem}
+    .ai-connection-banner p{color:var(--text-muted);font-size:.82rem;margin-top:3px}
+    .ai-mode-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fbbf24;margin-left:8px}
+    .ai-mode-dot.live{background:#34d399}
+    .ai-setup{margin:10px 0 16px;padding:18px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px}
+    .ai-setup summary{cursor:pointer;font-weight:800}
+    .ai-setup .input{margin-top:10px}
+    @media(max-width:1000px){.new-home-panel{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.sidebar{padding:16px}.main{padding:12px 12px 100px}.hero{padding:25px 18px}.hero h1{font-size:2rem}.hero-actions .btn{flex:1}.new-home-panel{grid-template-columns:1fr}.quick-card{min-height:105px}.topbar{padding-bottom:12px}.top-title h2{max-width:46vw}}
   </style>
 </head>
 <body>
@@ -372,8 +432,8 @@
         <div class="hero">
           <div class="hero-content">
             <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="homeBranchKicker">شعبة رياضيات</span></div>
-            <h1>راجع بذكاء، بدون تشتيت.</h1>
-            <p>ملفاتك وخطتك وتقدمك في واجهة بسيطة. افتح القائمة للوصول لكل شيء بدون ازدحام.</p>
+            <h1>مساحتك للنجاح.<br>كل شيء في مكان واحد.</h1>
+            <p>دروس وملفات منظّمة، خطة يومية، متابعة التقدم وأدوات مراجعة ذكية — صُمّمت خصيصاً لتلميذ البكالوريا الجزائرية.</p>
             <div class="countdown">
               <div class="time-box"><strong id="cdDays">000</strong><span>يوم</span></div>
               <div class="time-box"><strong id="cdHours">00</strong><span>ساعة</span></div>
@@ -386,6 +446,21 @@
               <button class="btn success" onclick="showPage('ai'); runAgent('daily_plan')"><i class="fa-solid fa-wand-magic-sparkles"></i> خطة اليوم</button>
               <button class="btn" onclick="showPage('planner')"><i class="fa-solid fa-stopwatch"></i> جلسة تركيز</button>
             </div>
+          </div>
+        </div>
+        <div class="new-home-panel">
+          <div class="card">
+            <div class="home-eyebrow"><i class="fa-solid fa-chart-line"></i> تقدّمك الدراسي</div>
+            <div class="home-stat-value" id="homeProgressValue">0%</div>
+            <p class="muted">متوسط إنجاز مواد شعبتك الحالية</p>
+            <div class="home-progress-track"><div class="home-progress-fill" id="homeProgressFill" style="width:0%"></div></div>
+            <button class="home-panel-link" onclick="showPage('progress')">تابع تقدمك <i class="fa-solid fa-arrow-left"></i></button>
+          </div>
+          <div class="card">
+            <div class="home-eyebrow"><i class="fa-solid fa-list-check"></i> خطتك لهذا اليوم</div>
+            <div class="home-stat-value" id="homeTasksValue">0</div>
+            <p class="muted" id="homeTasksSubtitle">مهام تنتظر الإنجاز</p>
+            <button class="home-panel-link" onclick="showPage('planner')">افتح مخطط المراجعة <i class="fa-solid fa-arrow-left"></i></button>
           </div>
         </div>
         <div class="section-head"><div><h2>اختصارات مفيدة</h2><p>اختر مسارك بسرعة، واترك التفاصيل داخل الصفحات.</p></div></div>
@@ -415,6 +490,16 @@
           </div>
           <button class="btn primary" onclick="runAgent(activeAgent)"><i class="fa-solid fa-play"></i> تشغيل الأداة</button>
         </div>
+        <div class="ai-connection-banner">
+          <div><strong><span class="ai-mode-dot" id="aiModeDot"></span><span id="aiModeTitle">أدوات المراجعة المحلية</span></strong><p id="aiModeDescription">الأدوات المحلية تعمل دون إنترنت؛ الإجابات التوليدية تتطلب ربط خدمة AI.</p></div>
+          <button class="btn" onclick="document.getElementById('aiSetup').open=true;document.getElementById('aiSetup').scrollIntoView({behavior:'smooth',block:'center'})"><i class="fa-solid fa-sliders"></i> إعداد الذكاء الاصطناعي</button>
+        </div>
+        <details class="ai-setup" id="aiSetup">
+          <summary>ربط المساعد الحقيقي (Gemini) — إعداد اختياري</summary>
+          <p class="muted">يمكنك تجربة مفتاح Gemini الخاص بك في هذه الجلسة فقط. لا تشارك مفتاحك مع الآخرين ولا تستخدم مفتاح إنتاجي على موقع عام؛ النشر العام يتطلب خادماً وسيطاً يحفظ المفتاح بأمان.</p>
+          <input id="sessionAiKey" class="input" type="password" autocomplete="off" placeholder="Gemini API key — لا يُحفظ في المتصفح" aria-label="مفتاح Gemini لهذه الجلسة">
+          <div class="actions"><button class="btn primary" onclick="enableSessionAI()"><i class="fa-solid fa-plug"></i> تفعيل لهذه الجلسة</button><button class="btn" onclick="disableSessionAI()">إيقاف الاتصال</button></div>
+        </details>
         <div class="context-strip">
           <div class="context-pill"><span>الشعبة</span><strong id="aiCtxBranch">-</strong></div>
           <div class="context-pill"><span>المادة</span><strong id="aiCtxSubject">-</strong></div>
@@ -516,7 +601,7 @@
       bacStart: new Date('2026-06-07T08:00:00+01:00'),
       videosCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHVBvdfHx7d-j0LMU8rPXIAxGbf3QQ4WxT_duxZdaZ95w6W8wvF5Kw7OuKh55_cTTeWMdIKpRGIZpL/pub?output=csv',
       mockBacUrl: 'https://drive.google.com/drive/folders/1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk',
-      aiMode: 'direct',
+      aiMode: 'proxy',
       aiProvider: 'gemini',
       aiApiKey: '',
       aiEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
@@ -524,7 +609,7 @@
       aiModels: ['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'],
       aiMaxOutputTokens: 4096,
       aiRequestTimeout: 60000,
-      aiUseLocalFallback: false,
+      aiUseLocalFallback: true,
       aiProxyEndpoint: ''
     };
     const pages = [
@@ -647,7 +732,7 @@
     if(state.progress)Object.keys(state.progress).forEach(id=>{if(allSubjects[id]?.special)delete state.progress[id];});
     if(branches[state.branch]?.subs && !state.subBranch) state.subBranch=Object.keys(branches[state.branch].subs)[0];
     let currentModalSubject=null, activeAgent='smart_tutor', focusTimer=null, focusTotal=0, focusLeft=0, loadedVideos=defaultVideos;
-    function saveState(){localStorage.setItem(CONFIG.storageKey,JSON.stringify(state));}
+    function saveState(){localStorage.setItem(CONFIG.storageKey,JSON.stringify(state));if(typeof renderHomeSummary==='function')renderHomeSummary();}
     function escapeHtml(t){return String(t??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
     function normalize(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
     function subjectLabel(id,sub=allSubjects[id]){if(!sub)return''; if(id==='third_lang'&&state.subBranch)return({german:'اللغة الألمانية',spanish:'اللغة الإسبانية',italian:'اللغة الإيطالية'}[state.subBranch]||sub.name); if(id==='tech_subject'&&state.subBranch)return({civil:'الهندسة المدنية',electrical:'الهندسة الكهربائية',mechanical:'الهندسة الميكانيكية',process:'هندسة الطرائق'}[state.subBranch]||sub.name); return sub.name;}
@@ -1063,9 +1148,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         return data.answer||data.text||data.message||readResponseText(data)||null;
       }catch(e){console.warn('Proxy AI failed, fallback used',e);return null;}
     }
-    async function callLiveAI(agentId, ctx){
-      if(CONFIG.aiMode==='direct')return await callDirectAI(agentId,ctx) || await callProxyAI(agentId,ctx);
-      return await callProxyAI(agentId,ctx) || await callDirectAI(agentId,ctx);
+    async function callLiveAI(agentId,ctx){
+      if(CONFIG.aiProxyEndpoint){try{const answer=await callProxyAI(agentId,ctx);if(answer)return answer;}catch(e){console.warn('AI proxy unavailable',e);}}
+      if(sessionGeminiKey||CONFIG.aiApiKey)return await callDirectAI(agentId,ctx);
+      throw new Error('لا توجد خدمة ذكاء اصطناعي متصلة.');
     }
 
 
@@ -1083,10 +1169,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return readResponseText(data);
     }
     async function callAIModel(model,input){
-      if(!CONFIG.aiApiKey)throw new Error('لا يوجد مفتاح للمساعد داخل الإعدادات.');
+      if(!(sessionGeminiKey||CONFIG.aiApiKey))throw new Error('لم يتم إعداد مفتاح Gemini.');
       const data = await fetchJsonWithTimeout(liveModelEndpoint(model), {
         method:'POST',
-        headers:{'Content-Type':'application/json','x-goog-api-key':CONFIG.aiApiKey},
+        headers:{'Content-Type':'application/json','x-goog-api-key':sessionGeminiKey||CONFIG.aiApiKey},
         body: JSON.stringify({
           contents:[{role:'user',parts:[{text:input}]}],
           systemInstruction:{parts:[{text:'أنت مساعد دراسي ممتاز لطلاب باكالوريا الجزائر. أجب بالعربية الفصحى البسيطة، منظم، عملي، غير مكرر، واستعمل سياق الطالب بدقة. لا تعط إجابات جاهزة عامة؛ ابني الجواب من طلب الطالب وبيانات الموقع. لا تذكر أنك نموذج ولا تذكر API.'}]},
@@ -1109,6 +1195,31 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return null;
     }
 
+    let sessionGeminiKey='';
+    function hasLiveAI(){return Boolean(sessionGeminiKey||CONFIG.aiProxyEndpoint);}
+    function updateAIModeIndicator(){
+      const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
+      if(dot)dot.classList.toggle('live',live);
+      if(title)title.textContent=live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
+      if(desc)desc.textContent=live?'يمكنك طلب شرح وتلخيص واختبارات من نموذج Gemini.':'تعمل خطة المراجعة وحاسبة المعدل وتحليل الأخطاء محلياً. للحصول على إجابات مولّدة، اربط Gemini.';
+    }
+    function enableSessionAI(){
+      const key=$('#sessionAiKey')?.value.trim()||'';
+      if(!key){showToast('أدخل مفتاح Gemini أولاً','warning');return;}
+      sessionGeminiKey=key;
+      $('#sessionAiKey').value='';
+      updateAIModeIndicator();
+      showToast('تم تفعيل الاتصال لهذه الجلسة. جرّب إرسال سؤال.','success');
+    }
+    function disableSessionAI(){sessionGeminiKey='';if($('#sessionAiKey'))$('#sessionAiKey').value='';updateAIModeIndicator();showToast('تم إيقاف اتصال Gemini','info');}
+    function renderHomeSummary(){
+      const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
+      if($('#homeProgressValue'))$('#homeProgressValue').textContent=avg+'%';
+      if($('#homeProgressFill'))$('#homeProgressFill').style.width=avg+'%';
+      const remaining=(state.tasks||[]).filter(t=>!t.done).length;
+      if($('#homeTasksValue'))$('#homeTasksValue').textContent=String(remaining);
+      if($('#homeTasksSubtitle'))$('#homeTasksSubtitle').textContent=remaining?'مهام متبقية من قائمة مراجعتك':'لا توجد مهام متبقية، أضف هدفاً جديداً';
+    }
     function setAIStatus(message, type='info'){
       const line=$('#aiStatusLine');
       if(!line)return;
@@ -1120,25 +1231,43 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const msg=aiErrorMessage(error);
       return `<div class="api-error-box"><strong>تعذر تشغيل المساعد الآن.</strong><br>السبب: ${escapeHtml(msg)}<br><br>جرّب إعادة المحاولة، أو افتح الصفحة عبر HTTPS. لن يظهر جواب جاهز مكرر حتى تعرف سبب المشكلة الحقيقي.</div>`;
     }
+    let aiBusy=false;
     async function runAgent(id='smart_tutor'){
-      activeAgent=id;renderAgents();renderAiSelectors();const out=$('#aiOutput');const ctx=aiContext();
-      out.innerHTML='<span class="typing"><span></span><span></span><span></span></span> المساعد يحلل طلبك وبياناتك...';
-      setAIStatus('المساعد يحلل طلبك باستعمال الشعبة، المادة، التقدم، الأخطاء والمهام...', 'info');
+      if(aiBusy){showToast('انتظر انتهاء الطلب الحالي','info');return;}
+      activeAgent=id;renderAgents();renderAiSelectors();
+      const out=$('#aiOutput'),ctx=aiContext();
+      const localSupported=['daily_plan','mistake_analyzer','grade_advisor'];
+      if(!hasLiveAI()){
+        if(localSupported.includes(id)){
+          const ans=localAgent(id,ctx);
+          out.textContent='[أداة محلية — ليست إجابة مولّدة بالذكاء الاصطناعي]\\n\\n'+ans;
+          setAIStatus('تم تشغيل الأداة محلياً دون اتصال بنموذج AI.','success');
+          showToast('تم إنشاء النتيجة المحلية','success');
+        }else{
+          out.textContent='هذه الأداة تتطلب نموذج ذكاء اصطناعي متصلاً لتقديم إجابة حقيقية ومخصصة. افتح إعداد الذكاء الاصطناعي بالأعلى لربط Gemini.\\n\\nيمكنك استخدام خطة المراجعة، تحليل الأخطاء، ونصيحة المعدل دون اتصال.';
+          setAIStatus('لا توجد خدمة AI متصلة. لا يتم تقديم إجابات وهمية.','info');
+          $('#aiSetup').open=true;
+        }
+        return;
+      }
+      aiBusy=true;
+      out.innerHTML='<span class="typing"><span></span><span></span><span></span></span> يتم توليد الإجابة...';
+      setAIStatus('جار الاتصال بنموذج الذكاء الاصطناعي...','info');
       try{
         const live=await callLiveAI(id,ctx);
-        if(!live || !String(live).trim())throw new Error('وصل رد فارغ من المساعد.');
+        if(!live||!String(live).trim())throw new Error('وصل رد فارغ من المساعد.');
         const ans=cleanRepeatedAnswer(String(live).trim(),ctx,id);
-        out.textContent=ans;
-        rememberAI(id,ctx,ans,true);
-        setAIStatus('تم تجهيز جواب مخصص حسب بياناتك.', 'success');
-        showToast('تم تجهيز الجواب','success');
+        out.textContent=ans;rememberAI(id,ctx,ans,true);
+        setAIStatus('تم استلام إجابة مولّدة من النموذج.','success');
+        showToast('تم تجهيز الإجابة','success');
       }catch(e){
-        console.warn(e);
+        console.warn('AI request failed',e);
         out.innerHTML=renderApiError(e);
-        setAIStatus('فشل الاتصال بالنموذج. لا توجد إجابة محلية جاهزة.', 'danger');
+        setAIStatus('تعذر الاتصال بالنموذج. تحقق من المفتاح والاتصال.','danger');
         showToast('تعذر تشغيل المساعد','danger');
-      }
+      }finally{aiBusy=false;}
     }
+
     function rememberAI(id,ctx,ans,live){
       state.aiHistory=state.aiHistory||[];
       state.aiHistory.unshift({agent:id,title:agents[id]?.title||id,question:(ctx.prompt||ctx.subject||'').slice(0,120),signature:signature(ans),live,time:new Date().toLocaleString('ar-DZ')});
@@ -1230,7 +1359,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updateCountdown(){const diff=Math.max(0,CONFIG.bacStart.getTime()-Date.now());const d=Math.floor(diff/86400000),h=Math.floor(diff/3600000)%24,m=Math.floor(diff/60000)%60,s=Math.floor(diff/1000)%60;$('#cdDays').textContent=String(d).padStart(3,'0');$('#cdHours').textContent=String(h).padStart(2,'0');$('#cdMins').textContent=String(m).padStart(2,'0');$('#cdSecs').textContent=String(s).padStart(2,'0');const start=new Date('2025-09-01T00:00:00+01:00').getTime();const pct=Math.max(0,Math.min(100,(Date.now()-start)/(CONFIG.bacStart.getTime()-start)*100));$('#yearProgress').style.width=pct+'%';}
     function showToast(message,type='info'){const div=document.createElement('div');div.className='toast';const icon=type==='success'?'fa-circle-check':type==='warning'?'fa-triangle-exclamation':type==='danger'?'fa-circle-xmark':'fa-circle-info';div.innerHTML=`<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;$('#toastArea').appendChild(div);setTimeout(()=>div.remove(),3200);}
     function initCanvas(){const c=$('#bgCanvas'),ctx=c.getContext('2d');let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
-    function renderAll(){cleanSpecialProgress();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();}
+    function renderAll(){cleanSpecialProgress();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
 
     function switchLoginTab(tab){
       $('#loginMainTab')?.classList.toggle('active',tab==='login');
