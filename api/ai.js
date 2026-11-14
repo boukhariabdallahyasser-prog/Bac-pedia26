@@ -30,7 +30,7 @@ export default async function handler(req,res){
   try{
     const quotaResponse=await fetch('https://vgioqexpyvwmxwtuntaa.supabase.co/rest/v1/rpc/consume_ai_quota',{
       method:'POST',
-      headers:{Authorization:'Bearer '+token,apikey:'sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE,'Content-Type':'application/json'},
+      headers:{Authorization:'Bearer '+token,apikey:'sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE','Content-Type':'application/json'},
       body:JSON.stringify({p_daily_limit:30}),
       signal:AbortSignal.timeout(6000)
     });
