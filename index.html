@@ -475,12 +475,45 @@
     @media(max-width:540px){.login-gate::before{display:none}.login-card{padding:23px 20px;border-radius:23px}.auth-trust-row{gap:8px}.auth-trust-row span{font-size:.69rem}.login-logo .brand-icon{width:52px;height:52px;flex-basis:52px}}
     @media(prefers-reduced-motion:reduce){.login-gate,.login-tab,.login-field{transition:none}}
 
+
+    /* Editorial split-screen authentication */
+    .login-card{width:min(96vw,1080px);max-width:1080px;display:grid;grid-template-columns:.9fr 1.1fr;padding:0;overflow:hidden}
+    .login-story{display:flex;flex-direction:column;justify-content:space-between;gap:30px;min-height:590px;padding:clamp(30px,5vw,58px);background:radial-gradient(ellipse at 10% 8%,rgba(93,224,230,.16),transparent 48%),linear-gradient(145deg,#222b55,#13283f);border-left:1px solid rgba(191,203,242,.13);direction:rtl}
+    .story-brand{display:flex;align-items:center;gap:12px;color:#e7e4ff;font-weight:900;letter-spacing:.08em;font-size:.83rem}
+    .story-brand b{color:#75dfe0}
+    .story-brand-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#b6a8ff,#54cbdc);color:#10172b;font-size:1.2rem}
+    .story-copy>span{color:#7fe1dc;font-size:.83rem;font-weight:900}
+    .story-copy h2{font-family:Cairo,Tajawal,sans-serif;color:#fff;font-size:clamp(2rem,3.4vw,3rem);line-height:1.5;font-weight:900;letter-spacing:-.04em;margin-top:12px}
+    .story-copy p{color:#bac7df;line-height:2;font-size:.96rem;max-width:390px;margin-top:15px}
+    .story-bottom{display:grid;gap:16px}
+    .story-bottom strong,.story-bottom small{display:block}
+    .story-bottom strong{color:#fff;font-size:1.05rem}
+    .story-bottom small{color:#aebbd6;margin-top:4px}
+    .story-security{display:flex;align-items:center;gap:10px;color:#c8d5e9;font-size:.8rem}
+    .story-security i{color:#70ded8}
+    .login-content{min-width:0;padding:clamp(24px,4vw,48px)}
+    @media(max-width:760px){.login-card{grid-template-columns:1fr;max-width:520px}.login-story{display:none}.login-content{padding:clamp(22px,5vw,34px)}}
+
   </style>
 </head>
 <body>
 
   <div class="login-gate" id="loginGate" aria-modal="true" aria-labelledby="loginHeading" role="dialog">
     <div class="login-card">
+      <aside class="login-story" aria-label="Bac-pedia 2027">
+        <div class="story-brand"><span class="story-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>BAC-PEDIA <b>2027</b></span></div>
+        <div class="story-copy">
+          <span>رحلتك نحو البكالوريا تبدأ هنا</span>
+          <h2>استعد بذكاء.<br>تقدّم بثبات.</h2>
+          <p>مواردك الدراسية وخطتك اليومية وتقدمك ومساعدك الذكي في مساحة واحدة، مصممة لترافقك حتى يوم الامتحان.</p>
+        </div>
+        <div class="story-bottom">
+          <div><strong>15 يونيو 2027</strong><small>موعد امتحان البكالوريا</small></div>
+          <div class="story-security"><i class="fa-solid fa-shield-halved"></i><span>حساب شخصي وبيانات معزولة</span></div>
+        </div>
+      </aside>
+      <div class="login-content">
+
       <div class="auth-premium-badge"><i class="fa-solid fa-shield-halved"></i> مساحة دراسية آمنة وخاصة</div>
       <div class="login-logo">
         <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -513,6 +546,7 @@
       <button class="auth-reset" id="authResetButton" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
       <p id="authSetupNotice" class="login-note" role="status"></p>
       <div class="auth-trust-row"><span><i class="fa-solid fa-lock"></i> حساب آمن</span><span><i class="fa-solid fa-cloud-arrow-up"></i> تقدّم محفوظ</span><span><i class="fa-solid fa-graduation-cap"></i> بكالوريا 2027</span></div>
+      </div>
     </div>
   </div>
 
