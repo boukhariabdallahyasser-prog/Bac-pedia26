@@ -1,8 +1,6 @@
-// Bac-pedia public Supabase configuration.
-// Replace the placeholders with Project Settings > API values.
-// The publishable/anon key is safe for browser use ONLY when RLS is enabled.
-// NEVER put the service_role or secret key in this file.
+// Public Supabase configuration for Bac-pedia 2027.
+// Publishable key only. Never include secret/service_role keys in client code.
 window.BAC_SUPABASE = {
-  url: 'https://YOUR_PROJECT_REF.supabase.co',
-  anonKey: 'sb_publishable_REPLACE_WITH_YOUR_KEY'
+  url: 'https://vgioqexpyvwmxwtuntaa.supabase.co',
+  anonKey: 'sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE'
 };
