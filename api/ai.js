@@ -6,6 +6,20 @@ export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   const siteOrigin='https://'+req.headers.host;
   if(req.headers.origin&&req.headers.origin!==siteOrigin)return res.status(403).json({error:'Origin not allowed'});
+  // Enforce a real Supabase session server-side, not only a frontend login gate.
+  const token=(req.headers.authorization||'').match(/^Bearer\\s+(.+)$/i)?.[1];
+  if(!token)return res.status(401).json({error:'Sign in required'});
+  try{
+    const check=await fetch('https://vgioqexpyvwmxwtuntaa.supabase.co/auth/v1/user',{
+      headers:{Authorization:'Bearer '+token,apikey:'sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE'},
+      signal:AbortSignal.timeout(6000)
+    });
+    if(!check.ok)return res.status(401).json({error:'Invalid or expired session'});
+    const user=await check.json();
+    if(!user?.id||!user?.email_confirmed_at)return res.status(403).json({error:'Verified account required'});
+  }catch(error){
+    return res.status(503).json({error:'Unable to verify session'});
+  }
   if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'AI service is not configured. Set GEMINI_API_KEY in Vercel.'});
   const {agent,prompt}=req.body||{};
   if(!allowedAgents.has(agent)||typeof prompt!=='string'||!prompt.trim()||prompt.length>14000)return res.status(400).json({error:'Invalid agent or prompt'});
