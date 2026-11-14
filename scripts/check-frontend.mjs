@@ -24,7 +24,7 @@ try{
   ];
   for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
   if(html.includes('window.prompt('))throw Error('Browser prompt must not be used for authentication workflows');
-  if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(html))throw Error('Gemini credentials or direct provider calls must not be present in browser code');
+  if(/sessionGeminiKey|x-goog-api-key|generativelanguage\.googleapis\.com|CONFIG\.aiApiKey/.test(html))throw Error('Gemini credentials or direct provider calls must not be present in browser code');
   if(!html.includes('callProxyAI(agentId,ctx)'))throw Error('Student AI requests must use the authenticated server proxy');
   if(html.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Shared unscoped student cache must not be loaded');
   if(!html.includes('userStorageKey(studentAuthUser.id)'))throw Error('Student local cache is not scoped to the authenticated user');
