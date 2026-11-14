@@ -751,7 +751,7 @@
       aiMaxOutputTokens: 4096,
       aiRequestTimeout: 60000,
       aiUseLocalFallback: true,
-      aiProxyEndpoint: location.hostname.endsWith('.vercel.app') ? '/api/ai' : ''
+      aiProxyEndpoint: (!location.hostname || location.hostname.endsWith('.github.io') || ['localhost','127.0.0.1'].includes(location.hostname)) ? '' : '/api/ai'
     };
     const pages = [
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
@@ -1302,18 +1302,23 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     async function callProxyAI(agentId, ctx){
       if(!CONFIG.aiProxyEndpoint)return null;
-      try{
-        const {data:sessionData}=await getStudentAuth().auth.getSession();
-        const accessToken=sessionData?.session?.access_token;
-        if(!accessToken)throw new Error('Authentication required');
-        const res=await fetch(CONFIG.aiProxyEndpoint,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+accessToken},body:JSON.stringify({agent:agentId,context:ctx,prompt:buildAIPrompt(agentId,ctx)})});
-        if(!res.ok)throw new Error('bad ai response');
-        const data=await res.json();
-        return data.answer||data.text||data.message||readResponseText(data)||null;
-      }catch(e){console.warn('Proxy AI failed, fallback used',e);return null;}
+      const auth=getStudentAuth();
+      if(!auth)throw new Error('خدمة الحسابات غير متاحة.');
+      const {data:sessionData,error:sessionError}=await auth.auth.getSession();
+      if(sessionError)throw sessionError;
+      const accessToken=sessionData?.session?.access_token;
+      if(!accessToken)throw new Error('يجب تسجيل الدخول لاستخدام المساعد.');
+      const res=await fetch(CONFIG.aiProxyEndpoint,{
+        method:'POST',
+        headers:{'Content-Type':'application/json',Authorization:'Bearer '+accessToken},
+        body:JSON.stringify({agent:agentId,context:ctx,prompt:buildAIPrompt(agentId,ctx)})
+      });
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok)throw new Error(data.error||'تعذر تشغيل خدمة الذكاء الاصطناعي.');
+      return data.answer||data.text||data.message||readResponseText(data)||null;
     }
     async function callLiveAI(agentId,ctx){
-      if(CONFIG.aiProxyEndpoint){try{const answer=await callProxyAI(agentId,ctx);if(answer)return answer;}catch(e){console.warn('AI proxy unavailable',e);}}
+      if(CONFIG.aiProxyEndpoint){const answer=await callProxyAI(agentId,ctx);if(answer)return answer;}
       if(sessionGeminiKey||CONFIG.aiApiKey)return await callDirectAI(agentId,ctx);
       throw new Error('لا توجد خدمة ذكاء اصطناعي متصلة.');
     }
