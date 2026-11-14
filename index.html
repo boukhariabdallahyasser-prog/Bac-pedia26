@@ -249,6 +249,48 @@
       }
     }
 
+
+    /* Bac-pedia UX refresh: calmer surfaces, accessible controls, fluid layout */
+    :root{--radius:18px;--shadow:0 12px 36px rgba(0,0,0,.19);--glow:0 0 0 3px rgba(129,140,248,.12)}
+    body{line-height:1.55}
+    .main{padding-inline:clamp(12px,2.4vw,34px)}
+    .topbar{border-radius:18px}
+    .hero{min-height:245px;border-radius:24px}
+    .hero h1{line-height:1.25;letter-spacing:-.015em}
+    .card{border-radius:18px;box-shadow:0 5px 20px rgba(0,0,0,.09)}
+    .card:hover{transform:translateY(-2px)}
+    .subject-card{min-height:205px}
+    .subject-card:hover{border-color:var(--primary)}
+    .btn,.nav-btn,.branch-btn,.ctrl-btn,.round-btn,.chip,.input,.select{transition:background-color .16s,border-color .16s,box-shadow .16s,color .16s,transform .16s}
+    :where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--primary-light)!important;outline-offset:3px}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .resource-folder-group{margin-top:10px;border:1px solid var(--border);border-radius:14px;padding:9px;background:var(--bg-glass)}
+    .resource-folder-group .resource-item{margin-top:0}
+    .resource-folder-group details .resource-item{margin:6px 8px;overflow-wrap:anywhere}
+    .resource-item{min-width:0;overflow-wrap:anywhere;line-height:1.55}
+    .resource-item:focus-visible{background:rgba(99,102,241,.12)}
+    .task-row input[type=checkbox]{width:19px;height:19px;accent-color:var(--primary);flex-shrink:0}
+    .task-row .round-btn{flex-shrink:0}
+    .grade-row{grid-template-columns:minmax(110px,2fr) minmax(72px,.8fr) minmax(72px,.8fr) 44px}
+    .no-results{border:1px dashed var(--border);border-radius:18px;margin-top:12px}
+    @media(max-width:700px){
+      .main{padding:10px 10px 100px}
+      .topbar{top:5px;padding:9px;border-radius:14px}
+      .top-title h2{font-size:1rem;max-width:45vw}
+      .hero{padding:24px 18px;min-height:auto}
+      .hero h1{font-size:clamp(1.75rem,8vw,2.6rem)}
+      .card{padding:15px}
+      .grid-auto{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+      .grade-row{grid-template-columns:minmax(0,1.5fr) 70px 65px 38px;gap:5px}
+      .grade-row .small-input{padding:9px 5px;font-size:.82rem}
+      .section-head{align-items:start}
+      .resource-item{font-size:.9rem}
+    }
+    @media(max-width:380px){.grade-row{grid-template-columns:minmax(0,1fr) 62px 58px 36px}.grade-row .round-btn{width:36px;height:36px}}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+      #bgCanvas{display:none!important}
+    }
   </style>
 </head>
 <body>
@@ -357,12 +399,12 @@
         <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
         <div class="card">
           <div class="grid-2">
-            <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
+            <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
             <select id="sortSelect" class="select" onchange="state.sort=this.value;saveState();renderSubjects()"><option value="default">ترتيب عادي</option><option value="available">المتاحة أولاً</option><option value="progress">الأقل تقدماً أولاً</option><option value="az">أبجدي</option></select>
           </div>
           <div class="pill-row" id="fileFilters" style="margin-top:12px"></div>
         </div>
-        <div class="grid-auto" id="subjectsGrid" style="margin-top:14px"></div>
+        <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
         <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
       </section>
       <section class="page" id="page-ai">
@@ -421,7 +463,7 @@
         <div class="grid-2">
           <div class="card">
             <h3>جلسة تركيز</h3>
-            <div class="focus-big" id="focusLabel">25:00</div>
+            <div class="focus-big" id="focusLabel" role="timer" aria-live="off">25:00</div>
             <div class="focus-bar"><span id="focusBar"></span></div>
             <div class="actions"><button class="btn primary" onclick="startFocus(25)">25 دقيقة</button><button class="btn" onclick="startFocus(50)">50 دقيقة</button><button class="btn warning" onclick="stopFocus(false)">إيقاف</button></div>
             <p class="muted">أنجزت اليوم: <strong id="focusDoneLabel">0</strong> جلسة.</p>
@@ -642,7 +684,8 @@
     }
     function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],nx=text[i+1];if(ch==='"'&&q&&nx==='"'){cell+='"';i++;}else if(ch==='"'){q=!q;}else if(ch===','&&!q){row.push(cell);cell='';}else if((ch==='\n'||ch==='\r')&&!q){if(cell||row.length){row.push(cell);rows.push(row);row=[];cell='';}if(ch==='\r'&&nx==='\n')i++;}else cell+=ch;}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
     function parsePubHtml(text){const doc=new DOMParser().parseFromString(text,'text/html');const table=doc.querySelector('table');if(!table)return[];return Array.from(table.querySelectorAll('tr')).map(tr=>Array.from(tr.children).map(td=>td.textContent.trim())).filter(r=>r.length);}
-    async function refreshFromDatabase(show=false){const ok=await loadResourceManifest();if(show)showToast(ok?'تم تحديث قائمة الموارد من الفهرس المحلي':'تعذر تحميل فهرس الموارد','info');return ok;}    function showPage(id){
+    async function refreshFromDatabase(show=false){const ok=await loadResourceManifest();if(show)showToast(ok?'تم تحديث قائمة الموارد من الفهرس المحلي':'تعذر تحميل فهرس الموارد','info');return ok;}
+    function showPage(id){
       if(!pages.some(p=>p[0]===id))id='home';
       if(id==='files'){
         state.filter='all';
@@ -790,7 +833,8 @@
       if(!categories.length&&!(entry?.items||[]).length){
         const empty=document.createElement('p');empty.className='muted';empty.textContent='لم تُسجّل فئات أو ملفات لهذه المادة بعد.';root.appendChild(empty);
       }
-    }    function openSubjectById(id){const s={id,...allSubjects[id],name:subjectLabel(id),desc:subjectDesc(id)};if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');}
+    }
+    function openSubjectById(id){const s={id,...allSubjects[id],name:subjectLabel(id),desc:subjectDesc(id)};if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');}
     function closeModal(){$('#modalOverlay').classList.remove('show');$('#subjectModal').classList.remove('show');currentModalSubject=null;}
     function openCurrentDrive(){if(!currentModalSubject?.url)return;const a=document.createElement('a');a.href=currentModalSubject.url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();closeModal();}
     function shareCurrentSubject(){if(currentModalSubject)copyText(currentModalSubject.url,'تم نسخ الرابط');}
@@ -1159,14 +1203,15 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function addTask(){const t=$('#newTaskText').value.trim();if(!t)return;state.tasks.unshift({text:t,done:false,date:Date.now()});$('#newTaskText').value='';saveState();renderTasks();}
     function generateDailyTasks(){const subs=getNormalSubjects().sort((a,b)=>(state.progress[a.id]||0)-(state.progress[b.id]||0)).slice(0,3);subs.forEach(s=>state.tasks.unshift({text:`جلسة ${s.name}: 25د درس + تمرين + تصحيح`,done:false,date:Date.now()}));saveState();renderTasks();showToast('تم توليد مهام اليوم','success');}
     function renderTasks(){$('#focusDoneLabel').textContent=state.focusDone||0;$('#taskList').innerHTML=state.tasks.length?state.tasks.map((t,i)=>`<div class="task-row"><input type="checkbox" ${t.done?'checked':''} onchange="state.tasks[${i}].done=this.checked;saveState();renderTasks()"><span style="${t.done?'text-decoration:line-through;color:var(--text-muted)':''}">${escapeHtml(t.text)}</span><button class="round-btn" onclick="state.tasks.splice(${i},1);saveState();renderTasks()"><i class="fa-solid fa-trash"></i></button></div>`).join(''):'<p class="muted">لا توجد مهام بعد.</p>';}
-    function startFocus(minutes){stopFocus(false);focusTotal=minutes*60;focusLeft=focusTotal;tickFocus();focusTimer=setInterval(tickFocus,1000);showToast('بدأت جلسة تركيز','success');}
-    function tickFocus(){if(focusLeft<=0){stopFocus(true);state.focusDone=(state.focusDone||0)+1;saveState();renderTasks();showToast('انتهت الجلسة، أحسنت','success');return;}const m=Math.floor(focusLeft/60),s=focusLeft%60;$('#focusLabel').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;$('#focusBar').style.width=(100-(focusLeft/focusTotal*100))+'%';focusLeft--;}
-    function stopFocus(done=false){if(focusTimer)clearInterval(focusTimer);focusTimer=null;if(!done){$('#focusLabel').textContent='25:00';$('#focusBar').style.width='0%';}}
+    let focusDeadline=0,focusPausedRemaining=0;
+    function startFocus(minutes){if(!Number.isFinite(minutes)||minutes<=0)return;stopFocus(false);focusTotal=Math.round(minutes*60);focusLeft=focusTotal;focusDeadline=Date.now()+focusTotal*1000;tickFocus();focusTimer=setInterval(tickFocus,250);showToast('بدأت جلسة تركيز','success');}
+    function tickFocus(){if(!focusDeadline)return;focusLeft=Math.max(0,Math.ceil((focusDeadline-Date.now())/1000));const m=Math.floor(focusLeft/60),seconds=focusLeft%60;$('#focusLabel').textContent=`${String(m).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;$('#focusBar').style.width=(100-focusLeft/focusTotal*100)+'%';if(focusLeft===0){stopFocus(true);state.focusDone=(state.focusDone||0)+1;saveState();renderTasks();showToast('انتهت الجلسة، أحسنت','success');}}
+    function stopFocus(done=false){if(focusTimer)clearInterval(focusTimer);focusTimer=null;focusDeadline=0;if(!done){$('#focusLabel').textContent='25:00';$('#focusBar').style.width='0%';}}
     function resetGrades(render=true){state.grades=coefTemplates[state.branch].map(([name,coef])=>({name,coef,mark:10}));saveState();if(render)renderGrades();}
     function renderGrades(){if(!state.grades)resetGrades(false);$('#gradeRows').innerHTML=state.grades.map((g,i)=>`<div class="grade-row"><input class="small-input" value="${escapeHtml(g.name)}" oninput="state.grades[${i}].name=this.value;saveState();renderAiSelectors()"><input class="small-input" type="number" min="0" max="20" step="0.25" value="${g.mark}" oninput="state.grades[${i}].mark=Number(this.value);saveState()"><input class="small-input" type="number" min="1" value="${g.coef}" oninput="state.grades[${i}].coef=Number(this.value);saveState()"><button class="round-btn" onclick="state.grades.splice(${i},1);saveState();renderGrades()"><i class="fa-solid fa-trash"></i></button></div>`).join('');renderAiSelectors();}
     function addGradeRow(name,coef,mark){state.grades.push({name,coef,mark});saveState();renderGrades();}
-    function calcGrade(){if(!state.grades)resetGrades(false);const total=state.grades.reduce((a,g)=>a+(+g.mark||0)*(+g.coef||0),0),coefs=state.grades.reduce((a,g)=>a+(+g.coef||0),0),avg=coefs?total/coefs:0;$('#gradeResult').textContent=`المعدل التقريبي: ${avg.toFixed(2)}/20\nمجموع المعاملات: ${coefs}\n${avg>=10?'أنت فوق العتبة، ركز على رفع المواد ذات المعامل الكبير.':'تحتاج خطة إنقاذ: ابدأ بالمواد الضعيفة ذات المعامل الكبير.'}`;}
-    function neededMark(){const target=+$('#targetAverage').value||10,sub=$('#targetSubject').value;let total=0,coefs=0,targetCoef=0;state.grades.forEach(g=>{const c=+g.coef||0;if(g.name===sub)targetCoef+=c;else total+=(+g.mark||0)*c;coefs+=c;});if(!targetCoef){$('#targetResult').textContent='المادة غير موجودة.';return;}const need=(target*coefs-total)/targetCoef;$('#targetResult').textContent=`للوصول إلى ${target.toFixed(2)}/20 تحتاج تقريباً ${need.toFixed(2)}/20 في ${sub}.\n${need>20?'الهدف صعب بمادة واحدة؛ حسّن أكثر من مادة.':need<0?'أنت حالياً فوق الهدف.':'ممكن، ركز على تمارين مضمونة النقاط.'}`;}
+    function calcGrade(){if(!state.grades)resetGrades(false);const valid=state.grades.every(g=>Number.isFinite(Number(g.mark))&&Number(g.mark)>=0&&Number(g.mark)<=20&&Number.isFinite(Number(g.coef))&&Number(g.coef)>0&&String(g.mark).trim()!==''&&String(g.coef).trim()!=='');if(!valid){$('#gradeResult').textContent='تحقق من العلامات (0 إلى 20) والمعاملات الموجبة قبل الحساب.';showToast('توجد علامات أو معاملات غير صالحة','warning');return;}const total=state.grades.reduce((a,g)=>a+Number(g.mark)*Number(g.coef),0),coefs=state.grades.reduce((a,g)=>a+Number(g.coef),0);if(!coefs){$('#gradeResult').textContent='أضف مادة واحدة على الأقل.';return;}const avg=total/coefs;$('#gradeResult').textContent=`المعدل التقريبي: ${avg.toFixed(2)}/20\nمجموع المعاملات: ${coefs}\n${avg>=10?'أنت فوق العتبة، ركز على رفع المواد ذات المعامل الكبير.':'تحتاج خطة إنقاذ: ابدأ بالمواد الضعيفة ذات المعامل الكبير.'}`;}
+    function neededMark(){const raw=$('#targetAverage').value,target=Number(raw),sub=$('#targetSubject').value;if(raw.trim()===''||!Number.isFinite(target)||target<0||target>20){$('#targetResult').textContent='أدخل هدفاً صحيحاً بين 0 و20.';return;}if(!state.grades?.length){$('#targetResult').textContent='أضف المواد والعلامات أولاً.';return;}if(state.grades.some(g=>String(g.mark).trim()===''||!Number.isFinite(Number(g.mark))||Number(g.mark)<0||Number(g.mark)>20||String(g.coef).trim()===''||!Number.isFinite(Number(g.coef))||Number(g.coef)<=0)){$('#targetResult').textContent='صحح العلامات والمعاملات غير الصالحة أولاً.';return;}let total=0,coefs=0,targetCoef=0;state.grades.forEach(g=>{const c=Number(g.coef);if(g.name===sub)targetCoef+=c;else total+=Number(g.mark)*c;coefs+=c;});if(!targetCoef){$('#targetResult').textContent='المادة غير موجودة.';return;}const need=(target*coefs-total)/targetCoef;$('#targetResult').textContent=`للوصول إلى ${target.toFixed(2)}/20 تحتاج ${Math.max(0,need).toFixed(2)}/20 في ${sub}.\n${need>20?'الهدف غير ممكن بتغيير علامة هذه المادة وحدها.':need<=0?'تحقق الهدف حتى مع علامة صفر في هذه المادة.':'الهدف ممكن حسابياً وفق بقية العلامات الحالية.'}`;}
     function renderProgress(){
       cleanSpecialProgress();
       const list=getNormalSubjects();
