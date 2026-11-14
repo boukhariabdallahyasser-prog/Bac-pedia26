@@ -1558,7 +1558,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(!u.email_confirmed_at){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();showToast('يجب تأكيد البريد الإلكتروني قبل استخدام المنصة','warning');return;}
       resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
-      renderSession();closeLoginGate();
+      renderAll();renderSession();closeLoginGate();
       // Enter immediately; cloud hydration and last-activity tracking must not block the interface.
       void loadStudentProgress().catch(error=>console.warn('Progress hydration failed:',error));
       void studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id).then(({error})=>{if(error)console.warn('Student profile activity update failed:',error.message);});
