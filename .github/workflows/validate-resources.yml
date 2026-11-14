@@ -1,0 +1,30 @@
+name: Validate Bac-pedia resources
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "resources.json"
+      - "scripts/validate-resources.mjs"
+      - ".github/workflows/validate-resources.yml"
+  pull_request:
+    paths:
+      - "resources.json"
+      - "scripts/validate-resources.mjs"
+      - ".github/workflows/validate-resources.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate resource manifest
+        run: node scripts/validate-resources.mjs
