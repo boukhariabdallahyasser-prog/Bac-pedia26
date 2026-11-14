@@ -610,7 +610,7 @@
       aiMaxOutputTokens: 4096,
       aiRequestTimeout: 60000,
       aiUseLocalFallback: true,
-      aiProxyEndpoint: ''
+      aiProxyEndpoint: location.hostname.endsWith('.vercel.app') ? '/api/ai' : ''
     };
     const pages = [
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
