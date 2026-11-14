@@ -494,6 +494,14 @@
     .login-content{min-width:0;padding:clamp(24px,4vw,48px)}
     @media(max-width:760px){.login-card{grid-template-columns:1fr;max-width:520px}.login-story{display:none}.login-content{padding:clamp(22px,5vw,34px)}}
 
+    .login-field{position:relative;padding-inline:14px}
+    .login-field input{min-width:0;flex:1}
+    .password-toggle{border:0;background:transparent;color:#9eacd0;cursor:pointer;padding:8px;border-radius:9px;flex:none}
+    .password-toggle:hover{background:rgba(255,255,255,.08);color:#fff}
+    .password-strength{margin:-4px 4px 12px}
+    .strength-track{height:5px;background:rgba(255,255,255,.09);border-radius:99px;overflow:hidden}
+    .strength-track span{display:block;height:100%;width:0;background:#e87979;border-radius:99px;transition:width .2s,background .2s}
+    .password-strength small{display:block;margin-top:6px;color:#9eacd0;font-size:.75rem}
   </style>
 </head>
 <body>
@@ -525,22 +533,23 @@
       </div>
       <div class="login-form" id="loginMainForm">
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" required aria-label="كلمة المرور" placeholder="كلمة المرور"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" required aria-label="كلمة المرور" placeholder="كلمة المرور"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('loginPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <button class="btn primary full" onclick="loginWithForm()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
         <p class="login-note">حسابك شخصي ومحمي. لا يمكن استخدام المنصة دون تسجيل الدخول.</p>
       </div>
       <div class="login-form hidden" id="signupMainForm">
         <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" required aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور الجديدة" placeholder="كلمة مرور قوية (8 أحرف على الأقل)"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassConfirmInput" type="password" autocomplete="new-password" minlength="8" required aria-label="تأكيد كلمة المرور" placeholder="تأكيد كلمة المرور"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور الجديدة" placeholder="كلمة مرور قوية (8 أحرف على الأقل)" oninput="updatePasswordStrength()"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="password-strength" id="passwordStrength"><div class="strength-track"><span id="passwordStrengthBar"></span></div><small id="passwordStrengthText" aria-live="polite">قوة كلمة المرور</small></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassConfirmInput" type="password" autocomplete="new-password" minlength="8" required aria-label="تأكيد كلمة المرور" placeholder="تأكيد كلمة المرور"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassConfirmInput',this)" aria-label="إظهار تأكيد كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
         <p class="login-note">سيصلك رابط تأكيد البريد الإلكتروني بعد إنشاء الحساب.</p>
       </div>
 <div class="login-form hidden" id="passwordRecoveryPanel">
         <h3>تعيين كلمة مرور جديدة</h3>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordInput" type="password" autocomplete="new-password" minlength="8" required placeholder="كلمة المرور الجديدة"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required placeholder="تأكيد كلمة المرور الجديدة"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordInput" type="password" autocomplete="new-password" minlength="8" required placeholder="كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required placeholder="تأكيد كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordConfirmInput',this)" aria-label="إظهار تأكيد كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <button class="btn primary full" type="button" onclick="saveRecoveredPassword()"><i class="fa-solid fa-check"></i> حفظ كلمة المرور</button>
       </div>
       <button class="auth-reset" id="authResetButton" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
@@ -1479,6 +1488,21 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(/rate limit/i.test(m))return 'محاولات كثيرة. حاول لاحقاً';
       if(/password/i.test(m))return 'تحقق من كلمة المرور (8 أحرف على الأقل)';
       return 'تعذر الاتصال بخدمة الحسابات. حاول لاحقاً';
+    }
+    function togglePasswordVisibility(inputId,button){
+      const input=$('#'+inputId);if(!input)return;
+      const reveal=input.type==='password';input.type=reveal?'text':'password';
+      button.innerHTML=reveal?'<i class="fa-solid fa-eye-slash"></i>':'<i class="fa-solid fa-eye"></i>';
+      button.setAttribute('aria-label',reveal?'إخفاء كلمة المرور':'إظهار كلمة المرور');
+    }
+    function updatePasswordStrength(){
+      const value=$('#signupPassInput')?.value||'',bar=$('#passwordStrengthBar'),label=$('#passwordStrengthText');
+      if(!bar||!label)return;
+      const checks=[value.length>=8,value.length>=12,/\\p{L}/u.test(value),/\\d/.test(value),/[^\\p{L}\\d]/u.test(value)];
+      const score=Math.min(4,checks.filter(Boolean).length);
+      const labels=['أدخل كلمة مرور','ضعيفة','متوسطة','جيدة','قوية'];
+      const colors=['#e87979','#e87979','#f5c77e','#70d6bd','#70d6bd'];
+      bar.style.width=(score*25)+'%';bar.style.background=colors[score];label.textContent=labels[score];
     }
     function setAuthBusy(busy){
       authLoading=busy;
