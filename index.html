@@ -914,6 +914,7 @@
     function parsePubHtml(text){const doc=new DOMParser().parseFromString(text,'text/html');const table=doc.querySelector('table');if(!table)return[];return Array.from(table.querySelectorAll('tr')).map(tr=>Array.from(tr.children).map(td=>td.textContent.trim())).filter(r=>r.length);}
     async function refreshFromDatabase(show=false){const ok=await loadResourceManifest();if(show)showToast(ok?'تم تحديث قائمة الموارد من الفهرس المحلي':'تعذر تحميل فهرس الموارد','info');return ok;}
     function showPage(id){
+      if(!studentAuthUser){openLoginGate();return;}
       if(!pages.some(p=>p[0]===id))id='home';
       if(id==='files'){
         state.filter='all';
@@ -1285,7 +1286,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function callProxyAI(agentId, ctx){
       if(!CONFIG.aiProxyEndpoint)return null;
       try{
-        const res=await fetch(CONFIG.aiProxyEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent:agentId,context:ctx,prompt:buildAIPrompt(agentId,ctx)})});
+        const {data:sessionData}=await getStudentAuth().auth.getSession();
+        const accessToken=sessionData?.session?.access_token;
+        if(!accessToken)throw new Error('Authentication required');
+        const res=await fetch(CONFIG.aiProxyEndpoint,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+accessToken},body:JSON.stringify({agent:agentId,context:ctx,prompt:buildAIPrompt(agentId,ctx)})});
         if(!res.ok)throw new Error('bad ai response');
         const data=await res.json();
         return data.answer||data.text||data.message||readResponseText(data)||null;
