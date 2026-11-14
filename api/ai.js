@@ -43,13 +43,13 @@ export default async function handler(req,res){
     const timer=setTimeout(()=>controller.abort(),25000);
     let response;
     try{
-      response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{
+      response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
         method:'POST',signal:controller.signal,
         headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},
         body:JSON.stringify({
-          systemInstruction:{parts:[{text:'You are a careful tutor for the Algerian baccalaureate. Respond in clear Arabic, follow the student request, avoid invented citations, and explicitly acknowledge uncertainty.'}]},
+          systemInstruction:{parts:[{text:'You are Bac-pedia 2027, a rigorous tutor for the Algerian baccalaureate. Respond in the language used by the student (Arabic or French). Explain concepts accurately, structure answers clearly, adapt to the selected subject and level, and never invent official exam facts or references.'}]},
           contents:[{role:'user',parts:[{text:prompt}]}],
-          generationConfig:{maxOutputTokens:2200,temperature:0.6}
+          generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingLevel:'medium'}}
         })
       });
     }finally{clearTimeout(timer);}
