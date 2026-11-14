@@ -502,6 +502,18 @@
     .strength-track{height:5px;background:rgba(255,255,255,.09);border-radius:99px;overflow:hidden}
     .strength-track span{display:block;height:100%;width:0;background:#e87979;border-radius:99px;transition:width .2s,background .2s}
     .password-strength small{display:block;margin-top:6px;color:#9eacd0;font-size:.75rem}
+    /* Fast, accessible authentication on small screens and slow connections */
+    .login-gate{overflow-y:auto;overscroll-behavior:contain;align-items:safe center;scrollbar-gutter:stable}
+    .login-card{max-height:min(96dvh,920px);overflow-y:auto;scrollbar-width:thin}
+    .login-content{display:flex;flex-direction:column;justify-content:center}
+    .login-tab:focus-visible,.password-toggle:focus-visible,.login-form .btn:focus-visible,.auth-reset:focus-visible{outline:3px solid #83e5df;outline-offset:3px}
+    .login-form .btn[aria-busy="true"]{opacity:.78;cursor:progress}
+    .login-form .btn[aria-busy="true"] i{animation:authPulse .85s ease-in-out infinite alternate}
+    @keyframes authPulse{to{opacity:.35;transform:scale(.85)}}
+    #authSetupNotice:not(:empty){padding:12px 14px;border-radius:12px;background:rgba(115,204,226,.1);border:1px solid rgba(115,204,226,.25)}
+    #authSetupNotice[data-status="success"]{color:#8df0ce;background:rgba(65,180,135,.12)}
+    @media(max-width:760px){.login-gate{padding:10px;align-items:flex-start}.login-card{width:100%;max-height:none;min-height:min(100dvh - 20px,680px);border-radius:20px}.login-content{padding:24px 20px}.auth-premium-badge{margin-bottom:14px}.login-logo{margin-bottom:14px}.login-tabs{margin:12px 0}.login-form{gap:10px}.login-field{min-height:50px}}
+    @media(max-width:380px){.login-content{padding:20px 14px}.auth-trust-row{gap:7px}.login-logo .brand-icon{width:46px;height:46px;flex-basis:46px}}
   </style>
 </head>
 <body>
@@ -528,8 +540,8 @@
         <div><h1 id="loginHeading">Bac-pedia <span class="auth-year">2027</span></h1><p>مستقبلك يبدأ هنا. سجّل الدخول لمتابعة رحلة النجاح.</p></div>
       </div>
       <div class="login-tabs">
-        <button class="login-tab active" id="loginMainTab" onclick="switchLoginTab('login')">دخول</button>
-        <button class="login-tab" id="signupMainTab" onclick="switchLoginTab('signup')">حساب جديد</button>
+        <button type="button" role="tab" aria-selected="true" class="login-tab active" id="loginMainTab" onclick="switchLoginTab('login')">دخول</button>
+        <button type="button" role="tab" aria-selected="false" class="login-tab" id="signupMainTab" onclick="switchLoginTab('signup')">حساب جديد</button>
       </div>
       <div class="login-form" id="loginMainForm">
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
@@ -1448,11 +1460,21 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function initCanvas(){const c=$('#bgCanvas'),ctx=c.getContext('2d');let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
     function renderAll(){cleanSpecialProgress();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
 
+    function showAuthNotice(message,type='info'){
+      const note=$('#authSetupNotice');if(!note)return;
+      note.textContent=message;note.dataset.status=type;
+    }
     function switchLoginTab(tab){
+      if(authLoading)return;
+      showAuthNotice('');
       $('#loginMainTab')?.classList.toggle('active',tab==='login');
       $('#signupMainTab')?.classList.toggle('active',tab==='signup');
       $('#loginMainForm')?.classList.toggle('hidden',tab!=='login');
       $('#signupMainForm')?.classList.toggle('hidden',tab!=='signup');
+      $('#loginMainTab')?.setAttribute('aria-selected',String(tab==='login'));
+      $('#signupMainTab')?.setAttribute('aria-selected',String(tab==='signup'));
+      const source=tab==='signup'?'loginEmailInput':'signupEmailInput',target=tab==='signup'?'signupEmailInput':'loginEmailInput';
+      if($('#'+source)?.value&&!$('#'+target)?.value)$('#'+target).value=$('#'+source).value;
     }
     function openLoginGate(){
       const gate=$('#loginGate');
@@ -1460,7 +1482,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       gate.classList.remove('hidden');
       document.body.classList.remove('authenticated');
       document.querySelector('.app-shell')?.setAttribute('inert','');
-      setTimeout(()=>{($('#loginEmailInput')||$('#signupNameInput'))?.focus?.();},120);
+      if(!document.activeElement?.closest?.('#loginGate'))requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
     }
     function closeLoginGate(){
       if(!studentAuthUser)return;
@@ -1508,7 +1530,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function setAuthBusy(busy){
       authLoading=busy;
       ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput','signupPassConfirmInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
-      $('#loginGate .login-form button, #loginGate .auth-reset').forEach(button=>button.disabled=busy);
+      $('#loginGate .login-form button, #loginGate .auth-reset, #loginGate .login-tab').forEach(button=>{button.disabled=busy;if(button.classList.contains('btn')){button.setAttribute('aria-busy',String(busy));}});
     }
     async function syncStudentProgress(){
       if(!studentAuth||!studentAuthUser)return;
@@ -1536,11 +1558,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(!u.email_confirmed_at){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();showToast('يجب تأكيد البريد الإلكتروني قبل استخدام المنصة','warning');return;}
       resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
-      await loadStudentProgress();
-      if(studentAuthUser?.id!==u.id)return;
-      const {error:profileError}=await studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id);
-      if(profileError)console.warn('Student profile activity update failed:',profileError.message);
       renderSession();closeLoginGate();
+      // Enter immediately; cloud hydration and last-activity tracking must not block the interface.
+      void loadStudentProgress().catch(error=>console.warn('Progress hydration failed:',error));
+      void studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id).then(({error})=>{if(error)console.warn('Student profile activity update failed:',error.message);});
     }
 
     async function initStudentAuth(){
@@ -1560,7 +1581,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
           return;
         }
         if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
-        if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>applyStudentSession(session),0);
+        if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>{if(session?.user?.id!==studentAuthUser?.id)void applyStudentSession(session);},0);
       });
       const {data,error}=await auth.auth.getSession();
       if(error)console.warn('Auth session error:',error.message);
@@ -1574,7 +1595,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         }
         return;
       }
-      if(data?.session)await applyStudentSession(data.session);
+      if(data?.session&&data.session.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);
       else{studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
     }
 
@@ -1594,7 +1615,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         const {data,error}=await auth.auth.signInWithPassword({email,password});
         if(error)throw error;
         if(!data.user?.email_confirmed_at){await auth.auth.signOut();throw new Error('email not confirmed');}
-        await applyStudentSession(data.session);
+        if(data.session?.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);
+        $('#loginPassInput').value='';
         showToast('تم تسجيل الدخول بنجاح','success');
       }catch(e){showToast(authErrorMessage(e),'danger')}
       finally{setAuthBusy(false)}
@@ -1614,7 +1636,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
         if(error)throw error;
         if(data.session&&data.user?.email_confirmed_at){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
-        else{if(data.session)await auth.auth.signOut();switchLoginTab('login');showToast('راجع بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول','success')}
+        else{if(data.session)await auth.auth.signOut();$('#loginEmailInput').value=email;$('#signupPassInput').value='';$('#signupPassConfirmInput').value='';switchLoginTab('login');showAuthNotice('تم إنشاء طلب الحساب. افتح رسالة التأكيد في بريدك الإلكتروني ثم سجّل الدخول.','success');showToast('راجع بريدك الإلكتروني لتأكيد الحساب','success')}
       }catch(e){showToast(authErrorMessage(e),'danger')}
       finally{setAuthBusy(false)}
     }
@@ -1689,7 +1711,12 @@ resetStudentData();renderAll();
     window.addEventListener('error',e=>{console.warn('Website error handled:',e.message);});
     window.addEventListener('unhandledrejection',e=>{console.warn('Promise error handled:',e.reason);});
 
-    function init(){applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
+    function initAuthKeyboard(){
+      [['loginMainForm','loginWithForm'],['signupMainForm','signupWithForm'],['passwordRecoveryPanel','saveRecoveredPassword']].forEach(([id,handler])=>{
+        $('#'+id)?.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.tagName==='INPUT'&&!authLoading){event.preventDefault();window[handler]?.();}});
+      });
+    }
+    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
     init();
   </script>
 </body>
