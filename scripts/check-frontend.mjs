@@ -14,6 +14,18 @@ try{
     const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
     if(result.status!==0)throw Error(`Inline script ${i} has a syntax error:\n${result.stderr}`);
   }
+  const authRequirements=[
+    'async function initStudentAuth()',
+    'onAuthStateChange',
+    'function userStorageKey(userId)',
+    'async function saveRecoveredPassword()',
+    'id="passwordRecoveryPanel"',
+    'email_confirmed_at'
+  ];
+  for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
+  if(html.includes('window.prompt('))throw Error('Browser prompt must not be used for authentication workflows');
+  if(html.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Shared unscoped student cache must not be loaded');
+  if(!html.includes('userStorageKey(studentAuthUser.id)'))throw Error('Student local cache is not scoped to the authenticated user');
   const apiCheck=spawnSync(process.execPath,['--input-type=module','--check'],{input:api,encoding:'utf8'});
   if(apiCheck.status!==0)throw Error(`AI API syntax error:\n${apiCheck.stderr}`);
   if(!api.includes('match(/^Bearer\\s+(.+)$/i)'))throw Error('AI API Bearer token parser is not using the expected whitespace matcher');
