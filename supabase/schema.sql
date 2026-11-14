@@ -67,3 +67,58 @@ for all
 to anon, authenticated
 using (false)
 with check (false);
+
+-- Student profile fields are maintained from Supabase Auth and progress writes.
+create table if not exists public.student_profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  full_name text not null default '',
+  email text,
+  branch text,
+  specialization text,
+  created_at timestamptz not null default now(),
+  last_activity_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.student_profiles enable row level security;
+revoke all on public.student_profiles from anon, authenticated;
+grant select on public.student_profiles to authenticated;
+grant update (last_activity_at) on public.student_profiles to authenticated;
+
+create policy "Students can read own profile"
+on public.student_profiles for select to authenticated
+using ((select auth.uid()) = user_id);
+create policy "Students can update own activity"
+on public.student_profiles for update to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+create or replace function public.sync_student_profile_from_auth()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  insert into public.student_profiles (user_id, full_name, email, last_activity_at)
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name',''), new.email, now())
+  on conflict (user_id) do update
+    set full_name = excluded.full_name, email = excluded.email, updated_at = now();
+  return new;
+end;
+$$;
+revoke all on function public.sync_student_profile_from_auth() from public, anon, authenticated;
+create trigger on_auth_user_profile_sync
+after insert or update of email, raw_user_meta_data on auth.users
+for each row execute function public.sync_student_profile_from_auth();
+
+create or replace function public.sync_student_profile_from_progress()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  update public.student_profiles
+  set branch = new.data->>'branch',
+      specialization = new.data->>'subBranch',
+      last_activity_at = now(), updated_at = now()
+  where user_id = new.user_id;
+  return new;
+end;
+$$;
+revoke all on function public.sync_student_profile_from_progress() from public, anon, authenticated;
+create trigger on_student_progress_profile_sync
+after insert or update of data on public.student_progress
+for each row execute function public.sync_student_profile_from_progress();
