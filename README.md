@@ -6,7 +6,7 @@ Arabic-first, RTL study platform for Algerian baccalaureate students preparing f
 
 - `index.html`: responsive student application and authentication interface.
 - `auth-config.js`: public Supabase project URL and publishable key only. Never put a Supabase secret/service-role key or Gemini key here.
-- `api/ai.js`: Vercel serverless AI endpoint. It verifies the Supabase bearer token, requires a confirmed email, validates the request, enforces the database-backed daily quota, and reads `GEMINI_API_KEY` from the server environment.
+- `api/ai.js`: Vercel serverless AI endpoint. It verifies the Supabase bearer token, requires a confirmed email, validates the request, enforces the database-backed daily quota, and calls Gemini 3.8 Flash using `GEMINI_API_KEY` from the server environment.
 - `resources.json`: checked-in index of Google Drive educational resources. Do not invent Drive IDs or URLs.
 - `supabase/schema.sql`: reproducible database schema and security policies.
 
