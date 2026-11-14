@@ -566,7 +566,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div><div class="brand-title">بوابة المراجعة</div><div class="brand-sub">باكالوريا الجزائر 2026</div></div>
+        <div><div class="brand-title">بوابة المراجعة</div><div class="brand-sub">باكالوريا الجزائر 2027</div></div>
       </div>
 
       <div class="session-card" id="sessionCard">
@@ -1159,7 +1159,7 @@
       const avgData=(()=>{try{if(!state.grades||!state.grades.length)return null;const total=state.grades.reduce((a,g)=>a+(+g.mark||0)*(+g.coef||0),0);const coefs=state.grades.reduce((a,g)=>a+(+g.coef||0),0);return coefs?Number((total/coefs).toFixed(2)):null;}catch(e){return null;}})();
       const recentHistory=(state.aiHistory||[]).slice(0,5).map(h=>({agent:h.agent,title:h.title,question:h.question,signature:h.signature,time:h.time}));
       return{
-        app:'بوابة المراجعة | باكالوريا الجزائر 2026',
+        app:'بوابة المراجعة | باكالوريا الجزائر 2027',
         branch:branches[state.branch].name,
         branchKey:state.branch,
         subBranch:state.subBranch?branches[state.branch].subs?.[state.subBranch]:'',
@@ -1213,7 +1213,7 @@
       };
       const varietyAngles=['ابدأ بتشخيص سريع ثم خطة تطبيق','ابدأ بخطأ شائع ثم صححه','ابدأ بجدول صغير ثم شرح','ابدأ بخطوات تنفيذ قصيرة','ابدأ بمثال جديد ثم قاعدة عامة'];
       const angle=varietyAngles[hashText(ctx.uniqueSeed+agentId)%varietyAngles.length];
-      return `أنت أداة "${toolName}" داخل منصة باكالوريا الجزائر 2026.
+      return `أنت أداة "${toolName}" داخل منصة باكالوريا الجزائر 2027.
 
 هدف الأداة:
 ${toolInstructions[agentId]||toolInstructions.smart_tutor}
