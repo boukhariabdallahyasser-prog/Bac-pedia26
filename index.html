@@ -500,10 +500,17 @@
         <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" required aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
         <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور الجديدة" placeholder="كلمة مرور قوية (8 أحرف على الأقل)"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassConfirmInput" type="password" autocomplete="new-password" minlength="8" required aria-label="تأكيد كلمة المرور" placeholder="تأكيد كلمة المرور"></div>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
         <p class="login-note">سيصلك رابط تأكيد البريد الإلكتروني بعد إنشاء الحساب.</p>
       </div>
-      <button class="auth-reset" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
+<div class="login-form hidden" id="passwordRecoveryPanel">
+        <h3>تعيين كلمة مرور جديدة</h3>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordInput" type="password" autocomplete="new-password" minlength="8" required placeholder="كلمة المرور الجديدة"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required placeholder="تأكيد كلمة المرور الجديدة"></div>
+        <button class="btn primary full" type="button" onclick="saveRecoveredPassword()"><i class="fa-solid fa-check"></i> حفظ كلمة المرور</button>
+      </div>
+      <button class="auth-reset" id="authResetButton" type="button" onclick="resetStudentPassword()">
       <p id="authSetupNotice" class="login-note" role="status"></p>
       <div class="auth-trust-row"><span><i class="fa-solid fa-lock"></i> حساب آمن</span><span><i class="fa-solid fa-cloud-arrow-up"></i> تقدّم محفوظ</span><span><i class="fa-solid fa-graduation-cap"></i> بكالوريا 2027</span></div>
     </div>
@@ -852,7 +859,8 @@
       ['🎬','فيديوهات تعليمية',[]]
     ];
     const defaultVideos = [{title:'كيفية المراجعة الفعّالة',url:''},{title:'إدارة الوقت قبل البكالوريا',url:''},{title:'تقنيات الحفظ السريع',url:''},{title:'التحكم في التوتر والقلق',url:''},{title:'إعداد جدول مراجعة',url:''},{title:'نصائح أيام الامتحان',url:''}];
-    let state = Object.assign({page:'home',branch:'math',subBranch:null,filter:'all',sort:'default',favorites:[],progress:{},tasks:[],mistakes:[],theme:'dark',focusDone:0,grades:null,aiHistory:[],aiProfile:{goals:[],weaknesses:[],preferredStyle:'منظم وواضح',lastUpdated:null},user:null,guest:false}, JSON.parse(localStorage.getItem(CONFIG.storageKey)||'{}'));
+    // Do not hydrate student state from a shared browser key before authentication.
+    let state = {page:'home',branch:'math',subBranch:null,filter:'all',sort:'default',favorites:[],progress:{},tasks:[],mistakes:[],theme:'dark',focusDone:0,grades:null,aiHistory:[],aiProfile:{goals:[],weaknesses:[],preferredStyle:'منظم وواضح',lastUpdated:null},user:null,guest:false};
     // Always start the website on the Mathematics branch when the page launches.
     // The student can still change branch normally from the sidebar during the session.
     state.branch='math';
@@ -867,15 +875,24 @@
     if(branches[state.branch]?.subs && !state.subBranch) state.subBranch=Object.keys(branches[state.branch].subs)[0];
     let currentModalSubject=null, activeAgent='smart_tutor', focusTimer=null, focusTotal=0, focusLeft=0, loadedVideos=defaultVideos;
     let cloudSaveTimer=null;
+    function userStorageKey(userId){return `${CONFIG.storageKey}:student:${userId}`;}
+    function resetStudentData(){
+      state.branch='math';state.subBranch=null;state.filter='all';state.sort='default';
+      state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;state.aiHistory=[];
+      state.aiProfile={goals:[],weaknesses:[],preferredStyle:'منظم وواضح',lastUpdated:null};
+      state.grades=coefTemplates.math.map(([name,coef])=>({name,coef,mark:10}));
+    }
+    function applyStudentData(saved){
+      if(!saved||typeof saved!=='object')return;
+      for(const key of ['branch','subBranch','progress','tasks','mistakes','grades','favorites','focusDone','aiProfile','theme','aiHistory'])if(Object.prototype.hasOwnProperty.call(saved,key))state[key]=saved[key];
+    }
     function saveState(){
       const snapshot={...state,user:null,guest:false};
-      localStorage.setItem(CONFIG.storageKey,JSON.stringify(snapshot));
+      if(studentAuthUser?.id){try{localStorage.setItem(userStorageKey(studentAuthUser.id),JSON.stringify(snapshot));}catch(error){console.warn('Private local cache unavailable:',error);}}
       if(typeof renderHomeSummary==='function')renderHomeSummary();
-      if(studentAuth && studentAuthUser){
-        clearTimeout(cloudSaveTimer);
-        cloudSaveTimer=setTimeout(()=>syncStudentProgress(),1100);
-      }
+      if(studentAuth&&studentAuthUser){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(()=>syncStudentProgress(),1100);}
     }
+
     function escapeHtml(t){return String(t??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
     function normalize(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
     function subjectLabel(id,sub=allSubjects[id]){if(!sub)return''; if(id==='third_lang'&&state.subBranch)return({german:'اللغة الألمانية',spanish:'اللغة الإسبانية',italian:'اللغة الإيطالية'}[state.subBranch]||sub.name); if(id==='tech_subject'&&state.subBranch)return({civil:'الهندسة المدنية',electrical:'الهندسة الكهربائية',mechanical:'الهندسة الميكانيكية',process:'هندسة الطرائق'}[state.subBranch]||sub.name); return sub.name;}
@@ -1552,7 +1569,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     function setAuthBusy(busy){
       authLoading=busy;
-      ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
+      ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput','signupPassConfirmInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
     }
     async function syncStudentProgress(){
       if(!studentAuth||!studentAuthUser)return;
@@ -1562,52 +1579,29 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(error)console.warn('Cloud progress sync failed:',error.message);
     }
     async function loadStudentProgress(){
-      if(!studentAuth||!studentAuthUser)return;
-      const {data,error}=await studentAuth.from('student_progress').select('data').eq('user_id',studentAuthUser.id).maybeSingle();
-      if(error){console.warn('Cloud progress load failed:',error.message);return;}
-      if(data?.data&&typeof data.data==='object'){
-        const saved=data.data;
-        for(const key of ['branch','subBranch','progress','tasks','mistakes','grades','favorites','focusDone','aiProfile']){
-          if(Object.prototype.hasOwnProperty.call(saved,key))state[key]=saved[key];
-        }
-        renderAll();
-      }else{
-        // Never expose a previous guest's or student's local data to a new account.
-        state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;
-        state.aiProfile={goals:[],weaknesses:[],preferredStyle:'منظم وواضح',lastUpdated:null};
-        renderAll();
-      }
+      if(!studentAuth||!studentAuthUser?.id)return;
+      const userId=studentAuthUser.id;
+      let localSnapshot=null;
+      try{localSnapshot=JSON.parse(localStorage.getItem(userStorageKey(userId))||'null');}catch(error){console.warn('Private local cache could not be read:',error);}
+      const {data,error}=await studentAuth.from('student_progress').select('data').eq('user_id',userId).maybeSingle();
+      if(studentAuthUser?.id!==userId)return;
+      if(error){console.warn('Cloud progress load failed:',error.message);if(localSnapshot)applyStudentData(localSnapshot);else resetStudentData();renderAll();return;}
+      if(data?.data&&typeof data.data==='object')applyStudentData(data.data);
+      else if(localSnapshot){applyStudentData(localSnapshot);await syncStudentProgress();}
+      else resetStudentData();
+      renderAll();
     }
     async function applyStudentSession(session){
       const u=session?.user||null;
-      studentAuthUser=u;
-      if(!u){state.user=null;state.guest=false;renderSession();openLoginGate();return;}
-      state.guest=false;
+      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+      if(!u.email_confirmed_at){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();showToast('يجب تأكيد البريد الإلكتروني قبل استخدام المنصة','warning');return;}
+      resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       await loadStudentProgress();
+      if(studentAuthUser?.id!==u.id)return;
       renderSession();closeLoginGate();
     }
-    async function initStudentAuth(){
-      const auth=getStudentAuth();
-      const note=$('#authSetupNotice');
-      if(!auth){
-        if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
-        studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();return;
-      }
-      if(note)note.textContent='';
-      const {data,error}=await auth.auth.getSession();
-      if(error)console.warn('Auth session error:',error.message);
-      if(data?.session)await applyStudentSession(data.session);
-      else{studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();}
-      auth.auth.onAuthStateChange((event,session)=>{
-        if(event==='PASSWORD_RECOVERY'){setTimeout(()=>completePasswordRecovery(),0);return;}
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();return;}
-        if(event==='SIGNED_IN'||event==='USER_UPDATED'){
-          // Defer database queries until after the auth state callback completes.
-          setTimeout(()=>applyStudentSession(session),0);
-        }
-      });
-    }
+
     function enterAsGuest(){
       openLoginGate();
       showToast('يجب إنشاء حساب أو تسجيل الدخول لاستعمال المنصة','warning');
@@ -1623,6 +1617,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       try{
         const {data,error}=await auth.auth.signInWithPassword({email,password});
         if(error)throw error;
+        if(!data.user?.email_confirmed_at){await auth.auth.signOut();throw new Error('email not confirmed');}
         await applyStudentSession(data.session);
         showToast('تم تسجيل الدخول بنجاح','success');
       }catch(e){showToast(authErrorMessage(e),'danger')}
@@ -1635,25 +1630,33 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const name=($('#signupNameInput')?.value||'').trim();
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
+      const confirmation=$('#signupPassConfirmInput')?.value||'';
       if(!name||!/^\S+@\S+\.\S+$/.test(email)||password.length<8){showToast('أدخل الاسم وبريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل','warning');return;}
+      if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
       setAuthBusy(true);
       try{
         const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
         if(error)throw error;
-        if(data.session){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
-        else{switchLoginTab('login');showToast('راجع بريدك الإلكتروني لتأكيد الحساب','success')}
+        if(data.session&&data.user?.email_confirmed_at){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
+        else{if(data.session)await auth.auth.signOut();switchLoginTab('login');showToast('راجع بريدك الإلكتروني لتأكيد الحساب قبل تسجيل الدخول','success')}
       }catch(e){showToast(authErrorMessage(e),'danger')}
       finally{setAuthBusy(false)}
     }
     async function completePasswordRecovery(){
-      const auth=getStudentAuth();
-      if(!auth)return;
-      const password=window.prompt('أدخل كلمة المرور الجديدة (8 أحرف على الأقل)');
-      if(password===null)return;
-      if(password.length<8){showToast('كلمة المرور قصيرة جداً','warning');return;}
-      const {error}=await auth.auth.updateUser({password});
-      showToast(error?authErrorMessage(error):'تم تغيير كلمة المرور بنجاح',error?'warning':'success');
+      if(!getStudentAuth())return;
+      $('#loginMainForm')?.classList.add('hidden');$('#signupMainForm')?.classList.add('hidden');
+      $('#passwordRecoveryPanel')?.classList.remove('hidden');$$('.login-tab').forEach(tab=>tab.classList.add('hidden'));
+      $('#authResetButton')?.classList.add('hidden');$('#recoveryPasswordInput')?.focus();
     }
+    async function saveRecoveredPassword(){
+      const auth=getStudentAuth(),password=$('#recoveryPasswordInput')?.value||'',confirmation=$('#recoveryPasswordConfirmInput')?.value||'';
+      if(password.length<8){showToast('يجب أن تتكون كلمة المرور من 8 أحرف على الأقل','warning');return;}
+      if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
+      setAuthBusy(true);
+      try{const {error}=await auth.auth.updateUser({password});if(error)throw error;$('#passwordRecoveryPanel')?.classList.add('hidden');const {data}=await auth.auth.getSession();if(data?.session)await applyStudentSession(data.session);showToast('تم تحديث كلمة المرور بنجاح','success');}
+      catch(error){showToast(authErrorMessage(error),'danger');}finally{setAuthBusy(false);}
+    }
+
     async function resetStudentPassword(){
       const auth=getStudentAuth();
       if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
@@ -1666,7 +1669,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       clearTimeout(cloudSaveTimer);
       if(studentAuth){const {error}=await studentAuth.auth.signOut();if(error){showToast(authErrorMessage(error),'warning');return;}}
       studentAuthUser=null;state.user=null;state.guest=false;state.page='home';
-      state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;renderAll();
+resetStudentData();renderAll();
       renderSession();showPage('home');openLoginGate();showToast('تم تسجيل الخروج','info');
     }
     function renderSession(){
