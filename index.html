@@ -1531,6 +1531,11 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
           if(Object.prototype.hasOwnProperty.call(saved,key))state[key]=saved[key];
         }
         renderAll();
+      }else{
+        // Never expose a previous guest's or student's local data to a new account.
+        state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;
+        state.aiProfile={goals:[],weaknesses:[],preferredStyle:'منظم وواضح',lastUpdated:null};
+        renderAll();
       }
     }
     async function applyStudentSession(session){
@@ -1555,6 +1560,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(data?.session)await applyStudentSession(data.session);
       else{state.user=null;state.guest=true;renderSession();closeLoginGate();}
       auth.auth.onAuthStateChange((event,session)=>{
+        if(event==='PASSWORD_RECOVERY'){setTimeout(()=>completePasswordRecovery(),0);return;}
         if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=true;renderSession();return;}
         if(event==='SIGNED_IN'||event==='USER_UPDATED'){
           // Defer database queries until after the auth state callback completes.
@@ -1599,6 +1605,15 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       }catch(e){showToast(authErrorMessage(e),'danger')}
       finally{setAuthBusy(false)}
     }
+    async function completePasswordRecovery(){
+      const auth=getStudentAuth();
+      if(!auth)return;
+      const password=window.prompt('أدخل كلمة المرور الجديدة (8 أحرف على الأقل)');
+      if(password===null)return;
+      if(password.length<8){showToast('كلمة المرور قصيرة جداً','warning');return;}
+      const {error}=await auth.auth.updateUser({password});
+      showToast(error?authErrorMessage(error):'تم تغيير كلمة المرور بنجاح',error?'warning':'success');
+    }
     async function resetStudentPassword(){
       const auth=getStudentAuth();
       if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
@@ -1611,6 +1626,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       clearTimeout(cloudSaveTimer);
       if(studentAuth){const {error}=await studentAuth.auth.signOut();if(error){showToast(authErrorMessage(error),'warning');return;}}
       studentAuthUser=null;state.user=null;state.guest=true;state.page='home';
+      state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;renderAll();
       renderSession();showPage('home');openLoginGate();showToast('تم تسجيل الخروج','info');
     }
     function renderSession(){
