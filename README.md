@@ -1,27 +1,69 @@
-# Bac-pedia 2.0
+# Bac-pedia 2027
 
-واجهة عربية RTL لمراجعة البكالوريا، مستضافة كصفحة ثابتة على GitHub Pages.
+Arabic-first, RTL study platform for Algerian baccalaureate students preparing for the examination on **15 June 2027**.
 
-## إدارة موارد Google Drive
+## Application architecture
 
-- مصدر روابط المواد والفئات هو الملف `resources.json` وليس جدول Google Sheets.
-- لا تُنشئ معرّفات Drive أو روابط بالتخمين. انسخ المعرّف والرابط من بيانات Google Drive الفعلية.
-- لكل مجلد أو ملف احتفظ بالعنوان والنوع والمعرّف والرابط الأبوي.
-- بعد تعديل الفهرس شغّل:
+- `index.html`: responsive student application and authentication interface.
+- `auth-config.js`: public Supabase project URL and publishable key only. Never put a Supabase secret/service-role key or Gemini key here.
+- `api/ai.js`: Vercel serverless AI endpoint. It verifies the Supabase bearer token, requires a confirmed email, validates the request, enforces the database-backed daily quota, and reads `GEMINI_API_KEY` from the server environment.
+- `resources.json`: checked-in index of Google Drive educational resources. Do not invent Drive IDs or URLs.
+- `supabase/schema.sql`: reproducible database schema and security policies.
+
+## Hosting
+
+**Use Vercel for the production application.** Vercel supports the `/api/ai` serverless endpoint. Configure the Vercel project to deploy this repository's `main` branch.
+
+GitHub Pages can serve the static HTML application, but it cannot execute `api/ai.js`; the AI proxy is intentionally disabled on `.github.io` hosts. A static GitHub Pages deployment is not the complete production backend.
+
+## Supabase
+
+The application uses the existing Supabase project:
+
+- Supabase Auth for email/password accounts, sessions and email confirmation.
+- `student_profiles` for name, email, branch, specialization and last activity.
+- `student_progress` for student-specific study state.
+- `ai_usage_daily` for atomic per-user daily AI request accounting.
+
+Row Level Security is enabled. Student progress and profile reads are scoped to `auth.uid()`. The AI usage table has no direct client privileges and a deny-all client policy; only the quota function can increment usage.
+
+The AI quota is **30 admitted requests per authenticated student per UTC day**. The `consume_ai_quota` function is intentionally `SECURITY DEFINER`: it performs one atomic increment and returns only whether the student's quota remains available. It does not return another student's usage or allow client edits to the counter.
+
+## Environment configuration
+
+Set this variable in the Vercel project's server-side Production environment (and Preview if needed):
+
+- `GEMINI_API_KEY`: Gemini API key. Never expose it in browser code, `auth-config.js`, Git history, or chat.
+
+The Supabase publishable key in `auth-config.js` is designed for browser use; database access remains protected by RLS.
+
+Configure Supabase Auth:
+1. Enable email confirmations.
+2. Enable leaked-password protection.
+3. Set the production Site URL to the Vercel domain.
+4. Add the exact production and preview callback URLs to the allowed redirect URLs.
+
+## Educational resources and access
+
+Resource records are validated for structure, HTTPS Google Drive URLs, Drive IDs and parent relationships:
 
 ```bash
 node scripts/validate-resources.mjs
 ```
 
-- يوجد GitHub Actions workflow لتشغيل فحص الفهرس عند تعديل ملف الموارد أو أداة التحقق.
-- واجهة الموقع تعرض الفئات والملفات الموجودة في الفهرس، وتفتح ملفات Drive في تبويب منفصل.
-- حالة `access_not_verified` تعني أن صلاحية الوصول العام لم تُثبت. لا تعتبر قدرة حساب الإدارة على استعراض الملف دليلاً على أن الطلاب يستطيعون فتحه دون تسجيل دخول.
-- إذا تعذر على الطلاب فتح مورد، افحص إعدادات المشاركة في Google Drive. عند الحاجة اجعل الوصول العام `Anyone with the link — Viewer` للمجلد المقصود، مع مراعاة سياسة الخصوصية وملكية المحتوى.
+The manifest currently records `access_not_verified`. A successful administrator listing does not prove anonymous students can open a Drive file. Test each intended folder with a non-owner account and set Google Drive sharing deliberately. A public Drive link remains public even when the application itself requires login; hiding a link behind authentication does not make the underlying Drive resource private.
 
-## نشر الموقع
+No private Supabase Storage bucket is currently configured.
 
-الموقع الحالي ملف HTML ثابت في جذر المستودع. لا يحتاج إلى خادم خلفي لتصفح المحتوى. إعدادات GitHub Pages الحالية يجب أن تبقى متوافقة مع النشر من الفرع `main` ما لم يغيّر مالك المستودع إعدادات Pages.
+## Checks
 
-## الذكاء الاصطناعي والأسرار
+The GitHub Actions workflow `Check Bac-pedia frontend` validates every inline JavaScript block, checks `api/ai.js` as an ES module, and verifies the critical AI authorization/quota guards.
 
-مفتاح Gemini لا يوضع في ملفات الواجهة أو المستودع. ميزة الذكاء الاصطناعي المباشر تبقى معطلة إلى أن يُنشأ خادم خلفي آمن يقرأ المفتاح من متغير بيئة سري. إزالة مفتاح من أحدث نسخة لا تلغي الحاجة إلى تدويره إذا سبق نشره في Git history.
+```bash
+node scripts/check-frontend.mjs
+node scripts/validate-resources.mjs
+```
+
+## Important operational note
+
+A passing syntax/CI check does not replace live tests of registration, email confirmation, password recovery, two-account RLS isolation, Vercel environment variables, Gemini responses, and mobile browser behavior. Those must be verified against the production deployment before calling the platform production-ready.
