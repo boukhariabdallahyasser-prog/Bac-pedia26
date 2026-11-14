@@ -1579,7 +1579,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function syncStudentProgress(){
       if(!studentAuth||!studentAuthUser)return;
       const userId=studentAuthUser.id;
-      const data={branch:state.branch,subBranch:state.subBranch,progress:state.progress,tasks:state.tasks,mistakes:state.mistakes,grades:state.grades,favorites:state.favorites,focusDone:state.focusDone,aiProfile:state.aiProfile};
+      const data={branch:state.branch,subBranch:state.subBranch,progress:state.progress,tasks:state.tasks,mistakes:state.mistakes,grades:state.grades,favorites:state.favorites,focusDone:state.focusDone,aiProfile:state.aiProfile,theme:state.theme,aiHistory:state.aiHistory};
       const {error}=await studentAuth.from('student_progress').upsert({user_id:userId,data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
       if(error)console.warn('Cloud progress sync failed:',error.message);
     }
@@ -1605,6 +1605,25 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       await loadStudentProgress();
       if(studentAuthUser?.id!==u.id)return;
       renderSession();closeLoginGate();
+    }
+
+    async function initStudentAuth(){
+      const auth=getStudentAuth();
+      const note=$('#authSetupNotice');
+      if(!auth){
+        if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
+        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;
+      }
+      if(note)note.textContent='';
+      const {data,error}=await auth.auth.getSession();
+      if(error)console.warn('Auth session error:',error.message);
+      if(data?.session)await applyStudentSession(data.session);
+      else{studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
+      auth.auth.onAuthStateChange((event,session)=>{
+        if(event==='PASSWORD_RECOVERY'){setTimeout(()=>completePasswordRecovery(),0);return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+        if(event==='SIGNED_IN'||event==='USER_UPDATED')setTimeout(()=>applyStudentSession(session),0);
+      });
     }
 
     function enterAsGuest(){
