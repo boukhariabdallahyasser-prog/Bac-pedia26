@@ -1551,7 +1551,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function setAuthBusy(busy){
       authLoading=busy;
       ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput','signupPassConfirmInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
-      $('#loginGate .login-form button, #loginGate .auth-reset, #loginGate .login-tab').forEach(button=>{button.disabled=busy;if(button.classList.contains('btn')){button.setAttribute('aria-busy',String(busy));}});
+      $ ('#loginGate .login-form button, #loginGate .auth-reset, #loginGate .login-tab').forEach(button=>{button.disabled=busy;if(button.classList.contains('btn')){button.setAttribute('aria-busy',String(busy));}});
     }
     async function syncStudentProgress(){
       if(!studentAuth||!studentAuthUser)return;
