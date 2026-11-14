@@ -134,3 +134,5 @@ select u.id, coalesce(u.raw_user_meta_data->>'full_name',''), u.email,
 from auth.users u
 left join public.student_progress p on p.user_id = u.id
 on conflict (user_id) do nothing;
+comment on function public.consume_ai_quota(integer) is
+'Intentional SECURITY DEFINER RPC: atomically increments only auth.uid() daily usage and returns a boolean; direct table access is revoked and clients cannot read or edit usage counters.';
