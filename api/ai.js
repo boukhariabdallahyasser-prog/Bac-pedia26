@@ -1,15 +1,5 @@
 // Vercel serverless function. Set GEMINI_API_KEY in Vercel project environment variables.
 const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','flashcards','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
-// Best-effort per-runtime protection. For a hard cross-instance quota, use a shared store.
-const usageStore=globalThis.__bacPediaAiUsage||(globalThis.__bacPediaAiUsage=new Map());
-function checkRateLimit(userId){
-  const now=Date.now(),windowMs=10*60*1000,limit=12;
-  let entry=usageStore.get(userId);
-  if(!entry||now-entry.startedAt>=windowMs){entry={startedAt:now,count:0};usageStore.set(userId,entry);}
-  entry.count++;
-  if(entry.count>limit)return Math.max(1,Math.ceil((windowMs-(now-entry.startedAt))/1000));
-  return 0;
-}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -31,12 +21,23 @@ export default async function handler(req,res){
   }catch(error){
     return res.status(503).json({error:'Unable to verify session'});
   }
-  const retryAfter=checkRateLimit(user.id);
-  if(retryAfter){res.setHeader('Retry-After',String(retryAfter));return res.status(429).json({error:'AI usage limit reached. Please try again later.'});}
   if(Number(req.headers['content-length']||0)>32000)return res.status(413).json({error:'Request too large'});
   if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'AI service is not configured. Set GEMINI_API_KEY in Vercel.'});
   const {agent,prompt}=req.body||{};
   if(!allowedAgents.has(agent)||typeof prompt!=='string'||!prompt.trim()||prompt.length>14000)return res.status(400).json({error:'Invalid agent or prompt'});
+
+  // Atomic per-student daily quota enforced in PostgreSQL (30 successful admissions/day).
+  try{
+    const quotaResponse=await fetch('https://vgioqexpyvwmxwtuntaa.supabase.co/rest/v1/rpc/consume_ai_quota',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+token,apikey:'sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE,'Content-Type':'application/json'},
+      body:JSON.stringify({p_daily_limit:30}),
+      signal:AbortSignal.timeout(6000)
+    });
+    if(!quotaResponse.ok)return res.status(503).json({error:'Unable to verify AI usage quota'});
+    const allowed=await quotaResponse.json();
+    if(allowed!==true)return res.status(429).json({error:'Daily AI limit reached (30 requests). Try again tomorrow.'});
+  }catch(error){return res.status(503).json({error:'AI usage service unavailable'});}
   try{
     const controller=new AbortController();
     const timer=setTimeout(()=>controller.abort(),25000);
