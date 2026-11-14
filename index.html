@@ -520,6 +520,19 @@
     #authSetupNotice:not(:empty){padding:12px 14px;border-radius:12px;background:rgba(115,204,226,.1);border:1px solid rgba(115,204,226,.25)}
     #authSetupNotice[data-status="success"]{color:#8df0ce;background:rgba(65,180,135,.12)}
     @media(max-width:760px){.login-gate{padding:10px;align-items:flex-start}.login-card{width:100%;max-height:none;min-height:min(100dvh - 20px,680px);border-radius:20px}.login-content{padding:24px 20px}.auth-premium-badge{margin-bottom:14px}.login-logo{margin-bottom:14px}.login-tabs{margin:12px 0}.login-form{gap:10px}.login-field{min-height:50px}}
+    /* Clean functional authentication: reset conflicting legacy field styles */
+    #loginGate .login-field{display:flex;align-items:center;gap:10px;padding:0 14px;background:#111c33;border:1px solid #33435e;min-height:54px;border-radius:14px;transition:border-color .15s,box-shadow .15s}
+    #loginGate .login-field:focus-within{border-color:#8f83f6;box-shadow:0 0 0 3px rgba(143,131,246,.18)}
+    #loginGate .login-field>i{position:static;transform:none;flex:0 0 19px;color:#9dacf0;font-size:1rem}
+    #loginGate .login-field input{border:0!important;box-shadow:none!important;background:transparent!important;padding:14px 0!important;min-width:0;min-height:52px;flex:1;color:#fff;direction:rtl}
+    #loginGate .login-field input[type=email]{direction:ltr;text-align:right}
+    #loginGate .password-toggle{display:grid;place-items:center;min-width:40px;min-height:40px}
+    #loginGate .password-toggle i{position:static!important;transform:none!important;color:inherit}
+    #loginGate .login-form .btn{min-height:54px;border-radius:14px}
+    #loginGate .login-tab{min-height:46px}
+    #loginGate .login-form.hidden{display:none!important}
+    #loginGate .login-story{min-height:0}
+    @media(max-width:760px){#loginGate .login-card{min-height:0;max-width:520px}#loginGate .login-content{padding:24px 20px}#loginGate .login-gate{padding:12px}}
     @media(max-width:380px){.login-content{padding:20px 14px}.auth-trust-row{gap:7px}.login-logo .brand-icon{width:46px;height:46px;flex-basis:46px}}
   </style>
 </head>
@@ -1464,7 +1477,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function applyTheme(){document.body.classList.toggle('light-mode',state.theme==='light');const icon=$('#themeToggleBtn i');if(icon)icon.className=state.theme==='light'?'fa-solid fa-sun':'fa-solid fa-moon';}
     function updateCountdown(){const diff=Math.max(0,CONFIG.bacStart.getTime()-Date.now());const d=Math.floor(diff/86400000),h=Math.floor(diff/3600000)%24,m=Math.floor(diff/60000)%60,s=Math.floor(diff/1000)%60;$('#cdDays').textContent=String(d).padStart(3,'0');$('#cdHours').textContent=String(h).padStart(2,'0');$('#cdMins').textContent=String(m).padStart(2,'0');$('#cdSecs').textContent=String(s).padStart(2,'0');const start=new Date('2025-09-01T00:00:00+01:00').getTime();const pct=Math.max(0,Math.min(100,(Date.now()-start)/(CONFIG.bacStart.getTime()-start)*100));$('#yearProgress').style.width=pct+'%';}
     function showToast(message,type='info'){const div=document.createElement('div');div.className='toast';const icon=type==='success'?'fa-circle-check':type==='warning'?'fa-triangle-exclamation':type==='danger'?'fa-circle-xmark':'fa-circle-info';div.innerHTML=`<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;$('#toastArea').appendChild(div);setTimeout(()=>div.remove(),3200);}
-    function initCanvas(){const c=$('#bgCanvas'),ctx=c.getContext('2d');let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
+    function initCanvas(){const c=$('#bgCanvas');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width: 760px)').matches)return;const ctx=c.getContext('2d');if(!ctx)return;let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
     function renderAll(){cleanSpecialProgress();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
 
     function showAuthNotice(message,type='info'){
@@ -1472,7 +1485,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       note.textContent=message;note.dataset.status=type;
     }
     function switchLoginTab(tab){
-      if(authLoading)return;
       showAuthNotice('');
       $('#loginMainTab')?.classList.toggle('active',tab==='login');
       $('#signupMainTab')?.classList.toggle('active',tab==='signup');
@@ -1604,8 +1616,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         }
         return;
       }
-      if(data?.session&&data.session.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);
-      else{studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
+      if(data?.session){if(data.session.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);}
+      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
     }
 
     function enterAsGuest(){
