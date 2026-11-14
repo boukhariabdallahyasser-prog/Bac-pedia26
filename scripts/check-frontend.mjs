@@ -20,6 +20,8 @@ try{
     'function userStorageKey(userId)',
     'async function saveRecoveredPassword()',
     'id="passwordRecoveryPanel"',
+    'function togglePasswordVisibility(inputId,button)',
+    'function updatePasswordStrength()',
     'email_confirmed_at'
   ];
   for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
