@@ -534,6 +534,52 @@
     #loginGate .login-story{min-height:0}
     @media(max-width:760px){#loginGate .login-card{min-height:0;max-width:520px}#loginGate .login-content{padding:24px 20px}#loginGate .login-gate{padding:12px}}
     @media(max-width:380px){.login-content{padding:20px 14px}.auth-trust-row{gap:7px}.login-logo .brand-icon{width:46px;height:46px;flex-basis:46px}}
+
+    /* 2027 design refresh: restrained typography, legible inputs, responsive layout */
+    #loginGate{background:#080f20;isolation:isolate;padding:clamp(12px,3vw,36px);overflow:auto}
+    #loginGate::before{display:none}
+    #loginGate .login-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:min(100%,1020px);max-height:none;min-height:590px;padding:0;overflow:hidden;border-radius:26px;background:#101b30;border:1px solid #2a3a56;box-shadow:0 32px 90px #020714b3}
+    #loginGate .login-card::before{display:none}
+    #loginGate .login-story{display:flex;flex-direction:column;justify-content:space-between;padding:clamp(28px,4vw,52px);background:linear-gradient(145deg,#263b79,#172752 65%,#132443);color:#fff;min-width:0}
+    #loginGate .story-copy h2{font-size:clamp(2rem,3vw,3.3rem);line-height:1.35;letter-spacing:-.025em;margin:18px 0}
+    #loginGate .story-copy p{color:#d3ddf7;line-height:1.95;font-size:1rem;max-width:390px}
+    #loginGate .story-brand{font-weight:900;letter-spacing:.03em}
+    #loginGate .login-content{padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;justify-content:center;min-width:0}
+    #loginGate .auth-premium-badge{margin:0 0 18px;font-size:.75rem}
+    #loginGate .login-logo{margin-bottom:12px}
+    #loginGate .login-logo h1{font-size:clamp(1.5rem,2vw,1.9rem)}
+    #loginGate .login-logo p{line-height:1.75;color:#b3bfd8}
+    #loginGate .login-tabs{margin:16px 0 22px;border-radius:13px;background:#0a1427;border-color:#2d3b54;padding:5px;gap:4px}
+    #loginGate .login-tab{border-radius:10px;color:#b6c4dc;font-size:.94rem}
+    #loginGate .login-tab.active{background:#655ee8;color:#fff;box-shadow:0 3px 12px #0b0c2559}
+    #loginGate .login-form{gap:14px}
+    #loginGate .login-field{background:#0b1629;border-color:#344562;border-radius:12px}
+    #loginGate .login-field input{font-size:16px;line-height:1.4}
+    #loginGate .login-field input::placeholder{color:#a1aec6;opacity:1}
+    #loginGate .login-form .btn{background:#6962ee;color:white;border:0;font-size:1rem;font-weight:800;box-shadow:none}
+    #loginGate .login-form .btn:hover:not(:disabled){background:#7b75ff;transform:translateY(-1px)}
+    #loginGate .login-form .btn:disabled{opacity:.6;cursor:wait}
+    #loginGate .login-note{color:#b7c2d7;line-height:1.7}
+    #loginGate .auth-reset{color:#a7baff;font-size:.88rem;margin:10px auto}
+    #loginGate #authSetupNotice:not(:empty){font-size:.88rem;line-height:1.7;background:#172944;border:1px solid #3d557b;color:#e6efff}
+    #loginGate #authSetupNotice[data-status="warning"]{background:#3a281f;border-color:#946444;color:#ffe3bf}
+    #loginGate #authSetupNotice[data-status="success"]{background:#15372e;border-color:#317c62;color:#c5ffeb}
+    #loginGate .auth-trust-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;color:#9dacc6;font-size:.75rem}
+    #loginGate .auth-trust-row span{white-space:nowrap}
+    #loginGate .password-strength{margin:-4px 0 0}
+    @media(max-width:760px){
+      #loginGate{padding:12px;align-items:flex-start}
+      #loginGate .login-card{display:flex;flex-direction:column;min-height:0;max-width:520px;width:100%;margin:auto;border-radius:20px}
+      #loginGate .login-story{padding:18px 22px;background:#1c305d}
+      #loginGate .story-copy,#loginGate .story-bottom{display:none}
+      #loginGate .login-content{padding:24px 20px}
+      #loginGate .login-logo{margin-bottom:4px}
+      #loginGate .auth-premium-badge{margin-bottom:13px}
+      #loginGate .login-tabs{margin:12px 0 18px}
+      #loginGate .login-form{gap:12px}
+    }
+    @media(max-width:400px){#loginGate{padding:0}#loginGate .login-card{border-radius:0;min-height:100dvh;border:0}#loginGate .login-content{padding:20px 17px}}
+    @media(prefers-reduced-motion:reduce){#loginGate *{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
