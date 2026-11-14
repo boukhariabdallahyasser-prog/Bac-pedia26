@@ -30,7 +30,7 @@ try{
   const authRegressions=[
     ['signup tab switch must not be blocked by authLoading',/function switchLoginTab\(tab\)\{\s*showAuthNotice/],
     ['session initialization must not sign out an already authenticated student',/else if\(!studentAuthUser\)\{studentAuthUser=null/],
-    ['busy-state buttons must use the collection selector',/\$\$\('#loginGate \.login-form button/],
+    ['busy-state buttons must use querySelectorAll',/document\.querySelectorAll\('#loginGate \.login-form button/],
     ['auth input icons must not overlay text',/#loginGate \.login-field>i\{position:static/],
     ['rate-limit feedback must be visible',/over_email_send_rate_limit/],
     ['signup cooldown must exist',/authCooldownUntil=Date\.now\(\)\+120000/],
