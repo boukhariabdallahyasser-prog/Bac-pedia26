@@ -1581,6 +1581,15 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     function authErrorMessage(e){
       const m=String(e?.message||'');
+      const code=String(e?.code||e?.name||'');
+      const status=Number(e?.status||0);
+      // Supabase Auth logs confirmed Brevo SMTP rejected AUTH with 535 5.7.8.
+      // Surface the actionable mailer error instead of the misleading generic account error.
+      if(/535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp/i.test(m) ||
+         /unexpected_failure/i.test(code) ||
+         (status>=500 && /confirmation email|sending email/i.test(m))) {
+        return 'تعذر إرسال رسالة التحقق: رفض Brevo بيانات SMTP (535). راجع حقل SMTP Login وكلمة مرور SMTP Key في إعدادات Supabase.';
+      }
       if(/invalid login credentials/i.test(m))return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
       if(/email not confirmed/i.test(m))return 'يرجى تأكيد البريد الإلكتروني أولاً';
       if(/already registered/i.test(m))return 'البريد الإلكتروني مسجل مسبقاً';
