@@ -1498,7 +1498,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updatePasswordStrength(){
       const value=$('#signupPassInput')?.value||'',bar=$('#passwordStrengthBar'),label=$('#passwordStrengthText');
       if(!bar||!label)return;
-      const checks=[value.length>=8,value.length>=12,/\\p{L}/u.test(value),/\\d/.test(value),/[^\\p{L}\\d]/u.test(value)];
+      const checks=[value.length>=8,value.length>=12,/\p{L}/u.test(value),/\d/.test(value),/[^\p{L}\d]/u.test(value)];
       const score=Math.min(4,checks.filter(Boolean).length);
       const labels=['أدخل كلمة مرور','ضعيفة','متوسطة','جيدة','قوية'];
       const colors=['#e87979','#e87979','#f5c77e','#70d6bd','#70d6bd'];
@@ -1589,7 +1589,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
       const confirmation=$('#signupPassConfirmInput')?.value||'';
-      if(!name||!/^\S+@\S+\.\S+$/.test(email)||password.length<8){showToast('أدخل الاسم وبريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل','warning');return;}
+      if(!name||!/^\\S+@\\S+\\.\\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){showToast('استخدم بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;}
       if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
       setAuthBusy(true);
       try{
