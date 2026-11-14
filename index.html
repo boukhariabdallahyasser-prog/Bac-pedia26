@@ -443,6 +443,7 @@
     @media(max-width:700px){.hero{min-height:0;padding:28px 19px;border-radius:22px}.hero h1{font-size:clamp(1.85rem,7.6vw,2.5rem)}.hero p{font-size:.93rem}.hero::before{width:240px;height:240px;left:-100px;top:-100px}.signature-strip{grid-template-columns:1fr;gap:9px}.signature-tile:last-child{grid-column:auto}.signature-tile{padding:12px 14px}.topbar{margin-bottom:17px;padding-bottom:15px}.new-home-panel{margin-top:15px}.home-welcome-note{line-height:1.65}}
     @media(prefers-reduced-motion:reduce){.signature-tile{transition:none}.signature-tile:hover{transform:none}}
 
+  .auth-reset{display:block;margin:12px auto;border:0;background:transparent;color:var(--primary-light);cursor:pointer;text-decoration:underline;text-underline-offset:4px;font-weight:700}.auth-reset:focus-visible{outline:2px solid var(--secondary);outline-offset:4px}#authSetupNotice{padding:10px;border-radius:10px;background:rgba(245,158,11,.08);line-height:1.8}#authSetupNotice:empty{display:none}
   </style>
 </head>
 <body>
@@ -461,15 +462,17 @@
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" placeholder="البريد الإلكتروني"></div>
         <div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
         <button class="btn primary full" onclick="loginWithForm()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
-        <p class="login-note">هذا دخول محلي داخل المتصفح فقط، حتى يعمل الموقع بسرعة بدون قاعدة مستخدمين.</p>
+        <p class="login-note">دخول آمن باستخدام البريد الإلكتروني وكلمة المرور. فعّل Supabase أولاً.</p>
       </div>
       <div class="login-form hidden" id="signupMainForm">
         <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" placeholder="اسمك"></div>
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" placeholder="كلمة مرور اختيارية"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" placeholder="كلمة مرور (8 أحرف على الأقل)"></div>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
-        <p class="login-note">يمكنك تغيير الشعبة واستعمال المساعد والملفات كالمعتاد.</p>
+        <p class="login-note">سيصلك رابط تأكيد البريد الإلكتروني بعد إنشاء الحساب.</p>
       </div>
+      <button class="auth-reset" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
+      <p id="authSetupNotice" class="login-note" role="status"></p>
       <div class="login-divider"><span>أو</span></div>
       <button class="btn full" onclick="enterAsGuest()"><i class="fa-solid fa-user-clock"></i> الدخول كزائر</button>
     </div>
@@ -691,6 +694,8 @@
     <div class="modal-body"><div id="subjectSubfolders" style="max-height:35vh;overflow:auto;margin-bottom:12px"></div><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
   </div>
   <div class="toast-area" id="toastArea"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="./auth-config.js"></script>
   <script>
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
@@ -830,7 +835,16 @@
     if(state.progress)Object.keys(state.progress).forEach(id=>{if(allSubjects[id]?.special)delete state.progress[id];});
     if(branches[state.branch]?.subs && !state.subBranch) state.subBranch=Object.keys(branches[state.branch].subs)[0];
     let currentModalSubject=null, activeAgent='smart_tutor', focusTimer=null, focusTotal=0, focusLeft=0, loadedVideos=defaultVideos;
-    function saveState(){localStorage.setItem(CONFIG.storageKey,JSON.stringify(state));if(typeof renderHomeSummary==='function')renderHomeSummary();}
+    let cloudSaveTimer=null;
+    function saveState(){
+      const snapshot={...state,user:null,guest:false};
+      localStorage.setItem(CONFIG.storageKey,JSON.stringify(snapshot));
+      if(typeof renderHomeSummary==='function')renderHomeSummary();
+      if(studentAuth && studentAuthUser){
+        clearTimeout(cloudSaveTimer);
+        cloudSaveTimer=setTimeout(()=>syncStudentProgress(),1100);
+      }
+    }
     function escapeHtml(t){return String(t??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
     function normalize(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
     function subjectLabel(id,sub=allSubjects[id]){if(!sub)return''; if(id==='third_lang'&&state.subBranch)return({german:'اللغة الألمانية',spanish:'اللغة الإسبانية',italian:'اللغة الإيطالية'}[state.subBranch]||sub.name); if(id==='tech_subject'&&state.subBranch)return({civil:'الهندسة المدنية',electrical:'الهندسة الكهربائية',mechanical:'الهندسة الميكانيكية',process:'هندسة الطرائق'}[state.subBranch]||sub.name); return sub.name;}
@@ -1475,32 +1489,129 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const gate=$('#loginGate');
       if(gate)gate.classList.add('hidden');
     }
+    let studentAuth=null,studentAuthUser=null,authLoading=false;
+    function authConfigured(){
+      const c=window.BAC_SUPABASE||{};
+      return /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(c.url||'') && /^sb_publishable_|^eyJ/.test(c.anonKey||'');
+    }
+    function getStudentAuth(){
+      if(studentAuth)return studentAuth;
+      if(!authConfigured()||!window.supabase?.createClient)return null;
+      const c=window.BAC_SUPABASE;
+      studentAuth=window.supabase.createClient(c.url,c.anonKey,{auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+      return studentAuth;
+    }
+    function authErrorMessage(e){
+      const m=String(e?.message||'');
+      if(/invalid login credentials/i.test(m))return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+      if(/email not confirmed/i.test(m))return 'يرجى تأكيد البريد الإلكتروني أولاً';
+      if(/already registered/i.test(m))return 'البريد الإلكتروني مسجل مسبقاً';
+      if(/rate limit/i.test(m))return 'محاولات كثيرة. حاول لاحقاً';
+      if(/password/i.test(m))return 'تحقق من كلمة المرور (8 أحرف على الأقل)';
+      return 'تعذر الاتصال بخدمة الحسابات. حاول لاحقاً';
+    }
+    function setAuthBusy(busy){
+      authLoading=busy;
+      ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
+    }
+    async function syncStudentProgress(){
+      if(!studentAuth||!studentAuthUser)return;
+      const userId=studentAuthUser.id;
+      const data={branch:state.branch,subBranch:state.subBranch,progress:state.progress,tasks:state.tasks,mistakes:state.mistakes,grades:state.grades,favorites:state.favorites,focusDone:state.focusDone,aiProfile:state.aiProfile};
+      const {error}=await studentAuth.from('student_progress').upsert({user_id:userId,data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error)console.warn('Cloud progress sync failed:',error.message);
+    }
+    async function loadStudentProgress(){
+      if(!studentAuth||!studentAuthUser)return;
+      const {data,error}=await studentAuth.from('student_progress').select('data').eq('user_id',studentAuthUser.id).maybeSingle();
+      if(error){console.warn('Cloud progress load failed:',error.message);return;}
+      if(data?.data&&typeof data.data==='object'){
+        const saved=data.data;
+        for(const key of ['branch','subBranch','progress','tasks','mistakes','grades','favorites','focusDone','aiProfile']){
+          if(Object.prototype.hasOwnProperty.call(saved,key))state[key]=saved[key];
+        }
+        renderAll();
+      }
+    }
+    async function applyStudentSession(session){
+      const u=session?.user||null;
+      studentAuthUser=u;
+      if(!u){state.user=null;state.guest=true;renderSession();return;}
+      state.guest=false;
+      state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
+      await loadStudentProgress();
+      renderSession();closeLoginGate();
+    }
+    async function initStudentAuth(){
+      const auth=getStudentAuth();
+      const note=$('#authSetupNotice');
+      if(!auth){
+        if(note)note.textContent='تسجيل الحسابات غير مفعل بعد. يمكن الدخول كزائر فقط إلى حين ربط قاعدة البيانات.';
+        state.user=null;state.guest=true;renderSession();closeLoginGate();return;
+      }
+      if(note)note.textContent='';
+      const {data,error}=await auth.auth.getSession();
+      if(error)console.warn('Auth session error:',error.message);
+      if(data?.session)await applyStudentSession(data.session);
+      else{state.user=null;state.guest=true;renderSession();closeLoginGate();}
+      auth.auth.onAuthStateChange((event,session)=>{
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=true;renderSession();return;}
+        if(event==='SIGNED_IN'||event==='USER_UPDATED'){
+          // Defer database queries until after the auth state callback completes.
+          setTimeout(()=>applyStudentSession(session),0);
+        }
+      });
+    }
     function enterAsGuest(){
-      state.guest=true;
-      if(!state.user)state.user={name:'زائر',email:'guest@local',mode:'guest'};
-      saveState();
-      renderSession();
-      afterLoginLanding();
-      showToast('تم الدخول كزائر','success');
+      state.guest=true;state.user=null;studentAuthUser=null;
+      saveState();renderSession();afterLoginLanding();showToast('تم الدخول كزائر','success');
     }
-    function loginWithForm(){
+    async function loginWithForm(){
+      const auth=getStudentAuth();
+      if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
+      if(authLoading)return;
       const email=($('#loginEmailInput')?.value||'').trim();
-      const pass=($('#loginPassInput')?.value||'').trim();
-      if(!email){showToast('اكتب البريد الإلكتروني أو ادخل كزائر','warning');return;}
-      const name=email.split('@')[0] || 'طالب';
-      state.guest=false;
-      state.user={name,email,mode:'login',passHint:pass?true:false};
-      saveState();renderSession();afterLoginLanding();showToast('تم تسجيل الدخول','success');
+      const password=$('#loginPassInput')?.value||'';
+      if(!email||!password){showToast('أدخل البريد الإلكتروني وكلمة المرور','warning');return;}
+      setAuthBusy(true);
+      try{
+        const {data,error}=await auth.auth.signInWithPassword({email,password});
+        if(error)throw error;
+        await applyStudentSession(data.session);
+        showToast('تم تسجيل الدخول بنجاح','success');
+      }catch(e){showToast(authErrorMessage(e),'danger')}
+      finally{setAuthBusy(false)}
     }
-    function signupWithForm(){
-      const name=($('#signupNameInput')?.value||'').trim() || 'طالب بكالوريا';
-      const email=($('#signupEmailInput')?.value||'').trim() || (name.replace(/\s+/g,'.')+'@local');
-      state.guest=false;
-      state.user={name,email,mode:'signup'};
-      saveState();renderSession();afterLoginLanding();showToast('تم إنشاء الحساب المحلي','success');
+    async function signupWithForm(){
+      const auth=getStudentAuth();
+      if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
+      if(authLoading)return;
+      const name=($('#signupNameInput')?.value||'').trim();
+      const email=($('#signupEmailInput')?.value||'').trim();
+      const password=$('#signupPassInput')?.value||'';
+      if(!name||!/^\S+@\S+\.\S+$/.test(email)||password.length<8){showToast('أدخل الاسم وبريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل','warning');return;}
+      setAuthBusy(true);
+      try{
+        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
+        if(error)throw error;
+        if(data.session){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
+        else{switchLoginTab('login');showToast('راجع بريدك الإلكتروني لتأكيد الحساب','success')}
+      }catch(e){showToast(authErrorMessage(e),'danger')}
+      finally{setAuthBusy(false)}
     }
-    function logoutUser(){
-      state.user=null;state.guest=false;state.page='home';saveState();renderSession();showPage('home');openLoginGate();showToast('تم الخروج','info');
+    async function resetStudentPassword(){
+      const auth=getStudentAuth();
+      if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
+      const email=($('#loginEmailInput')?.value||'').trim();
+      if(!/^\S+@\S+\.\S+$/.test(email)){showToast('اكتب بريدك الإلكتروني أولاً','warning');return;}
+      const {error}=await auth.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+      showToast(error?authErrorMessage(error):'إذا كان البريد مسجلاً فستصلك رسالة لاستعادة كلمة المرور',error?'warning':'success');
+    }
+    async function logoutUser(){
+      clearTimeout(cloudSaveTimer);
+      if(studentAuth){const {error}=await studentAuth.auth.signOut();if(error){showToast(authErrorMessage(error),'warning');return;}}
+      studentAuthUser=null;state.user=null;state.guest=true;state.page='home';
+      renderSession();showPage('home');openLoginGate();showToast('تم تسجيل الخروج','info');
     }
     function renderSession(){
       const u=state.user;
@@ -1524,7 +1635,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       showPage('home');
       closeLoginGate();
     }
-    function initSession(){state.guest=true;state.user={name:'زائر',mode:'guest'};renderSession();closeLoginGate();}
+    function initSession(){state.guest=true;state.user=null;renderSession();closeLoginGate();initStudentAuth().catch(e=>console.warn('Auth init:',e));}
     window.addEventListener('error',e=>{console.warn('Website error handled:',e.message);});
     window.addEventListener('unhandledrejection',e=>{console.warn('Promise error handled:',e.reason);});
 
