@@ -1549,15 +1549,31 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;
       }
       if(note)note.textContent='';
+      let recoveryFlow=/(?:^|[&#?])type=recovery(?:&|$)/i.test(location.hash+location.search);
+      auth.auth.onAuthStateChange((event,session)=>{
+        if(event==='PASSWORD_RECOVERY'){
+          recoveryFlow=true;
+          if(session?.user){resetStudentData();studentAuthUser=session.user;state.guest=false;}
+          setTimeout(()=>{openLoginGate();completePasswordRecovery();},0);
+          return;
+        }
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+        if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>applyStudentSession(session),0);
+      });
       const {data,error}=await auth.auth.getSession();
       if(error)console.warn('Auth session error:',error.message);
+      if(recoveryFlow){
+        if(data?.session){
+          resetStudentData();studentAuthUser=data.session.user;state.guest=false;
+          openLoginGate();completePasswordRecovery();
+        }else{
+          studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();
+          showToast('رابط استعادة كلمة المرور غير صالح أو انتهت صلاحيته. اطلب رابطاً جديداً.','warning');
+        }
+        return;
+      }
       if(data?.session)await applyStudentSession(data.session);
       else{studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
-      auth.auth.onAuthStateChange((event,session)=>{
-        if(event==='PASSWORD_RECOVERY'){setTimeout(()=>completePasswordRecovery(),0);return;}
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
-        if(event==='SIGNED_IN'||event==='USER_UPDATED')setTimeout(()=>applyStudentSession(session),0);
-      });
     }
 
     function enterAsGuest(){
@@ -1611,7 +1627,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(password.length<8){showToast('يجب أن تتكون كلمة المرور من 8 أحرف على الأقل','warning');return;}
       if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
       setAuthBusy(true);
-      try{const {error}=await auth.auth.updateUser({password});if(error)throw error;$('#passwordRecoveryPanel')?.classList.add('hidden');const {data}=await auth.auth.getSession();if(data?.session)await applyStudentSession(data.session);showToast('تم تحديث كلمة المرور بنجاح','success');}
+      try{const {error}=await auth.auth.updateUser({password});if(error)throw error;history.replaceState(null,'',location.pathname+location.search);$('#passwordRecoveryPanel')?.classList.add('hidden');const {data}=await auth.auth.getSession();if(data?.session)await applyStudentSession(data.session);else throw new Error('تعذر استعادة جلسة الحساب بعد تحديث كلمة المرور');showToast('تم تحديث كلمة المرور بنجاح','success');}
       catch(error){showToast(authErrorMessage(error),'danger');}finally{setAuthBusy(false);}
     }
 
