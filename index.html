@@ -1589,7 +1589,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
       const confirmation=$('#signupPassConfirmInput')?.value||'';
-      if(!name||!/^\\S+@\\S+\\.\\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){showToast('استخدم بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;}
+      if(!name||!/^\S+@\S+\.\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){showToast('استخدم بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;}
       if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
       setAuthBusy(true);
       try{
