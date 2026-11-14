@@ -27,6 +27,16 @@ try{
     'email_confirmed_at'
   ];
   for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
+  const authRegressions=[
+    ['signup tab switch must not be blocked by authLoading',/function switchLoginTab\(tab\)\{\s*showAuthNotice/],
+    ['session initialization must not sign out an already authenticated student',/else if\(!studentAuthUser\)\{studentAuthUser=null/],
+    ['busy-state buttons must use the collection selector',/\$\$\('#loginGate \.login-form button/],
+    ['auth input icons must not overlay text',/#loginGate \.login-field>i\{position:static/],
+    ['rate-limit feedback must be visible',/over_email_send_rate_limit/],
+    ['signup cooldown must exist',/authCooldownUntil=Date\.now\(\)\+120000/],
+    ['auth session must render dashboard before cloud hydration',/renderAll\(\);renderSession\(\);closeLoginGate\(\)/]
+  ];
+  for(const [name,pattern] of authRegressions)if(!pattern.test(html))throw Error('Auth UX regression: '+name);
   if(html.includes('window.prompt('))throw Error('Browser prompt must not be used for authentication workflows');
   if(/sessionGeminiKey|x-goog-api-key|generativelanguage\.googleapis\.com|CONFIG\.aiApiKey/.test(html))throw Error('Gemini credentials or direct provider calls must not be present in browser code');
   if(!html.includes('callProxyAI(agentId,ctx)'))throw Error('Student AI requests must use the authenticated server proxy');
