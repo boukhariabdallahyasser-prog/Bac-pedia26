@@ -1507,6 +1507,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function setAuthBusy(busy){
       authLoading=busy;
       ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput','signupPassConfirmInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
+      $('#loginGate .login-form button, #loginGate .auth-reset').forEach(button=>button.disabled=busy);
     }
     async function syncStudentProgress(){
       if(!studentAuth||!studentAuthUser)return;
@@ -1624,6 +1625,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     async function saveRecoveredPassword(){
       const auth=getStudentAuth(),password=$('#recoveryPasswordInput')?.value||'',confirmation=$('#recoveryPasswordConfirmInput')?.value||'';
+      if(authLoading)return;
       if(password.length<8){showToast('يجب أن تتكون كلمة المرور من 8 أحرف على الأقل','warning');return;}
       if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
       setAuthBusy(true);
@@ -1634,10 +1636,15 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function resetStudentPassword(){
       const auth=getStudentAuth();
       if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
+      if(authLoading)return;
       const email=($('#loginEmailInput')?.value||'').trim();
-      if(!/^\S+@\S+\.\S+$/.test(email)){showToast('اكتب بريدك الإلكتروني أولاً','warning');return;}
-      const {error}=await auth.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
-      showToast(error?authErrorMessage(error):'إذا كان البريد مسجلاً فستصلك رسالة لاستعادة كلمة المرور',error?'warning':'success');
+      if(!/^\\S+@\\S+\\.\\S+$/.test(email)){showToast('اكتب بريدك الإلكتروني أولاً','warning');return;}
+      setAuthBusy(true);
+      try{
+        const {error}=await auth.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+        showToast(error?authErrorMessage(error):'إذا كان البريد مسجلاً فستصلك رسالة لاستعادة كلمة المرور',error?'warning':'success');
+      }catch(error){showToast(authErrorMessage(error),'warning');}
+      finally{setAuthBusy(false);}
     }
     async function logoutUser(){
       clearTimeout(cloudSaveTimer);
