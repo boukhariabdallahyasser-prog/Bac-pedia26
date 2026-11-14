@@ -1604,6 +1604,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       await loadStudentProgress();
       if(studentAuthUser?.id!==u.id)return;
+      const {error:profileError}=await studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id);
+      if(profileError)console.warn('Student profile activity update failed:',profileError.message);
       renderSession();closeLoginGate();
     }
 
