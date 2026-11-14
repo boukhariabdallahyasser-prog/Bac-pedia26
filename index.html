@@ -634,10 +634,8 @@
           <button class="btn" onclick="document.getElementById('aiSetup').open=true;document.getElementById('aiSetup').scrollIntoView({behavior:'smooth',block:'center'})"><i class="fa-solid fa-sliders"></i> إعداد الذكاء الاصطناعي</button>
         </div>
         <details class="ai-setup" id="aiSetup">
-          <summary>ربط المساعد الحقيقي (Gemini) — إعداد اختياري</summary>
-          <p class="muted">يمكنك تجربة مفتاح Gemini الخاص بك في هذه الجلسة فقط. لا تشارك مفتاحك مع الآخرين ولا تستخدم مفتاح إنتاجي على موقع عام؛ النشر العام يتطلب خادماً وسيطاً يحفظ المفتاح بأمان.</p>
-          <input id="sessionAiKey" class="input" type="password" autocomplete="off" placeholder="Gemini API key — لا يُحفظ في المتصفح" aria-label="مفتاح Gemini لهذه الجلسة">
-          <div class="actions"><button class="btn primary" onclick="enableSessionAI()"><i class="fa-solid fa-plug"></i> تفعيل لهذه الجلسة</button><button class="btn" onclick="disableSessionAI()">إيقاف الاتصال</button></div>
+          <summary>حالة خدمة الذكاء الاصطناعي</summary>
+          <p class="muted">تُرسل طلبات الذكاء الاصطناعي إلى خادم Bac-pedia الآمن. لا تدخل مفتاح Gemini في المتصفح؛ تتم إدارة المفتاح من إعدادات الخادم فقط. إذا ظهرت الخدمة غير متاحة، فسيحتاج مسؤول المنصة إلى التحقق من نشر Vercel ومتغير GEMINI_API_KEY.</p>
         </details>
         <div class="context-strip">
           <div class="context-pill"><span>الشعبة</span><strong id="aiCtxBranch">-</strong></div>
@@ -1318,9 +1316,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return data.answer||data.text||data.message||readResponseText(data)||null;
     }
     async function callLiveAI(agentId,ctx){
-      if(CONFIG.aiProxyEndpoint){const answer=await callProxyAI(agentId,ctx);if(answer)return answer;}
-      if(sessionGeminiKey||CONFIG.aiApiKey)return await callDirectAI(agentId,ctx);
-      throw new Error('لا توجد خدمة ذكاء اصطناعي متصلة.');
+      if(!CONFIG.aiProxyEndpoint)throw new Error('خادم الذكاء الاصطناعي غير متاح على هذا النطاق. افتح نسخة Vercel الرسمية.');
+      const answer=await callProxyAI(agentId,ctx);
+      if(!answer)throw new Error('وصل رد فارغ من خادم الذكاء الاصطناعي.');
+      return answer;
     }
 
 
@@ -1364,23 +1363,13 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return null;
     }
 
-    let sessionGeminiKey='';
-    function hasLiveAI(){return Boolean(sessionGeminiKey||CONFIG.aiProxyEndpoint);}
+    function hasLiveAI(){return Boolean(CONFIG.aiProxyEndpoint);}
     function updateAIModeIndicator(){
       const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
       if(dot)dot.classList.toggle('live',live);
       if(title)title.textContent=live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
-      if(desc)desc.textContent=live?'يمكنك طلب شرح وتلخيص واختبارات من نموذج Gemini.':'تعمل خطة المراجعة وحاسبة المعدل وتحليل الأخطاء محلياً. للحصول على إجابات مولّدة، اربط Gemini.';
+      if(desc)desc.textContent=live?'تُعالج طلباتك عبر خادم Bac-pedia مع التحقق من الحساب وحد الاستخدام.':'خادم الذكاء الاصطناعي غير متاح على هذا النطاق. استخدم رابط Vercel الرسمي.';
     }
-    function enableSessionAI(){
-      const key=$('#sessionAiKey')?.value.trim()||'';
-      if(!key){showToast('أدخل مفتاح Gemini أولاً','warning');return;}
-      sessionGeminiKey=key;
-      $('#sessionAiKey').value='';
-      updateAIModeIndicator();
-      showToast('تم تفعيل الاتصال لهذه الجلسة. جرّب إرسال سؤال.','success');
-    }
-    function disableSessionAI(){sessionGeminiKey='';if($('#sessionAiKey'))$('#sessionAiKey').value='';updateAIModeIndicator();showToast('تم إيقاف اتصال Gemini','info');}
     function renderHomeSummary(){
       const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
       if($('#homeProgressValue'))$('#homeProgressValue').textContent=avg+'%';
