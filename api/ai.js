@@ -26,7 +26,7 @@ export default async function handler(req,res){
   const {agent,prompt}=req.body||{};
   if(!allowedAgents.has(agent)||typeof prompt!=='string'||!prompt.trim()||prompt.length>14000)return res.status(400).json({error:'Invalid agent or prompt'});
 
-  // Atomic per-student daily quota enforced in PostgreSQL (30 successful admissions/day).
+  // Atomic per-student daily quota enforced in PostgreSQL (30 admitted requests per UTC day).
   try{
     const quotaResponse=await fetch('https://vgioqexpyvwmxwtuntaa.supabase.co/rest/v1/rpc/consume_ai_quota',{
       method:'POST',
