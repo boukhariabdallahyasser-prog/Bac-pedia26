@@ -60,3 +60,10 @@ end;
 $$;
 revoke all on function public.consume_ai_quota(integer) from public, anon;
 grant execute on function public.consume_ai_quota(integer) to authenticated;
+
+create policy "AI usage records are server-managed"
+on public.ai_usage_daily
+for all
+to anon, authenticated
+using (false)
+with check (false);
