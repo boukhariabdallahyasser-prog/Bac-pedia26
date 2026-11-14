@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a1a" />
-  <title>بوابة المراجعة | باكالوريا 2026</title>
+  <title>Bac-pedia | بكالوريا 2027</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -351,6 +351,42 @@
     .ai-setup .input{margin-top:10px}
     @media(max-width:1000px){.new-home-panel{grid-template-columns:1fr 1fr}}
     @media(max-width:700px){.sidebar{padding:16px}.main{padding:12px 12px 100px}.hero{padding:25px 18px}.hero h1{font-size:2rem}.hero-actions .btn{flex:1}.new-home-panel{grid-template-columns:1fr}.quick-card{min-height:105px}.topbar{padding-bottom:12px}.top-title h2{max-width:46vw}}
+  
+    /* BAC 2027 premium design refresh */
+    :root{--primary:#8b5cf6;--primary-dark:#6d28d9;--primary-light:#c4b5fd;--secondary:#22d3ee;--accent:#fbbf24;--bg-main:#080d1d;--bg-card:rgba(17,25,49,.88);--bg-glass:rgba(23,34,65,.75);--border:rgba(173,189,233,.13);--shadow:0 20px 65px rgba(1,6,20,.28);--radius:24px}
+    body{background:radial-gradient(ellipse 60% 35% at 65% -10%,rgba(111,67,237,.19),transparent 75%),radial-gradient(ellipse 38% 30% at 2% 55%,rgba(8,145,178,.09),transparent 80%),var(--bg-main)}
+    body.light-mode{--primary:#6d28d9;--primary-light:#7c3aed;--secondary:#0891b2;--bg-main:#f4f7fd;--bg-card:#fff;--bg-glass:rgba(248,250,255,.94);--border:rgba(40,56,105,.12);--shadow:0 14px 40px rgba(44,62,112,.07)}
+    .sidebar{background:rgba(10,16,35,.94);border-left:1px solid var(--border);box-shadow:8px 0 48px rgba(0,0,0,.08)}
+    body.light-mode .sidebar{background:rgba(255,255,255,.96)}
+    .sidebar-brand{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(34,211,238,.07));border-radius:20px;padding:15px}
+    .brand-icon,.logo-icon{animation:none;background:linear-gradient(145deg,#8b5cf6,#6366f1 55%,#06b6d4);box-shadow:0 12px 30px rgba(109,40,217,.22)}
+    .brand-title{background:linear-gradient(120deg,#ddd6fe,#67e8f9);-webkit-background-clip:text;background-clip:text}
+    body.light-mode .brand-title{background:linear-gradient(120deg,#6d28d9,#0891b2);-webkit-background-clip:text;background-clip:text}
+    .nav-btn,.branch-btn{border-color:transparent;background:transparent;border-radius:13px;transition:background .18s,border-color .18s,transform .18s}
+    .nav-btn:hover,.branch-btn:hover{transform:none;background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.16);box-shadow:none}
+    .nav-btn.active,.branch-btn.active{background:linear-gradient(95deg,rgba(139,92,246,.24),rgba(34,211,238,.07));border-color:rgba(167,139,250,.25);color:var(--text-main)}
+    .topbar{background:rgba(13,20,41,.58);border:1px solid var(--border);border-radius:19px;padding:14px 18px;margin-bottom:20px;backdrop-filter:blur(18px)}
+    body.light-mode .topbar{background:rgba(255,255,255,.83)}
+    .hero{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(circle at 15% 25%,rgba(34,211,238,.25),transparent 36%),linear-gradient(115deg,#24135e 0%,#35217c 43%,#123b68 100%);border:1px solid rgba(196,181,253,.22);box-shadow:0 25px 60px rgba(23,16,71,.28);border-radius:28px}
+    .hero::before{content:"";position:absolute;width:350px;height:350px;left:-90px;top:-155px;border:1px solid rgba(255,255,255,.15);border-radius:50%;box-shadow:0 0 0 55px rgba(255,255,255,.025),0 0 0 110px rgba(255,255,255,.018);pointer-events:none}
+    .hero::after{content:"2027";position:absolute;left:5%;bottom:-.2em;font:900 clamp(5rem,15vw,12rem)/1 Cairo,sans-serif;letter-spacing:-.08em;color:rgba(255,255,255,.065);pointer-events:none}
+    .hero-content{position:relative;z-index:1}
+    .hero h1{font-family:Cairo,Tajawal,sans-serif;letter-spacing:-.045em;line-height:1.32;text-wrap:balance}
+    .hero p{max-width:680px;line-height:1.9}
+    .hero .kicker{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);backdrop-filter:blur(10px);padding:9px 15px;border-radius:999px}
+    .time-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);border-radius:18px}
+    .time-box strong{font-variant-numeric:tabular-nums}
+    .card,.quick-card{border:1px solid var(--border);background:var(--bg-card);box-shadow:0 12px 30px rgba(1,6,20,.09);transition:transform .2s,box-shadow .2s,border-color .2s}
+    .card:hover,.quick-card:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.32);box-shadow:0 18px 42px rgba(1,6,20,.16)}
+    .btn,.ctrl-btn{transition:transform .2s,box-shadow .2s,background .2s}
+    .btn:hover,.ctrl-btn:hover{transform:translateY(-2px)}
+    .btn.primary{background:linear-gradient(120deg,#8b5cf6,#6366f1);box-shadow:0 8px 22px rgba(99,102,241,.24)}
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #22d3ee;outline-offset:3px}
+    .home-welcome-note{display:flex;align-items:center;gap:10px;margin:0 0 16px;color:var(--text-sub);font-weight:700;font-size:.94rem}
+    .home-welcome-note i{color:var(--accent)}
+    @media(max-width:700px){.topbar{padding:10px 12px;border-radius:14px}.hero{border-radius:21px}.hero::after{font-size:6rem;bottom:0}.hero h1{font-size:clamp(1.7rem,7vw,2.3rem)}.home-welcome-note{font-size:.83rem}.time-box{border-radius:13px}}
+    @media(prefers-reduced-motion:reduce){.card,.quick-card,.btn,.ctrl-btn{transition:none!important}.card:hover,.quick-card:hover,.btn:hover,.ctrl-btn:hover{transform:none!important}}
+
   </style>
 </head>
 <body>
@@ -429,6 +465,7 @@
         </div>
       </div>
       <section class="page active" id="page-home">
+        <div class="home-welcome-note"><i class="fa-solid fa-sparkles"></i><span>رحلتك نحو بكالوريا 2027 تبدأ بخطوة اليوم — ركّز على التقدّم، لا الكمال.</span></div>
         <div class="hero">
           <div class="hero-content">
             <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="homeBranchKicker">شعبة رياضيات</span></div>
