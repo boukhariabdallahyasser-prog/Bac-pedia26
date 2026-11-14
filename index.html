@@ -741,14 +741,6 @@
       videosCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHVBvdfHx7d-j0LMU8rPXIAxGbf3QQ4WxT_duxZdaZ95w6W8wvF5Kw7OuKh55_cTTeWMdIKpRGIZpL/pub?output=csv',
       mockBacUrl: 'https://drive.google.com/drive/folders/1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk',
       aiMode: 'proxy',
-      aiProvider: 'gemini',
-      aiApiKey: '',
-      aiEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
-      aiResponsesEndpoint: '',
-      aiModels: ['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'],
-      aiMaxOutputTokens: 4096,
-      aiRequestTimeout: 60000,
-      aiUseLocalFallback: true,
       aiProxyEndpoint: (!location.hostname || location.hostname.endsWith('.github.io') || ['localhost','127.0.0.1'].includes(location.hostname)) ? '' : '/api/ai'
     };
     const pages = [
@@ -1224,79 +1216,12 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return '';
     }
     function aiProviderName(){return 'المساعد الذكي';}
-    function aiAuthHeaders(){return {'Content-Type':'application/json','Authorization':'Bearer '+CONFIG.aiApiKey};}
     function aiErrorMessage(error){
       if(!error)return 'خطأ غير معروف';
       if(typeof error==='string')return error;
       if(error.message)return error.message;
       if(error.error?.message)return error.error.message;
       try{return JSON.stringify(error).slice(0,700);}catch(e){return 'خطأ غير معروف';}
-    }
-    function withTimeout(promise, ms=45000){
-      const controller = new AbortController();
-      const timer = setTimeout(()=>controller.abort(), ms);
-      return {signal:controller.signal, run: promise(controller.signal).finally(()=>clearTimeout(timer))};
-    }
-    async function fetchJsonWithTimeout(url, options, timeout=45000){
-      const controller = new AbortController();
-      const timer = setTimeout(()=>controller.abort(), timeout);
-      try{
-        const res = await fetch(url, {...options, signal: controller.signal});
-        const text = await res.text();
-        let data = {};
-        try{data = text ? JSON.parse(text) : {};}catch(e){data = {raw:text};}
-        if(!res.ok){
-          const msg = data.error?.message || data.message || data.raw || ('HTTP '+res.status);
-          throw new Error(msg);
-        }
-        return data;
-      }finally{clearTimeout(timer);}
-    }
-    async function callChatCompletions(model,input){
-      if(!CONFIG.aiApiKey)throw new Error('لا يوجد مفتاح API داخل الإعدادات.');
-      const endpoint = CONFIG.aiEndpoint || (CONFIG.aiProvider==='aimlapi' ? 'https://api.aimlapi.com/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions');
-      const data = await fetchJsonWithTimeout(endpoint, {
-        method:'POST',
-        headers: aiAuthHeaders(),
-        body: JSON.stringify({
-          model,
-          temperature:0.88,
-          top_p:0.92,
-          presence_penalty:0.35,
-          frequency_penalty:0.45,
-          max_tokens:CONFIG.aiMaxOutputTokens||3200,
-          messages:[
-            {role:'system',content:'أنت مساعد دراسي ممتاز لطلاب باكالوريا الجزائر. أجب بالعربية، منظم، عملي، غير مكرر، واستعمل سياق الطالب بدقة. لا تعط إجابات جاهزة عامة؛ ابني الجواب من طلب الطالب وبيانات الموقع.'},
-            {role:'user',content:input}
-          ]
-        })
-      }, CONFIG.aiRequestTimeout||45000);
-      return readResponseText(data);
-    }
-    async function callResponsesApi(model,input){
-      if(!CONFIG.aiApiKey)throw new Error('لا يوجد مفتاح API داخل الإعدادات.');
-      const endpoint = CONFIG.aiResponsesEndpoint || (CONFIG.aiProvider==='aimlapi' ? 'https://api.aimlapi.com/v1/responses' : 'https://api.openai.com/v1/responses');
-      const data = await fetchJsonWithTimeout(endpoint, {
-        method:'POST',
-        headers: aiAuthHeaders(),
-        body: JSON.stringify({model,input,temperature:0.88,max_output_tokens:CONFIG.aiMaxOutputTokens||3200})
-      }, CONFIG.aiRequestTimeout||45000);
-      return readResponseText(data);
-    }
-    async function callDirectAI(agentId,ctx){
-      const input=buildAIPrompt(agentId,ctx);
-      const models=Array.isArray(CONFIG.aiModels)?CONFIG.aiModels: ['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'];
-      let lastError=null;
-      for(const model of models){
-        try{const text=await callChatCompletions(model,input); if(text&&text.trim())return text.trim();}
-        catch(e){lastError=e; console.warn('Chat AI failed',model,e);}
-      }
-      for(const model of models){
-        try{const text=await callResponsesApi(model,input); if(text&&text.trim())return text.trim();}
-        catch(e){lastError=e; console.warn('Responses AI failed',model,e);}
-      }
-      if(lastError)throw lastError;
-      return null;
     }
     async function callProxyAI(agentId, ctx){
       if(!CONFIG.aiProxyEndpoint)return null;
@@ -1322,46 +1247,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       return answer;
     }
 
-
-    /* Live AI integration: direct answers from the model */
-    function aiProviderName(){return 'المساعد الذكي';}
-    function liveModelEndpoint(model){return (CONFIG.aiEndpoint || 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent').replace('{model}', encodeURIComponent(model));}
-    function readAIText(data){
-      if(!data)return '';
-      if(data.candidates && data.candidates[0] && data.candidates[0].content && Array.isArray(data.candidates[0].content.parts)){
-        return data.candidates[0].content.parts.map(p=>p.text||'').join('\n').trim();
-      }
-      if(data.promptFeedback && data.promptFeedback.blockReason){
-        throw new Error('تم رفض الطلب: '+data.promptFeedback.blockReason);
-      }
-      return readResponseText(data);
-    }
-    async function callAIModel(model,input){
-      if(!(sessionGeminiKey||CONFIG.aiApiKey))throw new Error('لم يتم إعداد مفتاح Gemini.');
-      const data = await fetchJsonWithTimeout(liveModelEndpoint(model), {
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-goog-api-key':sessionGeminiKey||CONFIG.aiApiKey},
-        body: JSON.stringify({
-          contents:[{role:'user',parts:[{text:input}]}],
-          systemInstruction:{parts:[{text:'أنت مساعد دراسي ممتاز لطلاب باكالوريا الجزائر. أجب بالعربية الفصحى البسيطة، منظم، عملي، غير مكرر، واستعمل سياق الطالب بدقة. لا تعط إجابات جاهزة عامة؛ ابني الجواب من طلب الطالب وبيانات الموقع. لا تذكر أنك نموذج ولا تذكر API.'}]},
-          generationConfig:{temperature:0.88,topP:0.92,maxOutputTokens:CONFIG.aiMaxOutputTokens||4096}
-        })
-      }, CONFIG.aiRequestTimeout||60000);
-      const text=readAIText(data);
-      if(!text)throw new Error('وصل رد فارغ من المساعد.');
-      return text;
-    }
-    async function callDirectAI(agentId,ctx){
-      const input=buildAIPrompt(agentId,ctx);
-      const models=Array.isArray(CONFIG.aiModels)?CONFIG.aiModels:['gemini-2.5-flash'];
-      let lastError=null;
-      for(const model of models){
-        try{const text=await callAIModel(model,input); if(text&&text.trim())return text.trim();}
-        catch(e){lastError=e; console.warn('AI model failed',model,e);}
-      }
-      if(lastError)throw lastError;
-      return null;
-    }
 
     function hasLiveAI(){return Boolean(CONFIG.aiProxyEndpoint);}
     function updateAIModeIndicator(){
