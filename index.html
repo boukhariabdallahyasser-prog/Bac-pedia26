@@ -580,6 +580,17 @@
     }
     @media(max-width:400px){#loginGate{padding:0}#loginGate .login-card{border-radius:0;min-height:100dvh;border:0}#loginGate .login-content{padding:20px 17px}}
     @media(prefers-reduced-motion:reduce){#loginGate *{animation:none!important;transition:none!important}}
+
+    /* Focus treatment: one crisp border, no overlapping outlines or glowing rings */
+    #loginGate .login-field{border:1px solid #364760!important;box-shadow:none!important;outline:none!important;transition:border-color .16s ease,background-color .16s ease!important}
+    #loginGate .login-field:hover:not(:focus-within){border-color:#506481!important}
+    #loginGate .login-field:focus-within{border:1px solid #9a93fa!important;box-shadow:none!important;outline:none!important;background:#101d35!important}
+    #loginGate .login-field input,
+    #loginGate .login-field input:focus,
+    #loginGate .login-field input:focus-visible{outline:none!important;outline-offset:0!important;border:0!important;box-shadow:none!important;background:transparent!important}
+    #loginGate .login-field:focus-within>i{color:#b6b1ff}
+    #loginGate .login-field:has(input:invalid:not(:placeholder-shown)):not(:focus-within){border-color:#a35e64!important}
+    #loginGate .login-field .password-toggle:focus-visible{outline:2px solid #a7a1ff!important;outline-offset:1px!important}
   </style>
 </head>
 <body>
