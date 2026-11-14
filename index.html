@@ -444,37 +444,68 @@
     @media(prefers-reduced-motion:reduce){.signature-tile{transition:none}.signature-tile:hover{transform:none}}
 
   .auth-reset{display:block;margin:12px auto;border:0;background:transparent;color:var(--primary-light);cursor:pointer;text-decoration:underline;text-underline-offset:4px;font-weight:700}.auth-reset:focus-visible{outline:2px solid var(--secondary);outline-offset:4px}#authSetupNotice{padding:10px;border-radius:10px;background:rgba(245,158,11,.08);line-height:1.8}#authSetupNotice:empty{display:none}
+  
+    /* Account-required premium authentication experience */
+    body:not(.authenticated) .app-shell,body:not(.authenticated) #bgCanvas{visibility:hidden!important;pointer-events:none!important}
+    body:not(.authenticated){overflow:hidden}
+    .login-gate{background:radial-gradient(ellipse 55% 50% at 90% 0%,rgba(121,90,245,.21),transparent 75%),radial-gradient(ellipse 48% 45% at 5% 95%,rgba(34,211,238,.13),transparent 80%),#080e1d;padding:clamp(14px,4vw,40px);overflow-y:auto;overscroll-behavior:contain}
+    .login-gate::before{content:"";position:fixed;inset:18px;border:1px solid rgba(206,216,255,.065);border-radius:32px;pointer-events:none}
+    .login-card{width:min(96vw,500px);padding:clamp(24px,4vw,43px);border-radius:28px;background:linear-gradient(145deg,rgba(28,37,67,.97),rgba(15,23,45,.98));border:1px solid rgba(185,173,255,.2);box-shadow:0 36px 110px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.045);backdrop-filter:blur(30px);color:#f5f6ff}
+    .login-card::before{height:3px;background:linear-gradient(90deg,#59d6de,#a997ff,#f5c77e)}
+    .auth-premium-badge{display:table;margin:0 0 23px;padding:8px 14px;border-radius:999px;color:#d8d1ff;background:rgba(157,140,255,.1);border:1px solid rgba(169,151,255,.19);font-size:.78rem;font-weight:800}
+    .auth-premium-badge i{margin-left:7px;color:#71e4dc}
+    .login-logo{align-items:center;gap:16px;margin-bottom:24px}
+    .login-logo .brand-icon{flex:0 0 62px;width:62px;height:62px;border-radius:19px;font-size:1.6rem;box-shadow:0 12px 30px rgba(106,85,226,.24)}
+    .login-logo h1{font-size:clamp(1.4rem,4vw,1.9rem);letter-spacing:-.04em;color:#fff}
+    .login-logo p{font-size:.9rem;color:#abb8d6;line-height:1.75;margin-top:5px}
+    .auth-year{color:#a99aff;font-variant-numeric:tabular-nums}
+    .login-tabs{background:rgba(7,13,31,.57);border:1px solid rgba(183,196,235,.11);border-radius:15px;padding:5px;margin:20px 0}
+    .login-tab{border-radius:11px;min-height:44px;color:#aab7d3;transition:background .2s,color .2s}
+    .login-tab.active{background:linear-gradient(115deg,#a998ff,#7b6aef);color:#0b1230;box-shadow:0 5px 18px rgba(114,92,232,.23)}
+    .login-field{background:rgba(9,15,34,.65);border:1px solid rgba(192,204,237,.15);border-radius:13px;min-height:53px;transition:border-color .2s,box-shadow .2s}
+    .login-field:focus-within{border-color:#a997ff;box-shadow:0 0 0 3px rgba(169,151,255,.12)}
+    .login-field input{color:#fff;font-size:.96rem}
+    .login-field input::placeholder{color:#9aa8c5}
+    .login-form .btn{min-height:52px;border-radius:13px;margin-top:6px;font-size:.96rem}
+    .login-note{color:#aab7d3;line-height:1.8}
+    .auth-reset{color:#c6bcff}
+    .auth-trust-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:23px;padding-top:20px;border-top:1px solid rgba(185,195,231,.12)}
+    .auth-trust-row span{font-size:.75rem;color:#aebbd6;white-space:nowrap}
+    .auth-trust-row i{color:#70ded8;margin-left:4px}
+    @media(max-width:540px){.login-gate::before{display:none}.login-card{padding:23px 20px;border-radius:23px}.auth-trust-row{gap:8px}.auth-trust-row span{font-size:.69rem}.login-logo .brand-icon{width:52px;height:52px;flex-basis:52px}}
+    @media(prefers-reduced-motion:reduce){.login-gate,.login-tab,.login-field{transition:none}}
+
   </style>
 </head>
 <body>
 
-  <div class="login-gate" id="loginGate" aria-modal="true" role="dialog">
+  <div class="login-gate" id="loginGate" aria-modal="true" aria-labelledby="loginHeading" role="dialog">
     <div class="login-card">
+      <div class="auth-premium-badge"><i class="fa-solid fa-shield-halved"></i> مساحة دراسية آمنة وخاصة</div>
       <div class="login-logo">
         <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div><h1>بوابة المراجعة</h1><p>ادخل بحساب بسيط أو كزائر. كل البيانات تحفظ في هذا الجهاز.</p></div>
+        <div><h1 id="loginHeading">Bac-pedia <span class="auth-year">2027</span></h1><p>مستقبلك يبدأ هنا. سجّل الدخول لمتابعة رحلة النجاح.</p></div>
       </div>
       <div class="login-tabs">
         <button class="login-tab active" id="loginMainTab" onclick="switchLoginTab('login')">دخول</button>
         <button class="login-tab" id="signupMainTab" onclick="switchLoginTab('signup')">حساب جديد</button>
       </div>
       <div class="login-form" id="loginMainForm">
-        <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
+        <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" required aria-label="كلمة المرور" placeholder="كلمة المرور"></div>
         <button class="btn primary full" onclick="loginWithForm()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
-        <p class="login-note">دخول آمن باستخدام البريد الإلكتروني وكلمة المرور. فعّل Supabase أولاً.</p>
+        <p class="login-note">حسابك شخصي ومحمي. لا يمكن استخدام المنصة دون تسجيل الدخول.</p>
       </div>
       <div class="login-form hidden" id="signupMainForm">
-        <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" placeholder="اسمك"></div>
-        <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" placeholder="كلمة مرور (8 أحرف على الأقل)"></div>
+        <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" required aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
+        <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور الجديدة" placeholder="كلمة مرور قوية (8 أحرف على الأقل)"></div>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
         <p class="login-note">سيصلك رابط تأكيد البريد الإلكتروني بعد إنشاء الحساب.</p>
       </div>
       <button class="auth-reset" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
       <p id="authSetupNotice" class="login-note" role="status"></p>
-      <div class="login-divider"><span>أو</span></div>
-      <button class="btn full" onclick="enterAsGuest()"><i class="fa-solid fa-user-clock"></i> الدخول كزائر</button>
+      <div class="auth-trust-row"><span><i class="fa-solid fa-lock"></i> حساب آمن</span><span><i class="fa-solid fa-cloud-arrow-up"></i> تقدّم محفوظ</span><span><i class="fa-solid fa-graduation-cap"></i> بكالوريا 2027</span></div>
     </div>
   </div>
 
@@ -1483,11 +1514,16 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const gate=$('#loginGate');
       if(!gate)return;
       gate.classList.remove('hidden');
+      document.body.classList.remove('authenticated');
+      document.querySelector('.app-shell')?.setAttribute('inert','');
       setTimeout(()=>{($('#loginEmailInput')||$('#signupNameInput'))?.focus?.();},120);
     }
     function closeLoginGate(){
+      if(!studentAuthUser)return;
       const gate=$('#loginGate');
       if(gate)gate.classList.add('hidden');
+      document.body.classList.add('authenticated');
+      document.querySelector('.app-shell')?.removeAttribute('inert');
     }
     let studentAuth=null,studentAuthUser=null,authLoading=false;
     function authConfigured(){
@@ -1541,7 +1577,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function applyStudentSession(session){
       const u=session?.user||null;
       studentAuthUser=u;
-      if(!u){state.user=null;state.guest=true;renderSession();return;}
+      if(!u){state.user=null;state.guest=false;renderSession();openLoginGate();return;}
       state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       await loadStudentProgress();
@@ -1551,17 +1587,17 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const auth=getStudentAuth();
       const note=$('#authSetupNotice');
       if(!auth){
-        if(note)note.textContent='تسجيل الحسابات غير مفعل بعد. يمكن الدخول كزائر فقط إلى حين ربط قاعدة البيانات.';
-        state.user=null;state.guest=true;renderSession();closeLoginGate();return;
+        if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
+        studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();return;
       }
       if(note)note.textContent='';
       const {data,error}=await auth.auth.getSession();
       if(error)console.warn('Auth session error:',error.message);
       if(data?.session)await applyStudentSession(data.session);
-      else{state.user=null;state.guest=true;renderSession();closeLoginGate();}
+      else{studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();}
       auth.auth.onAuthStateChange((event,session)=>{
         if(event==='PASSWORD_RECOVERY'){setTimeout(()=>completePasswordRecovery(),0);return;}
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=true;renderSession();return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;renderSession();openLoginGate();return;}
         if(event==='SIGNED_IN'||event==='USER_UPDATED'){
           // Defer database queries until after the auth state callback completes.
           setTimeout(()=>applyStudentSession(session),0);
@@ -1569,8 +1605,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       });
     }
     function enterAsGuest(){
-      state.guest=true;state.user=null;studentAuthUser=null;
-      saveState();renderSession();afterLoginLanding();showToast('تم الدخول كزائر','success');
+      openLoginGate();
+      showToast('يجب إنشاء حساب أو تسجيل الدخول لاستعمال المنصة','warning');
     }
     async function loginWithForm(){
       const auth=getStudentAuth();
@@ -1625,7 +1661,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function logoutUser(){
       clearTimeout(cloudSaveTimer);
       if(studentAuth){const {error}=await studentAuth.auth.signOut();if(error){showToast(authErrorMessage(error),'warning');return;}}
-      studentAuthUser=null;state.user=null;state.guest=true;state.page='home';
+      studentAuthUser=null;state.user=null;state.guest=false;state.page='home';
       state.progress={};state.tasks=[];state.mistakes=[];state.favorites=[];state.focusDone=0;renderAll();
       renderSession();showPage('home');openLoginGate();showToast('تم تسجيل الخروج','info');
     }
@@ -1646,12 +1682,21 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       }
     }
     function afterLoginLanding(){
+      if(!studentAuthUser){openLoginGate();return;}
       state.page='home';
-      saveState();
-      showPage('home');
-      closeLoginGate();
+      saveState();showPage('home');closeLoginGate();
     }
-    function initSession(){state.guest=true;state.user=null;renderSession();closeLoginGate();initStudentAuth().catch(e=>console.warn('Auth init:',e));}
+    function initSession(){
+      state.guest=false;state.user=null;studentAuthUser=null;
+      document.querySelector('.app-shell')?.setAttribute('inert','');
+      renderSession();openLoginGate();
+      initStudentAuth().catch(e=>{
+        console.warn('Auth init:',e);
+        const note=$('#authSetupNotice');
+        if(note)note.textContent='تعذّر الاتصال بالخادم. حاول تحديث الصفحة.';
+        openLoginGate();
+      });
+    }
     window.addEventListener('error',e=>{console.warn('Website error handled:',e.message);});
     window.addEventListener('unhandledrejection',e=>{console.warn('Promise error handled:',e.reason);});
 
