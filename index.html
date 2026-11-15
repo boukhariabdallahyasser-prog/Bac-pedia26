@@ -1577,6 +1577,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if($('#'+source)?.value&&!$('#'+target)?.value)$('#'+target).value=$('#'+source).value;
     }
     function showEmailVerificationPanel(email,message=''){
+      showAuthNotice('');
       pendingVerificationEmail=String(email||'').trim();
       $('#pendingVerificationEmail').textContent=pendingVerificationEmail;
       $('#verificationPendingMessage').textContent=message||'أكد عنوان بريدك الإلكتروني قبل الدخول إلى المنصة. تحقق أيضاً من مجلد الرسائل غير المرغوب فيها.';
@@ -1797,6 +1798,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
           if(data.session)await auth.auth.signOut();
           $('#signupPassInput').value='';$('#signupPassConfirmInput').value='';
           showEmailVerificationPanel(email,'تم إنشاء طلب الحساب. أكد بريدك الإلكتروني قبل تسجيل الدخول، ويمكنك طلب رسالة جديدة من هنا.');
+          resendCooldownUntil=Date.now()+60000;
           showToast('تحقق من بريدك الإلكتروني','success');
         }
       }catch(e){
