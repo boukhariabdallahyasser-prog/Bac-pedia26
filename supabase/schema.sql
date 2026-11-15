@@ -33,12 +33,18 @@ create table if not exists public.ai_usage_daily (
 alter table public.ai_usage_daily enable row level security;
 revoke all on public.ai_usage_daily from anon, authenticated;
 
-create or replace function public.consume_ai_quota(p_daily_limit integer default 30)
+-- Keep privileged quota writes in a non-exposed schema. The public RPC is
+-- SECURITY INVOKER and deliberately ignores any client-supplied quota value.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+grant usage on schema private to authenticated;
+
+create or replace function private.consume_ai_quota()
 returns boolean
 language plpgsql
 security definer
 set search_path = ''
-as $$
+as $
 declare
   v_user_id uuid := auth.uid();
   v_count integer;
@@ -46,19 +52,29 @@ begin
   if v_user_id is null then
     raise exception 'Authentication required';
   end if;
-  if p_daily_limit < 1 or p_daily_limit > 1000 then
-    raise exception 'Invalid quota limit';
-  end if;
+
   insert into public.ai_usage_daily (user_id, usage_date, request_count)
   values (v_user_id, (timezone('utc', now()))::date, 1)
   on conflict (user_id, usage_date)
   do update set request_count = public.ai_usage_daily.request_count + 1
-    where public.ai_usage_daily.request_count < p_daily_limit
+    where public.ai_usage_daily.request_count < 30
   returning request_count into v_count;
+
   return v_count is not null;
 end;
-$$;
-revoke all on function public.consume_ai_quota(integer) from public, anon;
+$;
+revoke all on function private.consume_ai_quota() from public, anon, authenticated;
+grant execute on function private.consume_ai_quota() to authenticated;
+
+create or replace function public.consume_ai_quota(p_daily_limit integer default 30)
+returns boolean
+language sql
+security invoker
+set search_path = ''
+as $
+  select private.consume_ai_quota();
+$;
+revoke all on function public.consume_ai_quota(integer) from public, anon, authenticated;
 grant execute on function public.consume_ai_quota(integer) to authenticated;
 
 create policy "AI usage records are server-managed"
@@ -134,5 +150,7 @@ select u.id, coalesce(u.raw_user_meta_data->>'full_name',''), u.email,
 from auth.users u
 left join public.student_progress p on p.user_id = u.id
 on conflict (user_id) do nothing;
+comment on function private.consume_ai_quota() is
+'Private SECURITY DEFINER implementation. Enforces a hard limit of 30 AI requests per authenticated user per UTC day. The exposed public RPC is SECURITY INVOKER and ignores client-supplied limits.';
 comment on function public.consume_ai_quota(integer) is
-'Intentional SECURITY DEFINER RPC: atomically increments only auth.uid() daily usage and returns a boolean; direct table access is revoked and clients cannot read or edit usage counters.';
+'SECURITY INVOKER RPC wrapper. Client-supplied p_daily_limit is intentionally ignored; the private implementation enforces a hard limit of 30 per UTC day.';
