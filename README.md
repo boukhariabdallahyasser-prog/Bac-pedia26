@@ -45,6 +45,15 @@ Configure Supabase Auth:
 
 ## Educational resources and access
 
+The connected Drive root supplied for the project is the Mathematics-stream library. Programme mapping is intentionally branch-aware:
+
+- Mathematics and Technical Mathematics share the verified Mathematics and Physics folders.
+- Experimental Sciences keeps separate Mathematics and Physics subjects; no matching Science-stream folders are marked available until their own sources are connected.
+- Natural Sciences uses the same verified folder for Mathematics and Experimental Sciences.
+- Arabic, French, English, History/Geography, Philosophy and Islamic Education use shared resources for Mathematics, Experimental Sciences and Technical Mathematics where the programme is common.
+- Technical Mathematics: the separate Technology folder contains verified Electrical Engineering resources (summaries/lessons, topics, exercises and books). It is shown only when the Electrical specialization is selected.
+- Civil Engineering, Mechanical Engineering and Process Engineering are not marked available: no dedicated Drive resource folders were found in the inspected sources. The UI must not link them to the Electrical Engineering folder.
+
 Resource records are validated for structure, HTTPS Google Drive URLs, Drive IDs and parent relationships:
 
 ```bash
