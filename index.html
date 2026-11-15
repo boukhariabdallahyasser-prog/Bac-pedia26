@@ -498,10 +498,6 @@
     .login-field input{min-width:0;flex:1}
     .password-toggle{border:0;background:transparent;color:#9eacd0;cursor:pointer;padding:8px;border-radius:9px;flex:none}
     .password-toggle:hover{background:rgba(255,255,255,.08);color:#fff}
-    .password-strength{margin:-4px 4px 12px}
-    .strength-track{height:5px;background:rgba(255,255,255,.09);border-radius:99px;overflow:hidden}
-    .strength-track span{display:block;height:100%;width:0;background:#e87979;border-radius:99px;transition:width .2s,background .2s}
-    .password-strength small{display:block;margin-top:6px;color:#9eacd0;font-size:.75rem}
     /* Fast, accessible authentication on small screens and slow connections */
     .login-gate{overflow-y:auto;overscroll-behavior:contain;align-items:center;scrollbar-gutter:stable}
     .login-card{max-height:min(96dvh,920px);overflow-y:auto;scrollbar-width:thin;box-shadow:0 30px 100px rgba(0,0,0,.5)}
@@ -566,7 +562,6 @@
     #loginGate #authSetupNotice[data-status="success"]{background:#15372e;border-color:#317c62;color:#c5ffeb}
     #loginGate .auth-trust-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;color:#9dacc6;font-size:.75rem}
     #loginGate .auth-trust-row span{white-space:nowrap}
-    #loginGate .password-strength{margin:-4px 0 0}
     @media(max-width:760px){
       #loginGate{padding:12px;align-items:flex-start}
       #loginGate .login-card{display:flex;flex-direction:column;min-height:0;max-width:520px;width:100%;margin:auto;border-radius:20px}
@@ -591,15 +586,6 @@
     #loginGate .login-field:focus-within>i{color:#b6b1ff}
     #loginGate .login-field:has(input:invalid:not(:placeholder-shown)):not(:focus-within){border-color:#a35e64!important}
     #loginGate .login-field .password-toggle:focus-visible{outline:2px solid #a7a1ff!important;outline-offset:1px!important}
-  
-    .email-verification-panel{text-align:center;align-content:start;gap:13px;padding-top:10px}
-    .email-verification-panel h3{font-size:1.25rem;color:#fff;font-weight:900}
-    .email-verification-panel>p{color:#aebbd6;line-height:1.8}
-    .verification-icon{width:76px;height:76px;margin:4px auto 7px;border-radius:24px;display:grid;place-items:center;color:#80e5db;background:linear-gradient(145deg,rgba(92,221,212,.16),rgba(154,136,255,.16));border:1px solid rgba(143,218,224,.2);font-size:2rem;box-shadow:0 12px 35px rgba(0,0,0,.16)}
-    .verification-email{display:block;max-width:100%;overflow-wrap:anywhere;color:#d6ceff;font-size:1rem;padding:11px 14px;border-radius:12px;background:rgba(8,14,32,.55);border:1px solid rgba(180,168,255,.16);direction:ltr}
-    .verification-secondary{background:rgba(255,255,255,.045);border:1px solid rgba(190,200,231,.16);color:#e1e6f5}
-    .verification-secondary:hover{background:rgba(255,255,255,.085)}
-    .email-verification-panel .btn{min-height:49px;border-radius:13px}
 
   </style>
 </head>
@@ -637,25 +623,12 @@
         <p class="login-note">حسابك شخصي ومحمي. لا يمكن استخدام المنصة دون تسجيل الدخول.</p>
       </div>
       <div class="login-form hidden" id="signupMainForm" role="tabpanel">
-        <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" required aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور الجديدة" placeholder="كلمة مرور قوية (8 أحرف على الأقل)" oninput="updatePasswordStrength()"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
-        <div class="password-strength" id="passwordStrength"><div class="strength-track"><span id="passwordStrengthBar"></span></div><small id="passwordStrengthText" aria-live="polite">قوة كلمة المرور</small></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassConfirmInput" type="password" autocomplete="new-password" minlength="8" required aria-label="تأكيد كلمة المرور" placeholder="تأكيد كلمة المرور"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassConfirmInput',this)" aria-label="إظهار تأكيد كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
-        <p class="login-note">سيصلك رابط تأكيد البريد الإلكتروني بعد إنشاء الحساب.</p>
+        <p class="login-note">أنشئ حسابك باستخدام البريد الإلكتروني وكلمة المرور فقط.</p>
       </div>
-<div class="login-form hidden email-verification-panel" id="emailVerificationPanel" role="status" aria-live="polite">
-        <div class="verification-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
-        <h3>تحقق من بريدك الإلكتروني</h3>
-        <p>عنوان البريد المرتبط بطلب التسجيل:</p>
-        <strong class="verification-email" id="pendingVerificationEmail"></strong>
-        <p id="verificationPendingMessage" class="login-note">أكد عنوان بريدك الإلكتروني قبل الدخول إلى المنصة.</p>
-        <button class="btn success full" type="button" id="resendVerificationBtn" onclick="resendVerificationEmail()"><i class="fa-solid fa-paper-plane"></i> إعادة إرسال رسالة التأكيد</button>
-        <button class="btn full verification-secondary" type="button" onclick="returnToLoginFromVerification()">العودة إلى تسجيل الدخول</button>
-        <button class="auth-reset" type="button" onclick="returnToSignupFromVerification()">تغيير البريد الإلكتروني</button>
-      </div>
-      <div class="login-form hidden" id="passwordRecoveryPanel">
+<div class="login-form hidden" id="passwordRecoveryPanel">
         <h3>تعيين كلمة مرور جديدة</h3>
         <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordInput" type="password" autocomplete="new-password" minlength="8" required placeholder="كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required placeholder="تأكيد كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordConfirmInput',this)" aria-label="إظهار تأكيد كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
@@ -1563,7 +1536,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     function switchLoginTab(tab){
       showAuthNotice('');
-      $('#emailVerificationPanel')?.classList.add('hidden');
       $('#passwordRecoveryPanel')?.classList.add('hidden');
       $$('.login-tab').forEach(button=>button.classList.remove('hidden'));
       $('#authResetButton')?.classList.remove('hidden');
@@ -1575,51 +1547,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       $('#signupMainTab')?.setAttribute('aria-selected',String(tab==='signup'));
       const source=tab==='signup'?'loginEmailInput':'signupEmailInput',target=tab==='signup'?'signupEmailInput':'loginEmailInput';
       if($('#'+source)?.value&&!$('#'+target)?.value)$('#'+target).value=$('#'+source).value;
-    }
-    function showEmailVerificationPanel(email,message=''){
-      showAuthNotice('');
-      pendingVerificationEmail=String(email||'').trim();
-      $('#pendingVerificationEmail').textContent=pendingVerificationEmail;
-      $('#verificationPendingMessage').textContent=message||'أكد عنوان بريدك الإلكتروني قبل الدخول إلى المنصة. تحقق أيضاً من مجلد الرسائل غير المرغوب فيها.';
-      $('#loginMainForm')?.classList.add('hidden');
-      $('#signupMainForm')?.classList.add('hidden');
-      $('#passwordRecoveryPanel')?.classList.add('hidden');
-      $('#emailVerificationPanel')?.classList.remove('hidden');
-      $$('.login-tab').forEach(button=>button.classList.add('hidden'));
-      $('#authResetButton')?.classList.add('hidden');
-      $('#resendVerificationBtn')?.focus({preventScroll:true});
-    }
-    function returnToLoginFromVerification(){
-      $('#emailVerificationPanel')?.classList.add('hidden');
-      $('#loginEmailInput').value=pendingVerificationEmail;
-      $$('.login-tab').forEach(button=>button.classList.remove('hidden'));
-      $('#authResetButton')?.classList.remove('hidden');
-      switchLoginTab('login');
-    }
-    function returnToSignupFromVerification(){
-      $('#emailVerificationPanel')?.classList.add('hidden');
-      $('#signupEmailInput').value=pendingVerificationEmail;
-      $$('.login-tab').forEach(button=>button.classList.remove('hidden'));
-      $('#authResetButton')?.classList.remove('hidden');
-      switchLoginTab('signup');
-      $('#signupEmailInput')?.focus({preventScroll:true});
-    }
-    async function resendVerificationEmail(){
-      const auth=getStudentAuth();
-      if(!auth){showAuthNotice('خدمة الحسابات غير متاحة حالياً.','warning');return;}
-      if(!pendingVerificationEmail){showAuthNotice('أدخل البريد الإلكتروني أولاً.','warning');return;}
-      if(authLoading)return;
-      if(Date.now()<resendCooldownUntil){showAuthNotice('يرجى الانتظار قليلاً قبل طلب رسالة جديدة.','warning');return;}
-      setAuthBusy(true);
-      showAuthNotice('جارٍ طلب رسالة تأكيد جديدة...','info');
-      try{
-        const {error}=await auth.auth.resend({type:'signup',email:pendingVerificationEmail,options:{emailRedirectTo:location.origin+location.pathname}});
-        if(error)throw error;
-        resendCooldownUntil=Date.now()+60000;
-        showAuthNotice('تم قبول طلب إعادة الإرسال. إذا كان الحساب غير مؤكد فستصلك رسالة جديدة؛ تحقق من صندوق الوارد والرسائل غير المرغوب فيها.','success');
-      }catch(error){
-        showAuthNotice(authErrorMessage(error),'warning');
-      }finally{setAuthBusy(false);}
     }
     function openLoginGate(){
       const gate=$('#loginGate');
@@ -1636,7 +1563,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       document.body.classList.add('authenticated');
       document.querySelector('.app-shell')?.removeAttribute('inert');
     }
-    let studentAuth=null,studentAuthUser=null,authLoading=false,authCooldownUntil=0,pendingVerificationEmail='',resendCooldownUntil=0;
+    let studentAuth=null,studentAuthUser=null,authLoading=false,authCooldownUntil=0;
     function authConfigured(){
       const c=window.BAC_SUPABASE||{};
       return /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(c.url||'') && /^sb_publishable_|^eyJ/.test(c.anonKey||'');
@@ -1651,19 +1578,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function authErrorMessage(e){
       const m=String(e?.message||'');
       const code=String(e?.code||e?.name||'');
-      const status=Number(e?.status||0);
-      // Supabase Auth logs confirmed Brevo SMTP rejected AUTH with 535 5.7.8.
-      // Surface the actionable mailer error instead of the misleading generic account error.
-      if(/535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp/i.test(m) ||
-         /unexpected_failure/i.test(code) ||
-         (status>=500 && /confirmation email|sending email/i.test(m))) {
-        return 'تعذر إرسال رسالة التحقق: رفض Brevo بيانات SMTP (535). راجع حقل SMTP Login وكلمة مرور SMTP Key في إعدادات Supabase.';
-      }
+      if(/email not confirmed|535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp|unexpected_failure/i.test(m+' '+code))return 'التسجيل دون تحقق غير مفعّل بعد. أوقف خيار Confirm email في إعدادات Supabase ثم أعد المحاولة';
       if(/invalid login credentials/i.test(m))return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-      if(/email not confirmed/i.test(m))return 'يرجى تأكيد البريد الإلكتروني أولاً';
-      if(/already registered/i.test(m))return 'البريد الإلكتروني مسجل مسبقاً';
-      if(/rate limit|too many requests|429/i.test(m))return 'تم بلوغ حد المحاولات أو رسائل التأكيد في Supabase. انتظر قليلاً ولا تكرر الطلب، ثم حاول لاحقاً';
-      if(/email.*(send|limit)|over_email_send_rate_limit/i.test(m))return 'خدمة إرسال رسائل التأكيد بلغت حدها المؤقت. حاول لاحقاً أو تواصل مع إدارة المنصة';
+      if(/already registered|user_already_exists/i.test(m))return 'هذا البريد مسجل مسبقاً. استخدم تسجيل الدخول';
+      if(/rate limit|too many requests|429/i.test(m))return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً';
       if(/network|failed to fetch|fetch failed/i.test(m))return 'تعذر الاتصال بالخادم. تحقق من الإنترنت ثم أعد المحاولة';
       if(/password/i.test(m))return 'تحقق من كلمة المرور (8 أحرف على الأقل)';
       return 'تعذر الاتصال بخدمة الحسابات. حاول لاحقاً';
@@ -1674,18 +1592,9 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       button.innerHTML=reveal?'<i class="fa-solid fa-eye-slash"></i>':'<i class="fa-solid fa-eye"></i>';
       button.setAttribute('aria-label',reveal?'إخفاء كلمة المرور':'إظهار كلمة المرور');
     }
-    function updatePasswordStrength(){
-      const value=$('#signupPassInput')?.value||'',bar=$('#passwordStrengthBar'),label=$('#passwordStrengthText');
-      if(!bar||!label)return;
-      const checks=[value.length>=8,value.length>=12,/\p{L}/u.test(value),/\d/.test(value),/[^\p{L}\d]/u.test(value)];
-      const score=Math.min(4,checks.filter(Boolean).length);
-      const labels=['أدخل كلمة مرور','ضعيفة','متوسطة','جيدة','قوية'];
-      const colors=['#e87979','#e87979','#f5c77e','#70d6bd','#70d6bd'];
-      bar.style.width=(score*25)+'%';bar.style.background=colors[score];label.textContent=labels[score];
-    }
     function setAuthBusy(busy){
       authLoading=busy;
-      ['loginEmailInput','loginPassInput','signupNameInput','signupEmailInput','signupPassInput','signupPassConfirmInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
+      ['loginEmailInput','loginPassInput','signupEmailInput','signupPassInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
       document.querySelectorAll('#loginGate .login-form button, #loginGate .auth-reset, #loginGate .login-tab').forEach(button=>{button.disabled=busy;if(button.classList.contains('btn')){button.setAttribute('aria-busy',String(busy));}});
     }
     async function syncStudentProgress(){
@@ -1711,7 +1620,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function applyStudentSession(session){
       const u=session?.user||null;
       if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
-      if(!u.email_confirmed_at){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();showToast('يجب تأكيد البريد الإلكتروني قبل استخدام المنصة','warning');return;}
       resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       renderAll();renderSession();closeLoginGate();
@@ -1770,7 +1678,6 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       try{
         const {data,error}=await auth.auth.signInWithPassword({email,password});
         if(error)throw error;
-        if(!data.user?.email_confirmed_at){await auth.auth.signOut();throw new Error('email not confirmed');}
         if(data.session?.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);
         $('#loginPassInput').value='';
         showAuthNotice('');showToast('تم تسجيل الدخول بنجاح','success');
@@ -1778,49 +1685,40 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       finally{setAuthBusy(false)}
     }
     async function signupWithForm(){
-      if(Date.now()<authCooldownUntil){showAuthNotice('انتظر قبل إعادة طلب إنشاء الحساب. تكرار الطلبات قد يؤدي إلى حظر مؤقت من خدمة البريد.','warning');return;}
+      if(Date.now()<authCooldownUntil){showAuthNotice('انتظر بضع ثوانٍ قبل إعادة المحاولة.','warning');return;}
       const auth=getStudentAuth();
       if(!auth){showToast('يجب ربط Supabase أولاً','warning');return;}
       if(authLoading)return;
-      const name=($('#signupNameInput')?.value||'').trim();
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
-      const confirmation=$('#signupPassConfirmInput')?.value||'';
-      if(!name||!/^\S+@\S+\.\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){showToast('استخدم بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;}
-      if(password!==confirmation){showToast('تأكيد كلمة المرور غير مطابق','warning');return;}
-      setAuthBusy(true);showAuthNotice('جارٍ إنشاء الحساب، يرجى الانتظار...');
+      if(!/^\\S+@\\S+\\.\\S+$/.test(email)||password.length<8||! /\\p{L}/u.test(password)||! /\\d/.test(password)){
+        showToast('أدخل بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;
+      }
+      setAuthBusy(true);showAuthNotice('جارٍ إنشاء الحساب...');
       try{
-        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:name},emailRedirectTo:location.origin+location.pathname}});
+        const {data,error}=await auth.auth.signUp({email,password});
         if(error)throw error;
-        authCooldownUntil=Date.now()+60000;
-        if(data.session&&data.user?.email_confirmed_at){await applyStudentSession(data.session);showToast('تم إنشاء الحساب','success')}
-        else{
-          if(data.session)await auth.auth.signOut();
-          $('#signupPassInput').value='';$('#signupPassConfirmInput').value='';
-          showEmailVerificationPanel(email,'تم إنشاء طلب الحساب. أكد بريدك الإلكتروني قبل تسجيل الدخول، ويمكنك طلب رسالة جديدة من هنا.');
-          resendCooldownUntil=Date.now()+60000;
-          showToast('تحقق من بريدك الإلكتروني','success');
+        if(!data.session){
+          if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');
+          throw new Error('email confirmation is still enabled');
         }
+        authCooldownUntil=Date.now()+5000;
+        await applyStudentSession(data.session);
+        $('#signupPassInput').value='';
+        $('#loginEmailInput').value=email;
+        $('#loginPassInput').value='';
+        showAuthNotice('');
+        showToast('تم إنشاء الحساب وتسجيل الدخول بنجاح','success');
       }catch(e){
         if(/rate limit|429|too many requests/i.test(String(e?.message||'')))authCooldownUntil=Date.now()+120000;
         const message=authErrorMessage(e);
-        if(/already registered|user_already_exists/i.test(String(e?.message||e?.code||''))){
-          showEmailVerificationPanel(email,'هذا البريد مسجل مسبقاً. إذا لم تؤكد الحساب بعد، يمكنك إعادة إرسال رسالة التأكيد. وإذا كان مؤكداً، ارجع إلى تسجيل الدخول.');
-          showAuthNotice(message,'warning');
-        }else if(/535|5\.7\.8|unexpected_failure|smtp/i.test(String(e?.message||e?.code||''))){
-          showEmailVerificationPanel(email,'قد يكون طلب الحساب قد سُجل، لكن تعذر إرسال رسالة التأكيد بسبب إعدادات البريد. لا تنشئ حساباً آخر؛ أصلح SMTP ثم استخدم إعادة الإرسال.');
-          showAuthNotice(message,'warning');
-          resendCooldownUntil=Date.now()+60000;
-        }else{
-          showAuthNotice(message,'warning');
-          showToast(message,'danger');
-        }
-      }
-      finally{setAuthBusy(false)}
+        showAuthNotice(message,'warning');
+        showToast(message,'warning');
+      }finally{setAuthBusy(false);}
     }
     async function completePasswordRecovery(){
       if(!getStudentAuth())return;
-      $('#loginMainForm')?.classList.add('hidden');$('#signupMainForm')?.classList.add('hidden');$('#emailVerificationPanel')?.classList.add('hidden');
+      $('#loginMainForm')?.classList.add('hidden');$('#signupMainForm')?.classList.add('hidden');
       $('#passwordRecoveryPanel')?.classList.remove('hidden');$$('.login-tab').forEach(tab=>tab.classList.add('hidden'));
       $('#authResetButton')?.classList.add('hidden');$('#recoveryPasswordInput')?.focus();
     }
