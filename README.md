@@ -53,6 +53,7 @@ The connected Drive root supplied for the project is the Mathematics-stream libr
 - Arabic, French, English, History/Geography, Philosophy and Islamic Education use shared resources for Mathematics, Experimental Sciences and Technical Mathematics where the programme is common.
 - Technical Mathematics: the separate Technology folder contains verified Electrical Engineering resources (summaries/lessons, topics, exercises and books). It is shown only when the Electrical specialization is selected.
 - Civil Engineering, Mechanical Engineering and Process Engineering are not marked available: no dedicated Drive resource folders were found in the inspected sources. The UI must not link them to the Electrical Engineering folder.
+- The experimental-baccalaureate folder is indexed separately and shown only for Mathematics and Experimental Sciences; the Mathematics-stream previous-exam folder remains Mathematics-only.
 
 Resource records are validated for structure, HTTPS Google Drive URLs, Drive IDs and parent relationships:
 
