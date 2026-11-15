@@ -78,6 +78,10 @@
           "url": "https://drive.google.com/drive/folders/1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh",
           "parentId": "1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn"
         }
+      ],
+      "branches": [
+        "math",
+        "tech"
       ]
     },
     "physics_math": {
@@ -171,6 +175,10 @@
           "url": "https://drive.google.com/drive/folders/1oAg3y3jIZgtO-SoXJJcO0LrumNWhf_CS",
           "parentId": "1t8fEvl5ykjz7nEHxI6R_nCNEQEAugnUG"
         }
+      ],
+      "branches": [
+        "math",
+        "tech"
       ]
     },
     "natural_math": {
@@ -208,6 +216,10 @@
           "url": "https://drive.google.com/drive/folders/19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5",
           "parentId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
         }
+      ],
+      "branches": [
+        "math",
+        "science"
       ]
     },
     "arabic_sci": {
@@ -238,6 +250,11 @@
           "url": "https://drive.google.com/drive/folders/1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM",
           "parentId": "19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech"
       ]
     },
     "french_sci": {
@@ -275,6 +292,11 @@
           "url": "https://drive.google.com/drive/folders/10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB",
           "parentId": "1tQj-slGIMVtKZunffDMyurGJTkr5zMsN"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech"
       ]
     },
     "english_sci": {
@@ -312,6 +334,11 @@
           "url": "https://drive.google.com/drive/folders/18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM",
           "parentId": "1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech"
       ]
     },
     "history_sci": {
@@ -356,6 +383,11 @@
           "url": "https://drive.google.com/drive/folders/1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh",
           "parentId": "1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech"
       ]
     },
     "islamic": {
@@ -393,6 +425,14 @@
           "url": "https://drive.google.com/drive/folders/19hdtiqy_sNvkcB--i-L8073ZzPVQK55p",
           "parentId": "1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech",
+        "literature",
+        "languages",
+        "economy"
       ]
     },
     "philo_sci": {
@@ -416,6 +456,11 @@
           "url": "https://drive.google.com/drive/folders/1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T",
           "parentId": "1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech"
       ]
     },
     "exams": {
@@ -560,6 +605,14 @@
           "parentId": "1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",
           "availability": "listed_in_drive"
         }
+      ],
+      "branches": [
+        "math",
+        "science",
+        "tech",
+        "literature",
+        "languages",
+        "economy"
       ]
     },
     "bac_math": {
@@ -1865,6 +1918,9 @@
             }
           ]
         }
+      ],
+      "branches": [
+        "math"
       ]
     },
     "summaries_math": {
@@ -1909,6 +1965,9 @@
           "url": "https://drive.google.com/drive/folders/1ONi6wATikmlOCGJ_F7BVY29schWOLvXs",
           "parentId": "1yFiKLG7mCGo1Nx6HyIeakImgtAmqW65n"
         }
+      ],
+      "branches": [
+        "math"
       ]
     },
     "tech_subject": {
@@ -2275,7 +2334,13 @@
       "specializations": [
         "electrical"
       ],
-      "availability": "listed_in_drive"
+      "availability": "listed_in_drive",
+      "branches": [
+        "tech"
+      ],
+      "subBranches": [
+        "electrical"
+      ]
     }
   },
   "notes": [
@@ -2284,7 +2349,8 @@
     "A concrete-plant exam was inspected and explicitly identifies itself as a Technical Mathematics electrical-engineering assessment.",
     "No separate Civil Engineering resource folder was found in the inspected connected Drive locations; do not mark Civil Engineering as available.",
     "Folder IDs and direct children are copied from authenticated Google Drive listings; student anonymous access has not been verified.",
-    "The manifest is a verified inventory of inspected folder levels, not proof that every Drive file is anonymously accessible."
+    "The manifest is a verified inventory of inspected folder levels, not proof that every Drive file is anonymously accessible.",
+    "The same natural-sciences folder is intentionally reused for Mathematics and Experimental Sciences; the separate science-stream Mathematics and Physics resources remain unlinked until their own folders are verified."
   ],
   "programRules": {
     "sharedScientificTechnical": {
@@ -2298,6 +2364,7 @@
         "french_sci",
         "english_sci",
         "history_sci",
+        "philo_sci",
         "islamic"
       ]
     },
