@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-14",
+  "generatedAt": "2026-11-15",
   "rootFolder": {
     "id": "1mBeGIoLuQFItpGmalbVJFmLnp9L-O-Jx",
     "url": "https://drive.google.com/drive/folders/1mBeGIoLuQFItpGmalbVJFmLnp9L-O-Jx"
@@ -1920,38 +1920,416 @@
       "categories": [
         {
           "id": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
-          "title": "ملخصات ودروس",
+          "title": "ملخصات و دروس",
           "type": "folder",
           "url": "https://drive.google.com/drive/folders/1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
-          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+          "items": [
+            {
+              "id": "1FB-gIbRelWVpVfe13YVCBS8ukGZH7UIN",
+              "title": "ملخص هندسة كهربائية.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1FB-gIbRelWVpVfe13YVCBS8ukGZH7UIN/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1PpTzdN2-C9vHOhTcrZ449ex3HWsGOMzz",
+              "title": "قطع قطع من الرخام إلى قطعتين.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1PpTzdN2-C9vHOhTcrZ449ex3HWsGOMzz/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1c2paTkDLAUXJFVcfD3bqVA_M8SA8jSOf",
+              "title": "حوليات_استعد_للبكالوريا_من_إعداد_الأستاذة_بن_التاج_فتيحة_المنطق.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1c2paTkDLAUXJFVcfD3bqVA_M8SA8jSOf/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1PvaJDFVUxOQV_a-HwfnKEfmNjlXdeCvR",
+              "title": "المنطق التعاقبي.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1PvaJDFVUxOQV_a-HwfnKEfmNjlXdeCvR/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1WtxEvrMaNhNV0cBaaLVNBdO-mY8uEPAx",
+              "title": "01 الأنظمة الآلية.PDF",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1WtxEvrMaNhNV0cBaaLVNBdO-mY8uEPAx/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1hUcaTOLgCrvAmDlBlUnk5kTGrletL05e",
+              "title": "08 وظيفة التغذية.PDF",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1hUcaTOLgCrvAmDlBlUnk5kTGrletL05e/view?usp=drivesdk",
+              "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+              "availability": "listed_in_drive"
+            }
+          ]
         },
         {
           "id": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
           "title": "مواضيع",
           "type": "folder",
           "url": "https://drive.google.com/drive/folders/11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
-          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+          "items": [
+            {
+              "id": "1_k3sgCrQpI9d0WCdXpIfqGLmkZS3Vbq9",
+              "title": "باك تجريبي سبع ولايات 2025.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1_k3sgCrQpI9d0WCdXpIfqGLmkZS3Vbq9/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1Xb-vJnNT6e6pshJ9CzdraXXK96svCdXy",
+              "title": "ملخص هندسة كهربائية.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Xb-vJnNT6e6pshJ9CzdraXXK96svCdXy/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1OYsLcA0qk3LfjgAlp-t8iNrz1vFm6so5",
+              "title": "حل الموضوع الشامل 144 سؤال.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1OYsLcA0qk3LfjgAlp-t8iNrz1vFm6so5/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1sU-YEOXNLph4JTYuUH1ZuaKbo2Lvg1Hd",
+              "title": "هندسة كهربائية - بكالوريات تجريبية + الحل - نافع - بكالوريا 2022.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1sU-YEOXNLph4JTYuUH1ZuaKbo2Lvg1Hd/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "11ExvwdxCCVREWImUYpzVDrkeYwyruuh5",
+              "title": "تعبئة دلاء بمركز العصائر.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/11ExvwdxCCVREWImUYpzVDrkeYwyruuh5/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "169mELCGEqNrf3teb0vVurhRgboTkkrtP",
+              "title": "تعليب الصفائح 2.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/169mELCGEqNrf3teb0vVurhRgboTkkrtP/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1BmG5QuBmaAcdcvvZhw-VJxIjfYIDoUcz",
+              "title": "اختبار الفصل الثاني سنة الثالثة للأستاذ بلمادي محمد 2019.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1BmG5QuBmaAcdcvvZhw-VJxIjfYIDoUcz/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ygow_N_MVySfYcX7QND91nCK7zknReGl",
+              "title": "توظيب علب منتوج صناعي نسخة2.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ygow_N_MVySfYcX7QND91nCK7zknReGl/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "12JiEghea4OG0n-QtgihvOZKyMJnmPnXR",
+              "title": "موضوع شامل 144 سؤال.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12JiEghea4OG0n-QtgihvOZKyMJnmPnXR/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1CZ3LkWqHf9URCBFFM2OPqQk06EZLul5o",
+              "title": "محطة الخرسانة.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1CZ3LkWqHf9URCBFFM2OPqQk06EZLul5o/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1-Rqiaf8hVOfe4V4SO06X-M0vP-sEhOPR",
+              "title": "ملء قارورات غاز البوتان 2-1.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1-Rqiaf8hVOfe4V4SO06X-M0vP-sEhOPR/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1uw5n-go7V0KkMw7fUx4lBwueXGFqvPgI",
+              "title": "ملء صناديق بعلب الدواء.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1uw5n-go7V0KkMw7fUx4lBwueXGFqvPgI/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1ZPCnkRDqZwyCPw057BOPx07Gj8_jKF7q",
+              "title": "ملء و توظيب علب الحلوى-1.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1ZPCnkRDqZwyCPw057BOPx07Gj8_jKF7q/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1eKEliGVWiSJ7KZYR5u6eUF70gHHctpPK",
+              "title": "ملء قارورات بخليط كيميائي.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1eKEliGVWiSJ7KZYR5u6eUF70gHHctpPK/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1NCd6w0JuFnSN2EcujSHI2kZSgjJ9jrVE",
+              "title": "صناعة مادة أولية للدواء.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1NCd6w0JuFnSN2EcujSHI2kZSgjJ9jrVE/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1XTsg7eBrFqj3KMm1UG3eWADWTgijKb7Y",
+              "title": "صنع قوالب بلاستيكية 2025.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1XTsg7eBrFqj3KMm1UG3eWADWTgijKb7Y/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1LxWgM1diEQASeMkL-TORPx3u6olASXWO",
+              "title": "ملخص_ومجموعة_تمارين_بالحل_للمحرك_لاتزامني.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1LxWgM1diEQASeMkL-TORPx3u6olASXWO/view?usp=drivesdk",
+              "parentId": "11QjE6YWz2tcSfbWSNQMlg_cXorPahfuR",
+              "availability": "listed_in_drive"
+            }
+          ]
         },
         {
           "id": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
           "title": "تمارين",
           "type": "folder",
           "url": "https://drive.google.com/drive/folders/1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
-          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+          "items": [
+            {
+              "id": "1Er2wqC8EWunRUypuOMUAyQ6L4qGFznr_",
+              "title": "تمارين المحول و المحرك مع الحل.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1Er2wqC8EWunRUypuOMUAyQ6L4qGFznr_/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "160mP0HYf3e954iWzqP1puyMGJLQkutRx",
+              "title": "فرض توظيب منتوج صناعي-2.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/160mP0HYf3e954iWzqP1puyMGJLQkutRx/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "12qV_oZPqsV2ILx_nGRLxwQUZulGpn2v4",
+              "title": "أنشطة الأستاذ زرهوني.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/12qV_oZPqsV2ILx_nGRLxwQUZulGpn2v4/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1RYW4XhcBrnkVtX_LPwqW5YG_zwRLNFf_",
+              "title": "GEMMA-2024.éleve.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1RYW4XhcBrnkVtX_LPwqW5YG_zwRLNFf_/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1lJzktrqgNuwctIXn_XHdqwpzUGVL4kGc",
+              "title": "انشطة_حول_وظيفة_التحكم_والمعقبات_.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1lJzktrqgNuwctIXn_XHdqwpzUGVL4kGc/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1vqoT6M5Wz_N7ZJG8FhvzuLTvfyrvK_jT",
+              "title": "تمارين التقويم المراقب بالحل.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1vqoT6M5Wz_N7ZJG8FhvzuLTvfyrvK_jT/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1FB6RISFHUvOWfVqU95KnKyVKLa8NoT1E",
+              "title": "سلسلة تمارين المحول.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1FB6RISFHUvOWfVqU95KnKyVKLa8NoT1E/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1t1D6nazfopOD4oV7ktJ6Vvz-e3UlrEC5",
+              "title": "سلسلة_تمارين_المنطق_التعاقبي_للاستاذ_بوخرص_جميل.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1t1D6nazfopOD4oV7ktJ6Vvz-e3UlrEC5/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1IK8gShj0mpw2s7bPZCliC8uKKv1l7OU3",
+              "title": "سلسلة تمارين التيار ثلاثي الطور.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1IK8gShj0mpw2s7bPZCliC8uKKv1l7OU3/view?usp=drivesdk",
+              "parentId": "1bXMI0RED1gCZV-iSN3xpvj3MsgZ0v4ev",
+              "availability": "listed_in_drive"
+            }
+          ]
         },
         {
           "id": "1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
           "title": "كتب",
           "type": "folder",
           "url": "https://drive.google.com/drive/folders/1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
-          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+          "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+          "items": [
+            {
+              "id": "1AieZLfQxSzf4_j-2JoJr6Y3_hLQ8ASQG",
+              "title": "كتاب التعليم عن بعد.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1AieZLfQxSzf4_j-2JoJr6Y3_hLQ8ASQG/view?usp=drivesdk",
+              "parentId": "1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1CU4wLzKknKkRSW1EGYY_NfDxL7X98zkJ",
+              "title": "كتاب المختار في الهندسة الكهربائية ثالثة ثانوي - نافع بكالوريا 2024.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1CU4wLzKknKkRSW1EGYY_NfDxL7X98zkJ/view?usp=drivesdk",
+              "parentId": "1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
+              "availability": "listed_in_drive"
+            },
+            {
+              "id": "1IqnNRgGQsu6vbqjqXeSmhnoAXNhCGp1S",
+              "title": "03 الميكرومراقب.pdf",
+              "type": "file",
+              "mimeType": "application/pdf",
+              "url": "https://drive.google.com/file/d/1IqnNRgGQsu6vbqjqXeSmhnoAXNhCGp1S/view?usp=drivesdk",
+              "parentId": "1SfjZ4KcpqtIxJOHUR1VSSiAPmZO0lWoH",
+              "availability": "listed_in_drive"
+            }
+          ]
         }
-      ]
+      ],
+      "displayName": "الهندسة الكهربائية",
+      "program": "technical_math",
+      "specializations": [
+        "electrical"
+      ],
+      "availability": "listed_in_drive"
     }
   },
   "notes": [
-    "Folder IDs and direct children are copied from Google Drive listing results, not inferred.",
-    "The manifest is a verified partial inventory, not a recursive full-drive crawl.",
-    "Drive connector listing does not prove public/anonymous access."
-  ]
+    "The supplied root folder is the Mathematics-stream resource library.",
+    "Technical Mathematics electrical-engineering materials are in the separate technology folder and its four verified subfolders.",
+    "A concrete-plant exam was inspected and explicitly identifies itself as a Technical Mathematics electrical-engineering assessment.",
+    "No separate Civil Engineering resource folder was found in the inspected connected Drive locations; do not mark Civil Engineering as available.",
+    "Folder IDs and direct children are copied from authenticated Google Drive listings; student anonymous access has not been verified.",
+    "The manifest is a verified inventory of inspected folder levels, not proof that every Drive file is anonymously accessible."
+  ],
+  "programRules": {
+    "sharedScientificTechnical": {
+      "branches": [
+        "math",
+        "science",
+        "tech"
+      ],
+      "subjects": [
+        "arabic_sci",
+        "french_sci",
+        "english_sci",
+        "history_sci",
+        "islamic"
+      ]
+    },
+    "mathematicsAndPhysics": {
+      "mathAndTechnicalMathShare": [
+        "math_math",
+        "physics_math"
+      ],
+      "experimentalSciencesUseSeparatePrograms": [
+        "math_science",
+        "physics_science"
+      ]
+    },
+    "naturalSciences": {
+      "sharedFolderAcrossMathAndExperimentalSciences": "natural_math",
+      "driveFolderId": "1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5"
+    },
+    "technicalMathSpecializations": {
+      "electrical": {
+        "availability": "verified",
+        "subjectId": "tech_subject",
+        "folderId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+      },
+      "civil": {
+        "availability": "not_found_in_inspected_drive_folders"
+      },
+      "mechanical": {
+        "availability": "not_found_in_inspected_drive_folders"
+      },
+      "process": {
+        "availability": "not_found_in_inspected_drive_folders"
+      }
+    }
+  }
 }
