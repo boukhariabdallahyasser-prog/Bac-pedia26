@@ -587,6 +587,13 @@
     #loginGate .login-field:has(input:invalid:not(:placeholder-shown)):not(:focus-within){border-color:#a35e64!important}
     #loginGate .login-field .password-toggle:focus-visible{outline:2px solid #a7a1ff!important;outline-offset:1px!important}
 
+    .sub-branch-note{margin-top:9px;padding:9px 11px;border:1px solid var(--border);border-radius:12px;font-size:.76rem;line-height:1.7;color:var(--text-muted);background:var(--bg-glass)}
+    .sub-branch-note.is-available{border-color:rgba(16,185,129,.28);color:var(--success)}
+    .sub-branch-note.is-unavailable{border-color:rgba(245,158,11,.28);color:var(--warning)}
+    .sub-branch-status{display:block;font-size:.63rem;line-height:1.2;margin-top:3px;font-weight:800}
+    .sub-branch-status.is-available{color:#34d399}
+    .sub-branch-status.is-unavailable{color:#f59e0b}
+    #subBranchRow .chip{display:flex;flex-direction:column;align-items:center;gap:3px}
   </style>
 </head>
 <body>
@@ -664,6 +671,7 @@
         <div class="nav-group-title"><i class="fa-solid fa-layer-group"></i> الشعبة</div>
         <div class="branch-grid" id="branchGrid"></div>
         <div class="sub-branches" id="subBranchRow"></div>
+        <div class="sub-branch-note" id="subBranchAvailabilityNote" hidden></div>
       </div>
       <div>
         <div class="nav-group-title"><i class="fa-solid fa-chart-simple"></i> إحصائيات سريعة</div>
@@ -881,18 +889,18 @@
     const branches = {
       math:{name:'رياضيات',icon:'fa-solid fa-calculator'},
       science:{name:'علوم تجريبية',icon:'fa-solid fa-flask'},
-      tech:{name:'تقني رياضي',icon:'fa-solid fa-gears',subs:{civil:'هندسة مدنية',electrical:'هندسة كهربائية',mechanical:'هندسة ميكانيكية',process:'هندسة الطرائق'}},
+      tech:{name:'تقني رياضي',icon:'fa-solid fa-gears',subs:{electrical:'هندسة كهربائية',civil:'هندسة مدنية',mechanical:'هندسة ميكانيكية',process:'هندسة الطرائق'},defaultSub:'electrical'},
       literature:{name:'آداب وفلسفة',icon:'fa-solid fa-feather'},
       languages:{name:'لغات أجنبية',icon:'fa-solid fa-globe',subs:{german:'الألمانية',spanish:'الإسبانية',italian:'الإيطالية'}},
       economy:{name:'تسيير واقتصاد',icon:'fa-solid fa-chart-line'}
     };
     const color={math:'linear-gradient(135deg,#6366f1,#4f46e5)',physics:'linear-gradient(135deg,#0ea5e9,#0284c7)',science:'linear-gradient(135deg,#10b981,#059669)',arabic:'linear-gradient(135deg,#14b8a6,#0d9488)',french:'linear-gradient(135deg,#3b82f6,#2563eb)',english:'linear-gradient(135deg,#ef4444,#dc2626)',history:'linear-gradient(135deg,#8b5cf6,#7c3aed)',islamic:'linear-gradient(135deg,#f59e0b,#d97706)',philo:'linear-gradient(135deg,#ec4899,#db2777)',tech:'linear-gradient(135deg,#eab308,#ca8a04)',eco:'linear-gradient(135deg,#22c55e,#16a34a)',law:'linear-gradient(135deg,#a855f7,#9333ea)',special:'linear-gradient(135deg,#f97316,#ea580c)'};
     const allSubjects = {
-      math_math:{name:'الرياضيات',icon:'fa-solid fa-square-root-variable',color:color.math,desc:'دروس وتمارين الرياضيات لشعبة الرياضيات',branches:['math']},
+      math_math:{name:'الرياضيات',icon:'fa-solid fa-square-root-variable',color:color.math,desc:'دروس وتمارين الرياضيات لشعبتي الرياضيات والتقني الرياضي',branches:['math','tech']},
       physics_math:{name:'الفيزياء',icon:'fa-solid fa-atom',color:color.physics,desc:'دروس وتمارين الفيزياء',branches:['math','tech']},
-      natural_math:{name:'العلوم الطبيعية',icon:'fa-solid fa-dna',color:color.science,desc:'علوم طبيعية لشعبة الرياضيات',branches:['math']},
+      natural_math:{name:'العلوم الطبيعية',icon:'fa-solid fa-dna',color:color.science,desc:'نفس برنامج العلوم الطبيعية لشعبتي الرياضيات والعلوم التجريبية',branches:['math','science']},
       exams:{name:'اختبارات وفروض',icon:'fa-solid fa-clipboard-list',color:color.special,desc:'اختبارات وفروض للمراجعة',branches:['math','science','tech','literature','languages','economy'],special:true},
-      bac_math:{name:'مواضيع البكالوريا',icon:'fa-solid fa-award',color:color.special,desc:'مواضيع بكالوريا سابقة',branches:['math','science','tech','literature','languages','economy'],special:true},
+      bac_math:{name:'مواضيع البكالوريا',icon:'fa-solid fa-award',color:color.special,desc:'مواضيع البكالوريا الخاصة بشعبة الرياضيات',branches:['math'],special:true},
       mock_bac:{name:'بكالوريات تجريبية',icon:'fa-solid fa-file-circle-check',color:'linear-gradient(135deg,#06b6d4,#3b82f6)',desc:'بكالوريات تجريبية للتدريب النهائي',branches:['math','science','tech','literature','languages','economy'],special:true},
       summaries_math:{name:'الملخصات',icon:'fa-solid fa-file-lines',color:color.special,desc:'ملخصات جميع مواد الرياضيات',branches:['math'],special:true},
       summaries_science:{name:'الملخصات',icon:'fa-solid fa-file-lines',color:color.special,desc:'ملخصات العلوم التجريبية',branches:['science'],special:true},
@@ -901,11 +909,11 @@
       summaries_lang:{name:'الملخصات',icon:'fa-solid fa-file-lines',color:color.special,desc:'ملخصات اللغات الأجنبية',branches:['languages'],special:true},
       summaries_eco:{name:'الملخصات',icon:'fa-solid fa-file-lines',color:color.special,desc:'ملخصات التسيير والاقتصاد',branches:['economy'],special:true},
       math_science:{name:'الرياضيات',icon:'fa-solid fa-square-root-variable',color:color.math,desc:'رياضيات شعبة العلوم',branches:['science']},
-      natural_science:{name:'العلوم الطبيعية',icon:'fa-solid fa-dna',color:color.science,desc:'علوم طبيعية لشعبة العلوم',branches:['science']},
+      natural_science:{name:'العلوم الطبيعية',icon:'fa-solid fa-dna',color:color.science,desc:'مرادف قديم للعلوم الطبيعية المشتركة؛ يستخدم natural_math لتجنب تكرار المادة',branches:[]},
       physics_science:{name:'الفيزياء',icon:'fa-solid fa-atom',color:color.physics,desc:'فيزياء شعبة العلوم',branches:['science']},
-      math_tech:{name:'الرياضيات',icon:'fa-solid fa-calculator',color:color.math,desc:'رياضيات التقني الرياضي',branches:['tech']},
-      tech_subject:{name:'التكنولوجيا',icon:'fa-solid fa-microchip',color:color.tech,desc:'مادة التكنولوجيا حسب التخصص',branches:['tech']},
-      philo_tech:{name:'الفلسفة',icon:'fa-solid fa-brain',color:color.philo,desc:'فلسفة للشعب التقنية والاقتصاد',branches:['tech','economy']},
+      math_tech:{name:'الرياضيات',icon:'fa-solid fa-calculator',color:color.math,desc:'مرادف قديم؛ يستخدم math_math لبرنامج الرياضيات المشترك مع التقني الرياضي',branches:[]},
+      tech_subject:{name:'الهندسة الكهربائية',icon:'fa-solid fa-bolt',color:color.tech,desc:'ملفات ودروس الهندسة الكهربائية المتاحة من مجلد تقني مستقل',branches:['tech'],subBranches:['electrical']},
+      philo_tech:{name:'الفلسفة',icon:'fa-solid fa-brain',color:color.philo,desc:'مرادف قديم؛ تستخدم الفلسفة المشتركة للشعب العلمية والتقنية',branches:[]},
       arabic_lit:{name:'اللغة العربية',icon:'fa-solid fa-pen-nib',color:color.arabic,desc:'لغة عربية للشعب الأدبية',branches:['literature','languages','economy']},
       french_lit:{name:'اللغة الفرنسية',icon:'fa-solid fa-comment-dots',color:color.french,desc:'فرنسية للشعب الأدبية',branches:['literature','languages','economy']},
       english_lit:{name:'اللغة الإنجليزية',icon:'fa-solid fa-language',color:color.english,desc:'إنجليزية للشعب الأدبية',branches:['literature','languages','economy']},
@@ -922,7 +930,7 @@
       english_sci:{name:'اللغة الإنجليزية',icon:'fa-solid fa-language',color:color.english,desc:'لغة إنجليزية للشعب العلمية',branches:['math','science','tech']},
       history_sci:{name:'التاريخ والجغرافيا',icon:'fa-solid fa-earth-africa',color:color.history,desc:'تاريخ وجغرافيا للشعب العلمية',branches:['math','science','tech']},
       islamic:{name:'العلوم الإسلامية',icon:'fa-solid fa-book-quran',color:color.islamic,desc:'علوم إسلامية لكل الشعب',branches:['math','science','tech','literature','languages','economy']},
-      philo_sci:{name:'الفلسفة',icon:'fa-solid fa-brain',color:color.philo,desc:'فلسفة لشعبتي الرياضيات والعلوم',branches:['math','science']}
+      philo_sci:{name:'الفلسفة',icon:'fa-solid fa-brain',color:color.philo,desc:'الفلسفة المشتركة لشعب الرياضيات والعلوم والتقني الرياضي',branches:['math','science','tech']}
     };
     const backupUrls = {
       math_math:'https://drive.google.com/drive/folders/1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn',
@@ -1012,10 +1020,10 @@
     function normalize(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
     function subjectLabel(id,sub=allSubjects[id]){if(!sub)return''; if(id==='third_lang'&&state.subBranch)return({german:'اللغة الألمانية',spanish:'اللغة الإسبانية',italian:'اللغة الإيطالية'}[state.subBranch]||sub.name); if(id==='tech_subject'&&state.subBranch)return({civil:'الهندسة المدنية',electrical:'الهندسة الكهربائية',mechanical:'الهندسة الميكانيكية',process:'هندسة الطرائق'}[state.subBranch]||sub.name); return sub.name;}
     function subjectDesc(id,sub=allSubjects[id]){if(id==='third_lang'&&state.subBranch)return'دروس وتمارين '+subjectLabel(id,sub); if(id==='tech_subject'&&state.subBranch)return'ملفات ودروس '+subjectLabel(id,sub); return sub?.desc||'';}
-    function getSubjects(){return Object.entries(allSubjects).filter(([id,s])=>s.branches.includes(state.branch)).map(([id,s])=>({id,...s,name:subjectLabel(id,s),desc:subjectDesc(id,s)}));}
+    function getSubjects(){return Object.entries(allSubjects).filter(([id,s])=>s.branches.includes(state.branch)&&(!Array.isArray(s.subBranches)||s.subBranches.includes(state.subBranch))).map(([id,s])=>({id,...s,name:subjectLabel(id,s),desc:subjectDesc(id,s)}));}
     function getNormalSubjects(){return getSubjects().filter(s=>!s.special);}
     function getResourceItems(){return getSubjects().filter(s=>s.special);}
-    function isStudySubjectId(id){return !!(id && allSubjects[id] && !allSubjects[id].special);}
+    function isStudySubjectId(id){const s=id&&allSubjects[id];return !!(s&&!s.special&&s.branches.includes(state.branch)&&(!Array.isArray(s.subBranches)||s.subBranches.includes(state.subBranch)));}
     function studyProgress(){const out={};getNormalSubjects().forEach(s=>{out[s.id]=Number(state.progress[s.id]||0)});return out;}
     function cleanSpecialProgress(){Object.keys(state.progress||{}).forEach(id=>{if(allSubjects[id]?.special)delete state.progress[id];});}
     function currentSubject(){
@@ -1089,7 +1097,8 @@
       const branch=branches[state.branch]?.name || '';
       const sub=branches[state.branch]?.subs?.[state.subBranch];
       const suffix=sub ? ` - ${sub}` : '';
-      el.textContent=`يعرض الآن: الكل حسب شعبة ${branch}${suffix}.`;
+      const availabilityNote=state.branch==='tech'&&state.subBranch!=='electrical'?' — لا توجد حالياً موارد Drive موثقة لهذا التخصص':'';
+      el.textContent=`يعرض الآن: الكل حسب شعبة ${branch}${suffix}${availabilityNote}.`;
     }
     function renderNavs(){
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
@@ -1158,8 +1167,25 @@
       if(!isMobileSidebar()) closeSidebar();
       else updateSidebarButton();
     });
-    function renderBranches(){$('#branchGrid').innerHTML=Object.entries(branches).map(([id,b])=>`<button class="branch-btn ${state.branch===id?'active':''}" onclick="selectBranch('${id}')"><i class="${b.icon}"></i><span>${b.name}</span></button>`).join('');const b=branches[state.branch];$('#subBranchRow').innerHTML=b.subs?Object.entries(b.subs).map(([id,l])=>`<button class="chip ${state.subBranch===id?'active':''}" onclick="selectSubBranch('${id}')">${l}</button>`).join(''):'';$('#homeBranchKicker').textContent='شعبة '+branches[state.branch].name;updateFilesSubtitle();}
-    function selectBranch(id){state.branch=id;state.subBranch=branches[id].subs?Object.keys(branches[id].subs)[0]:null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');if(!branches[id].subs || window.matchMedia('(max-width:980px)').matches)closeSidebar();}
+    function renderBranches(){
+      $('#branchGrid').innerHTML=Object.entries(branches).map(([id,b])=>`<button class="branch-btn ${state.branch===id?'active':''}" onclick="selectBranch('${id}')"><i class="${b.icon}"></i><span>${b.name}</span></button>`).join('');
+      const b=branches[state.branch];
+      $('#subBranchRow').innerHTML=b.subs?Object.entries(b.subs).map(([id,label])=>{
+        const status=state.branch==='tech'?`<small class="sub-branch-status ${id==='electrical'?'is-available':'is-unavailable'}">${id==='electrical'?'موارد متاحة':'لا توجد موارد'}</small>`:'';
+        return `<button class="chip ${state.subBranch===id?'active':''}" onclick="selectSubBranch('${id}')"><span>${label}</span>${status}</button>`;
+      }).join(''):'';
+      const note=$('#subBranchAvailabilityNote');
+      if(note){
+        const isTech=state.branch==='tech';
+        note.hidden=!isTech;
+        note.textContent=!isTech?'':state.subBranch==='electrical'?'تم ربط مجلد مستقل يحتوي على موارد الهندسة الكهربائية.':'لا يوجد مجلد موارد موثّق لهذا التخصص في Google Drive حالياً؛ لن تظهر له مواد على أنها متاحة.';
+        note.classList.toggle('is-available',isTech&&state.subBranch==='electrical');
+        note.classList.toggle('is-unavailable',isTech&&state.subBranch!=='electrical');
+      }
+      $('#homeBranchKicker').textContent='شعبة '+branches[state.branch].name;
+      updateFilesSubtitle();
+    }
+    function selectBranch(id){state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');if(!branches[id].subs || window.matchMedia('(max-width:980px)').matches)closeSidebar();}
     function selectSubBranch(id){state.subBranch=id;saveState();renderAll();showToast('تم اختيار '+(branches[state.branch].subs?.[id]||''),'success');closeSidebar();}
     function renderFilters(){const filters=[['all','الكل'],['available','متاحة'],['preparing','قيد التحضير'],['favorites','المفضلة'],['special','موارد عامة']];$('#fileFilters').innerHTML=filters.map(f=>`<button class="chip ${state.filter===f[0]?'active':''}" onclick="state.filter='${f[0]}';saveState();renderSubjects();renderFilters()">${f[1]}</button>`).join('');$('#sortSelect').value=state.sort||'default';}
     function renderSubjects(){const q=normalize($('#searchInput')?.value||'');let list=getSubjects().filter(s=>!q||normalize(s.name+' '+s.desc+' '+s.id).includes(q));if(state.filter==='available')list=list.filter(s=>!!s.url);if(state.filter==='preparing')list=list.filter(s=>!s.url);if(state.filter==='favorites')list=list.filter(s=>state.favorites.includes(s.id));if(state.filter==='special')list=list.filter(s=>s.special);if(state.sort==='available')list.sort((a,b)=>(!!b.url)-(!!a.url));if(state.sort==='progress')list.sort((a,b)=>((a.special?1:0)-(b.special?1:0)) || ((state.progress[a.id]||0)-(state.progress[b.id]||0)));if(state.sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));$('#subjectsGrid').innerHTML=list.map(subjectCard).join('');$('#noResults').classList.toggle('hide',!!list.length);renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();}
@@ -1195,11 +1221,17 @@
         const empty=document.createElement('p');empty.className='muted';empty.textContent='لم تُسجّل فئات أو ملفات لهذه المادة بعد.';root.appendChild(empty);
       }
     }
-    function openSubjectById(id){const s={id,...allSubjects[id],name:subjectLabel(id),desc:subjectDesc(id)};if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');}
+    function openSubjectById(id){
+      const subject=allSubjects[id];
+      if(!subject||!subject.branches.includes(state.branch)|| (Array.isArray(subject.subBranches)&&!subject.subBranches.includes(state.subBranch))){showToast('لا توجد موارد موثقة لهذا التخصص حالياً','warning');return;}
+      const s={id,...subject,name:subjectLabel(id),desc:subjectDesc(id)};
+      if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}
+      currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');
+    }
     function closeModal(){$('#modalOverlay').classList.remove('show');$('#subjectModal').classList.remove('show');currentModalSubject=null;}
     function openCurrentDrive(){if(!currentModalSubject?.url)return;const a=document.createElement('a');a.href=currentModalSubject.url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();closeModal();}
     function shareCurrentSubject(){if(currentModalSubject)copyText(currentModalSubject.url,'تم نسخ الرابط');}
-    function shareSubject(id){const s=allSubjects[id];if(s?.url)copyText(s.url,'تم نسخ الرابط');else showToast('لا يوجد رابط بعد','warning');}
+    function shareSubject(id){const s=allSubjects[id];if(s?.url&&s.branches.includes(state.branch)&&(!Array.isArray(s.subBranches)||s.subBranches.includes(state.subBranch)))copyText(s.url,'تم نسخ الرابط');else showToast('لا توجد موارد موثقة لهذا التخصص حالياً','warning');}
     function toggleFavorite(id){const i=state.favorites.indexOf(id);if(i>=0){state.favorites.splice(i,1);showToast('تمت الإزالة من المفضلة','info')}else{state.favorites.push(id);showToast('تمت الإضافة للمفضلة','success')}saveState();renderSubjects();}
     function renderFavoritesMini(){/* sidebar stats only for clean UI */}
     function renderStats(){
