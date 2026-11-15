@@ -2341,6 +2341,308 @@
       "subBranches": [
         "electrical"
       ]
+    },
+    "mock_bac": {
+      "id": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+      "title": "بكالوريات تجريبية",
+      "type": "folder",
+      "driveId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+      "url": "https://drive.google.com/drive/folders/1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+      "branches": [
+        "math",
+        "science"
+      ],
+      "availability": "listed_in_drive",
+      "items": [
+        {
+          "id": "1o6Smz3xPBUyZeNCeFkL39MefnqHFdSGg",
+          "title": "FACEBOOK",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1o6Smz3xPBUyZeNCeFkL39MefnqHFdSGg",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1-HP-I8e3j6xnvHVuyu06FtgSGlHMPj9L",
+          "title": "MATH.BAC 2023-FB:matheux",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1-HP-I8e3j6xnvHVuyu06FtgSGlHMPj9L/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1-B2rvw9feUddxlwgsoLPWF52HlCU1Cvb",
+          "title": "مواضيع الطبعة الثالثة للبكالوريا لتجربية دورة أفريل 2023ا",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1-B2rvw9feUddxlwgsoLPWF52HlCU1Cvb/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "15dmtGvmYymZjF-SfusSexAIhCCjXM4wY",
+          "title": "pdf-serie",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/15dmtGvmYymZjF-SfusSexAIhCCjXM4wY",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1ulJjGFQSNy75jk3moOkioO_ByDOfX7db",
+          "title": "《ملفات خالد بخاخشة 》",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1ulJjGFQSNy75jk3moOkioO_ByDOfX7db/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1rfsB7Y0PEzn6FY3ri4GH6iMEVENy3bdY",
+          "title": "Sujets du Lycée des Maths",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1rfsB7Y0PEzn6FY3ri4GH6iMEVENy3bdY",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1LEkXSgEIcb3CjQcwCyykZyaNWEPaQCBG",
+          "title": "تمارين للمراجعة للشاملة 2020",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1LEkXSgEIcb3CjQcwCyykZyaNWEPaQCBG/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1MGs8IKkKMMQq2WBOH6doIEAFGDMAzGZn",
+          "title": "ملفات الاستاذ قزوري",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1MGs8IKkKMMQq2WBOH6doIEAFGDMAzGZn/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1gYjOssauVsvTC46dxOKH_OxzXHO878sj",
+          "title": "فلسفة",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1gYjOssauVsvTC46dxOKH_OxzXHO878sj",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1TSSyHFsy_GKrJuC6-TNgRy_UpXFvAL-g",
+          "title": "سلسلة المواضيع التجريبية (بعضها مع الحل)",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1TSSyHFsy_GKrJuC6-TNgRy_UpXFvAL-g/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "12w9xUKZVs4-txIGceBPgaJ54GoHEVvFd",
+          "title": "الأستادة تشوك هجيرة",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/12w9xUKZVs4-txIGceBPgaJ54GoHEVvFd/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1EJSv8CWhbP_ef8PX6L914tnK7fMNIQEl",
+          "title": "إمتحان إثبات المستوى",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1EJSv8CWhbP_ef8PX6L914tnK7fMNIQEl",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1e8tAeU-MEMD2MubXIH48nbhNWzGsrF2F",
+          "title": "أعمال الأساتذة_الجزائر",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1e8tAeU-MEMD2MubXIH48nbhNWzGsrF2F/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1l72nFDcLKKtIN0r_GvuJ_seouoLxcBWQ",
+          "title": "بنك البكالوريا التجريبية",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1l72nFDcLKKtIN0r_GvuJ_seouoLxcBWQ/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1rXZWFOvOKbSlEjoXAT0RXy_Ubw3K2otq",
+          "title": "مواضيع الفصل الأول",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1rXZWFOvOKbSlEjoXAT0RXy_Ubw3K2otq",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1eCXECp_AWREMfxMuXGBydVXmJWd59M_U",
+          "title": "Physique Maroc",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1eCXECp_AWREMfxMuXGBydVXmJWd59M_U",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1bNRjL1V4gK0Xfu-DpmfBMZqacrbaELx-",
+          "title": "Sciences 3AS",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1bNRjL1V4gK0Xfu-DpmfBMZqacrbaELx-",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1nBPbbBdbsPFMdark0bzFa5wHKq4GXTlf",
+          "title": "فيزياء",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1nBPbbBdbsPFMdark0bzFa5wHKq4GXTlf",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1L58SCwTilqWsQr8uf9QGCvenNFPvwHOi",
+          "title": "رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1L58SCwTilqWsQr8uf9QGCvenNFPvwHOi",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1E6UFSNBEQovQqidwL_bPTL7KUa49n9uG",
+          "title": "2",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1E6UFSNBEQovQqidwL_bPTL7KUa49n9uG",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "10vSsM45O4ygTkbIRJZn-HjZVX31-xcvh",
+          "title": "مواضيع بكالوريات تجريبية أشبال الأمة",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/10vSsM45O4ygTkbIRJZn-HjZVX31-xcvh",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1zPvG81rnfwDFVAYtDrSjfKmDMXxk2FAK",
+          "title": "مواضيع في مادة اللغة الفرنسية - اللغة الانجليزية شعبة رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1zPvG81rnfwDFVAYtDrSjfKmDMXxk2FAK",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1ZQd9FjZqL-E2H4NadYGKtylsDZIEpYOD",
+          "title": "ملخصات في مادة التاريخ و الجغرافيا",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1ZQd9FjZqL-E2H4NadYGKtylsDZIEpYOD",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1Ngyo4Ee8IHEOPRsEVL5UbCula_M9xAQJ",
+          "title": "مواضيع في مادة اللغة العربية شعبة رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1Ngyo4Ee8IHEOPRsEVL5UbCula_M9xAQJ",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1VHmC01J8iRFyMY0yfwh8ThJVe4v3z_GM",
+          "title": "مواضيع في مادة العلوم الطبيعية شعبة رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1VHmC01J8iRFyMY0yfwh8ThJVe4v3z_GM",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1BNIJ13lLi40SLOXOeKD_I2mCcKPhnK3s",
+          "title": "الحقيبة المعلوماتية الألماسية - نافع - للبكالوريا 2022",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1BNIJ13lLi40SLOXOeKD_I2mCcKPhnK3s/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1rEwwVrr6BZRq2-bF5KFGJbZYtP9dl6Yt",
+          "title": "EXTRA BAC 2021 2022",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1rEwwVrr6BZRq2-bF5KFGJbZYtP9dl6Yt",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1uaqHvOXnPaG9wYthVhhOVc078_WcHhAf",
+          "title": "مواضيع في مادة العلوم الفيزيائية شعبة رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1uaqHvOXnPaG9wYthVhhOVc078_WcHhAf",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1ucdEyTNiGiwqCojSJl9p2wGhxkKzK7mf",
+          "title": "مواضيع في مادة الرياضيات شعبة رياضيات",
+          "type": "folder",
+          "mimeType": "application/vnd.google-apps.folder",
+          "url": "https://drive.google.com/drive/folders/1ucdEyTNiGiwqCojSJl9p2wGhxkKzK7mf",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1dEW6ZYn1PBmTcxLxm8A07x0G4xa4ocSl",
+          "title": "رياضيات متقن الشهيد زيان عاشور",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1dEW6ZYn1PBmTcxLxm8A07x0G4xa4ocSl/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1uI7gtL_X2_diD3reFA5WoMYU6JpCI2ZF",
+          "title": "السنة الثالثة ثانوي",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1uI7gtL_X2_diD3reFA5WoMYU6JpCI2ZF/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1TohEPA4oOxOqoTDg2HKXzzRj96lDta10",
+          "title": "مواضيع مع الحلول",
+          "type": "shortcut",
+          "mimeType": "application/vnd.google-apps.shortcut",
+          "url": "https://drive.google.com/file/d/1TohEPA4oOxOqoTDg2HKXzzRj96lDta10/view?usp=drivesdk",
+          "parentId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+          "availability": "listed_in_drive"
+        }
+      ]
     }
   },
   "notes": [
@@ -2350,7 +2652,8 @@
     "No separate Civil Engineering resource folder was found in the inspected connected Drive locations; do not mark Civil Engineering as available.",
     "Folder IDs and direct children are copied from authenticated Google Drive listings; student anonymous access has not been verified.",
     "The manifest is a verified inventory of inspected folder levels, not proof that every Drive file is anonymously accessible.",
-    "The same natural-sciences folder is intentionally reused for Mathematics and Experimental Sciences; the separate science-stream Mathematics and Physics resources remain unlinked until their own folders are verified."
+    "The same natural-sciences folder is intentionally reused for Mathematics and Experimental Sciences; the separate science-stream Mathematics and Physics resources remain unlinked until their own folders are verified.",
+    "The mock-baccalaureate resource folder was inspected separately and is available for Mathematics and Experimental Sciences only; its children are indexed as Drive folders/shortcuts."
   ],
   "programRules": {
     "sharedScientificTechnical": {
@@ -2397,6 +2700,14 @@
       "process": {
         "availability": "not_found_in_inspected_drive_folders"
       }
+    },
+    "mockBaccalaureateFolder": {
+      "folderId": "1I_YpIVvGLHMsPYQ97zIQUdFm8fr0Juuk",
+      "branches": [
+        "math",
+        "science"
+      ],
+      "note": "Mixed experimental papers, including separate Mathematics and Experimental Sciences folders; not advertised for other branches."
     }
   }
 }
