@@ -1578,13 +1578,28 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function authErrorMessage(e){
       const m=String(e?.message||'');
       const code=String(e?.code||e?.name||'');
-      if(/email confirmation is still enabled|email not confirmed|535|5\.7\.8|smtp.*authentication failed|authentication failed.*smtp|unexpected_failure/i.test(m+' '+code))return 'التسجيل دون تحقق غير مفعّل بعد. أوقف خيار Confirm email في إعدادات Supabase ثم أعد المحاولة';
-      if(/invalid login credentials/i.test(m))return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-      if(/already registered|user_already_exists/i.test(m))return 'هذا البريد مسجل مسبقاً. استخدم تسجيل الدخول';
-      if(/rate limit|too many requests|429/i.test(m))return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً';
-      if(/network|failed to fetch|fetch failed/i.test(m))return 'تعذر الاتصال بالخادم. تحقق من الإنترنت ثم أعد المحاولة';
-      if(/password/i.test(m))return 'تحقق من كلمة المرور (8 أحرف على الأقل)';
-      return 'تعذر الاتصال بخدمة الحسابات. حاول لاحقاً';
+      const detail=(m+' '+code).toLowerCase();
+      if(/535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp/.test(detail)){
+        return 'فشل إرسال رسالة التأكيد: Brevo رفض بيانات SMTP (535). لتسجيل الدخول بالبريد وكلمة المرور فقط، عطّل Confirm email في إعدادات Supabase. لا تكرر إنشاء الحساب قبل تعديل الإعداد.';
+      }
+      if(/email confirmation is still enabled|email not confirmed|unexpected_failure|error sending confirmation email/.test(detail)){
+        return 'Supabase ما زال يطلب تأكيد البريد. افتح Auth > Providers > Email في Supabase وأوقف Confirm email ثم احفظ الإعداد.';
+      }
+      if(/invalid login credentials/.test(detail)){
+        return 'هذا البريد أو كلمة المرور غير صحيحين. إذا كان الحساب موجوداً، استخدم استعادة كلمة المرور بدلاً من إنشاء حساب جديد.';
+      }
+      if(/already registered|user_already_exists/.test(detail)){
+        return 'هذا البريد مسجل مسبقاً. انتقل إلى تسجيل الدخول أو استعادة كلمة المرور.';
+      }
+      if(/rate limit|too many requests|429/.test(detail)){
+        return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً.';
+      }
+      if(/network|failed to fetch|fetch failed|load failed/.test(detail)){
+        return 'تعذر الوصول إلى Supabase. تحقق من الاتصال بالإنترنت ثم أعد المحاولة.';
+      }
+      if(/password/.test(detail))return 'تحقق من كلمة المرور؛ يجب أن تتكون من 8 أحرف على الأقل.';
+      console.error('[Bac-pedia Auth]',{message:m,code,status:e?.status});
+      return 'فشل طلب المصادقة. افتح الموقع المنشور بعد تحديثه، وإذا استمرت المشكلة أرسل تفاصيل الخطأ من وحدة التحكم.';
     }
     function togglePasswordVisibility(inputId,button){
       const input=$('#'+inputId);if(!input)return;
