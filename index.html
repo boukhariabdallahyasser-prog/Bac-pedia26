@@ -1578,7 +1578,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function authErrorMessage(e){
       const m=String(e?.message||'');
       const code=String(e?.code||e?.name||'');
-      if(/email not confirmed|535|5\.7\.8|smtp.*authentication failed|authentication failed.*smtp|unexpected_failure/i.test(m+' '+code))return 'التسجيل دون تحقق غير مفعّل بعد. أوقف خيار Confirm email في إعدادات Supabase ثم أعد المحاولة';
+      if(/email confirmation is still enabled|email not confirmed|535|5\.7\.8|smtp.*authentication failed|authentication failed.*smtp|unexpected_failure/i.test(m+' '+code))return 'التسجيل دون تحقق غير مفعّل بعد. أوقف خيار Confirm email في إعدادات Supabase ثم أعد المحاولة';
       if(/invalid login credentials/i.test(m))return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
       if(/already registered|user_already_exists/i.test(m))return 'هذا البريد مسجل مسبقاً. استخدم تسجيل الدخول';
       if(/rate limit|too many requests|429/i.test(m))return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً';
