@@ -1819,7 +1819,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function completePasswordRecovery(){
       if(!getStudentAuth())return;
       $('#loginMainForm')?.classList.add('hidden');$('#signupMainForm')?.classList.add('hidden');$('#emailVerificationPanel')?.classList.add('hidden');
-      $('#passwordRecoveryPanel')?.classList.remove('hidden');$$$('.login-tab').forEach(tab=>tab.classList.add('hidden'));
+      $('#passwordRecoveryPanel')?.classList.remove('hidden');$$('.login-tab').forEach(tab=>tab.classList.add('hidden'));
       $('#authResetButton')?.classList.add('hidden');$('#recoveryPasswordInput')?.focus();
     }
     async function saveRecoveredPassword(){
