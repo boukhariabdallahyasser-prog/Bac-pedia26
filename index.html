@@ -1044,8 +1044,10 @@
         const data=await response.json();
         if(data.schemaVersion!==1||!data.subjects||typeof data.subjects!=='object')throw new Error('Invalid resource manifest');
         for(const [id,item] of Object.entries(data.subjects)){
-          if(!allSubjects[id]||!item||!isDriveResourceUrl(item.url))continue;
-          allSubjects[id].url=item.url;
+          if(!allSubjects[id]||!item)continue;
+          if(Array.isArray(item.branches))allSubjects[id].branches=[...item.branches];
+          if(Array.isArray(item.subBranches))allSubjects[id].subBranches=[...item.subBranches];
+          if(isDriveResourceUrl(item.url))allSubjects[id].url=item.url;
         }
         resourceManifest=data;renderAll();return true;
       }catch(error){console.warn('Resource manifest unavailable; using embedded fallback links.',error);applyBackupUrls();renderAll();return false;}
