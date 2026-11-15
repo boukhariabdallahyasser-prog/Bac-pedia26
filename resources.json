@@ -2643,6 +2643,77 @@
           "availability": "listed_in_drive"
         }
       ]
+    },
+    "summaries_tech": {
+      "id": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+      "title": "ملخصات ودروس الهندسة الكهربائية",
+      "type": "folder",
+      "driveId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+      "url": "https://drive.google.com/drive/folders/1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+      "parentId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+      "branches": [
+        "tech"
+      ],
+      "subBranches": [
+        "electrical"
+      ],
+      "availability": "listed_in_drive",
+      "items": [
+        {
+          "id": "1FB-gIbRelWVpVfe13YVCBS8ukGZH7UIN",
+          "title": "ملخص هندسة كهربائية.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1FB-gIbRelWVpVfe13YVCBS8ukGZH7UIN/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1PpTzdN2-C9vHOhTcrZ449ex3HWsGOMzz",
+          "title": "قطع قطع من الرخام إلى قطعتين.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1PpTzdN2-C9vHOhTcrZ449ex3HWsGOMzz/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1c2paTkDLAUXJFVcfD3bqVA_M8SA8jSOf",
+          "title": "حوليات_استعد_للبكالوريا_من_إعداد_الأستاذة_بن_التاج_فتيحة_المنطق.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1c2paTkDLAUXJFVcfD3bqVA_M8SA8jSOf/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1PvaJDFVUxOQV_a-HwfnKEfmNjlXdeCvR",
+          "title": "المنطق التعاقبي.pdf",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1PvaJDFVUxOQV_a-HwfnKEfmNjlXdeCvR/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1WtxEvrMaNhNV0cBaaLVNBdO-mY8uEPAx",
+          "title": "01 الأنظمة الآلية.PDF",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1WtxEvrMaNhNV0cBaaLVNBdO-mY8uEPAx/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        },
+        {
+          "id": "1hUcaTOLgCrvAmDlBlUnk5kTGrletL05e",
+          "title": "08 وظيفة التغذية.PDF",
+          "type": "file",
+          "mimeType": "application/pdf",
+          "url": "https://drive.google.com/file/d/1hUcaTOLgCrvAmDlBlUnk5kTGrletL05e/view?usp=drivesdk",
+          "parentId": "1sVBP8B40huWF6z5bcHgZnwb9SYGxvJU3",
+          "availability": "listed_in_drive"
+        }
+      ]
     }
   },
   "notes": [
@@ -2653,7 +2724,8 @@
     "Folder IDs and direct children are copied from authenticated Google Drive listings; student anonymous access has not been verified.",
     "The manifest is a verified inventory of inspected folder levels, not proof that every Drive file is anonymously accessible.",
     "The same natural-sciences folder is intentionally reused for Mathematics and Experimental Sciences; the separate science-stream Mathematics and Physics resources remain unlinked until their own folders are verified.",
-    "The mock-baccalaureate resource folder was inspected separately and is available for Mathematics and Experimental Sciences only; its children are indexed as Drive folders/shortcuts."
+    "The mock-baccalaureate resource folder was inspected separately and is available for Mathematics and Experimental Sciences only; its children are indexed as Drive folders/shortcuts.",
+    "The Electrical Engineering summaries/lessons subfolder is also indexed as a dedicated summaries card for the Electrical specialization only."
   ],
   "programRules": {
     "sharedScientificTechnical": {
@@ -2689,7 +2761,11 @@
       "electrical": {
         "availability": "verified",
         "subjectId": "tech_subject",
-        "folderId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC"
+        "folderId": "1TVa3lzCYwaAvOtae70djh8ItmjCQxTeC",
+        "subjects": [
+          "tech_subject",
+          "summaries_tech"
+        ]
       },
       "civil": {
         "availability": "not_found_in_inspected_drive_folders"
