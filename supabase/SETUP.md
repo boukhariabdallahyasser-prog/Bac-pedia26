@@ -1,34 +1,47 @@
 # Bac-pedia 2027 — Production setup
 
-This repository is already connected to the existing Supabase project:
+This repository is connected to the existing Supabase project:
 - Project ref: `vgioqexpyvwmxwtuntaa`
 - Project URL: `https://vgioqexpyvwmxwtuntaa.supabase.co`
 
-## Authentication
+## Authentication: email + password only
 
-1. In Authentication → Providers → Email, keep Email enabled and **Confirm email** enabled.
-2. In Authentication → URL Configuration, set the Site URL to the production Vercel origin:
-   `https://bac-pedia26.vercel.app`
-3. Add the production redirect URL:
-   `https://bac-pedia26.vercel.app/**`
-4. Add a localhost redirect only for local development, for example `http://localhost:3000/**`.
-5. Do not disable email confirmation to work around SMTP failures. The application requires a verified account before access.
+The application intentionally uses only two fields for account creation and sign-in: email and password. It does not show an email-verification screen or require a password-confirmation field.
 
-## Brevo custom SMTP
+For hosted Supabase, disable email confirmation:
+1. Open [Supabase Auth Providers](https://supabase.com/dashboard/project/vgioqexpyvwmxwtuntaa/auth/providers).
+2. Open the **Email** provider.
+3. Turn **Confirm email** OFF and save the change.
+4. Keep Email/password sign-in enabled.
 
-Configure Custom SMTP in Supabase Auth with:
+With confirmation disabled, Supabase should return an authenticated session directly from `signUp()`, allowing the application to sign the student in immediately. If the application reports that no session was returned after signup, check that **Confirm email** is actually OFF in the hosted project.
+
+Disabling confirmation means Supabase does not verify that a new user owns the email address they enter. Use a strong password and consider re-enabling confirmation if verified email ownership becomes a requirement.
+
+## Site and redirect URLs
+
+In Authentication → URL Configuration:
+- Site URL: `https://bac-pedia26.vercel.app`
+- Production redirect URL: `https://bac-pedia26.vercel.app/**`
+- Optional local development URL: `http://localhost:3000/**`
+
+## Email delivery
+
+Custom SMTP is no longer required for signup when **Confirm email** is OFF. The **Forgot password** flow still sends a recovery email, so configure a working SMTP provider if students need password recovery.
+
+For Brevo custom SMTP:
 - Host: `smtp-relay.brevo.com`
 - Port: `587`
 - Sender name: `Bac-pedia 2027`
 - Sender email: a verified sender in Brevo
-- Username: copy the exact **Login** value shown on Brevo's SMTP page. It is not necessarily the sender email and must not be the relay hostname.
-- Password: a Brevo **SMTP key**, not an API key or Brevo account password.
+- Username: the exact **Login** value shown on Brevo's SMTP page
+- Password: a Brevo **SMTP key**, not an API key or Brevo account password
 
-If Brevo returns `535 5.7.8 Authentication failed`, verify the exact SMTP Login and SMTP key, remove spaces/newlines, and try a short SMTP key if the SMTP client truncates long passwords. Never commit SMTP credentials to GitHub.
+Never commit SMTP credentials to GitHub.
 
 ## Database
 
-Run `supabase/schema.sql` only when provisioning a fresh database or intentionally reconciling schema. The existing production project already has:
+Run `supabase/schema.sql` only when provisioning a fresh database or intentionally reconciling schema. The production project already has:
 - `student_profiles`
 - `student_progress` with per-user RLS
 - `ai_usage_daily` with client access denied
@@ -40,16 +53,12 @@ Never expose the Supabase secret/service-role key in frontend code or GitHub. Th
 
 ## Deployment and verification
 
-The production application is deployed through the existing Vercel project:
-`https://bac-pedia26.vercel.app`
+Production website: `https://bac-pedia26.vercel.app`
 
-After changing authentication or SMTP settings, test:
-1. Sign up with a new email address.
-2. Confirm the email using the link.
-3. Sign in.
-4. Refresh and confirm the session is restored.
-5. Sign out and confirm the login gate returns.
-6. Test password recovery.
-7. Test two accounts and confirm their progress remains isolated.
-
-A successful Vercel deployment does not prove SMTP delivery. Confirm the email arrives and check Supabase Auth logs for SMTP errors.
+Test after disabling **Confirm email**:
+1. Create a new account with email and password only.
+2. Verify that the application signs the student in immediately without sending a confirmation email.
+3. Refresh and confirm the session is restored.
+4. Sign out and confirm the login gate returns.
+5. Test password recovery if SMTP is configured.
+6. Test two accounts and confirm their progress remains isolated.
