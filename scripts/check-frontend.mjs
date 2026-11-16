@@ -43,6 +43,8 @@ requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
 requireText(html,'id="chapterContext"','Lesson detail area');
 for(const id of ['page-admin','adminList','adminMetrics','collaboratorStatusPanel','contributorMetrics','signupCollabExtras','approvedResourceGrid'])requireText(html,'id="'+id+'"','role-separated interface');
 requireText(html,'href="/assets/portals.css"','portal stylesheet');
+requireText(html,'data-admin-tab="ai"','admin diagnostic tab');
+for(const value of ['async function inspectOwnerAI()','async function testOwnerAI()','agent:\'smart_tutor\'','Authorization:\'Bearer \'+token'])requireText(community,value,'admin-only AI test flow');
 for(const marker of ['window.BAC_PORTAL_ROLE','sidebarBranches','sidebarStudyStats',"if(id==='admin')window.renderAdmin"])requireText(app,marker,'role-aware app navigation');
 
 if(html.includes('id="page-flashcards"')||html.includes('id="lpDemoFlashcard"')||html.includes('id="flashcards-preview"'))throw Error('Removed flashcard UI was reintroduced');

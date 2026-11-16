@@ -271,6 +271,59 @@ async function loadAdmin(){
    failed(error,'تحميل لوحة الإدارة');
  }
 }
+async function inspectOwnerAI(){
+ if(ownerRole!=='admin'||adminTab!=='ai')return;
+ const root=$('adminList');if(!root)return;
+ root.replaceChildren(el('p','portal-ai-status','جار فحص خادم الذكاء الاصطناعي...'));
+ try{
+   const response=await fetch('/api/ai',{method:'GET',cache:'no-store'});
+   const info=await response.json();
+   if(ownerRole!=='admin'||adminTab!=='ai')return;
+   const connected=response.ok&&info.provider==='deploy'&&info.ready===true;
+   const section=el('section','portal-ai-panel');
+   section.append(el('h3','','مساعد Deploy.com'));
+   section.append(el('p','portal-ai-status',connected?
+     'مفتاح API موجود في الخادم. لم يتم التأكد من صلاحية المفتاح أو إنتاج إجابة حتى الآن.':
+     'الربط غير مكتمل. تحقّق من DEPLOY_API_KEY في إعدادات Cloudflare.'));
+   section.append(el('p','portal-ai-footnote',
+     'ملاحظة: حالة الربط لا تعرض المفتاح ولا تُثبت نجاح توليد الإجابات. اختبار الإجابة يستهلك طلباً واحداً من رصيدك اليومي.'));
+   const actions=el('div','portal-admin-actions');
+   actions.append(button('إعادة الفحص',()=>void inspectOwnerAI()));
+   if(connected)actions.append(button('اختبار إجابة حقيقية',()=>void testOwnerAI(),'portal-action success'));
+   section.append(actions);
+   root.replaceChildren(section);
+ }catch(error){
+   console.warn('Owner AI health check failed',error);
+   root.replaceChildren(placeholder('خادم AI لا يستجيب','تأكد من تشغيل Cloudflare Worker وفتح الرابط الصحيح.'));
+ }
+}
+async function testOwnerAI(){
+ if(ownerRole!=='admin'||adminTab!=='ai')return;
+ const root=$('adminList');if(!root)return;
+ const result=el('p','portal-ai-status','جار اختبار إجابة من Deploy.com...');
+ root.append(result);
+ try{
+   const session=await db().auth.getSession();
+   const token=session.data?.session?.access_token;
+   if(!token){result.textContent='يرجى تسجيل الدخول مرة أخرى.';return;}
+   const response=await fetch('/api/ai',{
+     method:'POST',
+     headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+     body:JSON.stringify({
+       agent:'smart_tutor',
+       prompt:'اكتب جملة ترحيب واحدة موجزة لطالب يستعد لبكالوريا الجزائر 2027.'
+     })
+   });
+   const body=await response.json();
+   if(ownerRole!=='admin'||adminTab!=='ai')return;
+   result.textContent=response.ok&&typeof body.answer==='string'?
+     'نجح الاتصال! ردّ النموذج: '+body.answer.slice(0,500):
+     'تعذر إنشاء الإجابة ('+response.status+'): '+String(body.error||'خطأ غير معروف').slice(0,250);
+ }catch(error){
+   console.warn('Owner AI generation test failed',error);
+   result.textContent='فشل الاتصال بالخادم أو قراءة الرد. تحقّق من إعدادات Cloudflare.';
+ }
+}
 function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
@@ -313,7 +366,7 @@ function renderAdmin(){
        el('p','','الشعبة: '+(p.branch||'غير محددة')+' · التسجيل: '+date(p.created_at)));
      card.append(main);root.append(card);
    }
- }else{
+ }else if(adminTab==='audit'){
    if(!auditEntries.length){root.append(placeholder('لا توجد إجراءات','ستظهر قرارات الموافقة والرفض والحذف هنا.'));return;}
    for(const entry of auditEntries){
      const card=el('article','portal-admin-entry');
@@ -323,6 +376,8 @@ function renderAdmin(){
        el('p','',entry.target_id));
      card.append(main);root.append(card);
    }
+ }else if(adminTab==='ai'){
+   void inspectOwnerAI();
  }
 }
 async function moderate(type,id,decision){
