@@ -1,3 +1,33 @@
+## November 2026: dedicated premium login and signup page
+
+The public landing (`/`) stays a scrollable marketing page. It no longer
+contains login/password fields or account forms. Opening any landing sign-in
+or sign-up CTA now navigates to `/login/?tab=login|signup&role=student|collaborator`.
+
+| URL | Source | Contents |
+| --- | --- | --- |
+| `/` | `index.html` | Public landing without credential fields |
+| `/login/` | `login/index.html` | Dedicated RTL login/signup, password recovery, accessible labels and account type |
+| `/student/` | `student/index.html` | Student lessons, files, planning and AI |
+| `/contributor/` | `contributor/index.html` | Pending/approved contributor workspace |
+| `/admin/` | `admin/index.html` | Single verified owner dashboard |
+
+The login page has independent styling in `assets/auth-page.css` and reuses the
+existing Supabase authentication routines rather than inventing new security
+logic. The new registration email redirect now points to `/login/`, which
+must be included in Supabase Auth → Redirect URLs for the Cloudflare domain.
+Existing recovery links pointing at the old root are redirected to `/login/`
+without dropping the recovery token.
+
+Vite builds **five** HTML entries, and Cloudflare serves each by exact static
+asset path. CI validates all pages and generates desktop/mobile login previews.
+
+**Account cleanup:** Supabase Auth user accounts were cleaned in production
+as explicitly requested, preserving the verified Amira account and the single
+admin role owner. No account emails, passwords or user records were committed
+to GitHub. If the new deployment has not gone live, old frontend sessions
+may still carry expired tokens; users should log in again.
+
 ## November 2026: genuinely separate role-based pages
 
 Bac-pedia is a **Vite multi-page application**, no longer one enormous HTML file
