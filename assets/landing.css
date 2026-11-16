@@ -56,3 +56,11 @@ body:not(.authenticated) .login-gate:not(.hidden) .login-card{max-height:95vh;ov
 
 body.auth-modal-open{overflow:hidden}
 .landing [id]{scroll-margin-top:28px}
+
+/* Public page is a normal document, not a locked auth gate.
+   The old app CSS hid scrolling for all logged-out visitors. */
+html:has(body.public-mode){scroll-behavior:smooth;overflow-y:auto}
+body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y!important;height:auto!important;min-height:100vh}
+body.public-mode:not(.authenticated):not(.auth-modal-open) .landing{height:auto;min-height:100vh;overflow-x:clip;overflow-y:visible}
+body.public-mode.auth-modal-open{overflow:hidden!important}
+.landing section[id]{scroll-margin-top:40px}

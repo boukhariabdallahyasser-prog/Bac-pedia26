@@ -25,7 +25,10 @@ requireText(html,'href="/assets/app.css"','CSS independently loaded');
 requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
 requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
 requireText(html,'id="chapterContext"','Lesson detail area');
-for(const id of ['publicLanding','lpHeroTitle','lpDemoFlashcard','signupKindStudent','signupKindCollaborator','signupNameInput','page-flashcards','page-collaborate','flashDeckCreateForm','flashStudyCard','collaboratorApplyForm','collabResourceForm'])requireText(html,'id="'+id+'"','public/auth/community UI');
+if(html.includes('id="page-flashcards"')||html.includes('id="lpDemoFlashcard"')||html.includes('id="flashcards-preview"'))throw Error('Removed flashcard UI was reintroduced');
+const landingCSS=fs.readFileSync('assets/landing.css','utf8');
+requireText(landingCSS,'body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important','Public landing must remain vertically scrollable');
+for(const id of ['publicLanding','lpHeroTitle','signupKindStudent','signupKindCollaborator','signupNameInput','page-collaborate','collaboratorApplyForm','collabResourceForm'])requireText(html,'id="'+id+'"','public/auth/community UI');
 for(const css of ['/assets/landing.css','/assets/community.css'])requireText(html,'href="'+css+'"','new independent CSS');
 for(const asset of ['assets/landing.js','assets/community.js'])requireText(config,asset,'Vite runtime packaging');
 if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
@@ -66,7 +69,7 @@ if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not 
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
 requireText(app,"options:{data:{full_name:fullName,signup_intent:signupIntent}}",'signup role is explicitly only an intent');
-for(const marker of ["from('flashcard_decks')","from('flashcard_cards')","from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=",'status===\'approved\''])requireText(community,marker,'database-backed learning/community flows');
+for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=",'status===\'approved\''])requireText(community,marker,'database-backed learning/community flows');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 
