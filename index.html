@@ -213,6 +213,7 @@
         </div>
         <div class="ai-connection-banner">
           <div><strong><span class="ai-mode-dot" id="aiModeDot"></span><span id="aiModeTitle">أدوات المراجعة المحلية</span></strong><p id="aiModeDescription">الأدوات المحلية تعمل دون إنترنت؛ الإجابات التوليدية تتطلب ربط خدمة AI.</p></div>
+          <button class="btn" type="button" onclick="void checkAIAvailability()"><i class="fa-solid fa-rotate"></i> إعادة فحص AI</button>
           <button class="btn" onclick="document.getElementById('aiSetup').open=true;document.getElementById('aiSetup').scrollIntoView({behavior:'smooth',block:'center'})"><i class="fa-solid fa-sliders"></i> إعداد الذكاء الاصطناعي</button>
         </div>
         <details class="ai-setup" id="aiSetup">
