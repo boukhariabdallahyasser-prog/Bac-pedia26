@@ -1,3 +1,25 @@
+## Emergency fix: Cloudflare redirect loop (November 2026)
+
+Cloudflare's native `assets.html_handling = auto-trailing-slash` serves
+`/login/` directly from `/login/index.html`, and canonicalizes
+`/login/index.html` back to `/login/`. The old Worker intercepted
+`/login/` and internally fetched `/login/index.html`, creating an
+infinite HTTP 307 redirect loop. The same issue affected student, contributor
+and admin routes.
+
+**Fix:** Cloudflare static assets handle all five HTML pages directly.
+The Worker runs first only for `/api/*`, where it still authenticates and
+proxies Deploy.com AI. `wrangler.jsonc` uses native multi-page HTML handling
+without the former `single-page-application` fallback. No Supabase accounts,
+passwords, migrations or user data are changed.
+
+The GitHub workflow runs a local Wrangler server, tests direct and canonical
+role URLs with a low redirect limit, validates the correct page contents and
+checks the public landing. Wrangler packaging and Vite build also run.
+
+Cloudflare's production GitHub integration must deploy the updated `main`
+branch for the correction to reach the `workers.dev` URL.
+
 ## November 2026: dedicated premium login and signup page
 
 The public landing (`/`) stays a scrollable marketing page. It no longer
