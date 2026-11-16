@@ -9,6 +9,13 @@ const main=fs.readFileSync('src/main.js','utf8');
 const config=fs.readFileSync('vite.config.js','utf8');
 const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
+const curatorSql=fs.readFileSync('supabase/contributor_curator_fields_2026.sql','utf8');
+for(const token of ['collaborator_academic_branch_valid','resource_academic_branch_valid',
+  'resource_explained','resource_unit_required','admin_update_curated_resource',
+  'admin_update_contributor_profile','resubmit_contributor_resource','SECURITY INVOKER'])
+  requireText(curatorSql,token,'secure contributor moderation migration');
+if(curatorSql.includes('admin-yasser.ad@ad.co'))throw Error('Never store owner email in source');
+
 const wranglerConfig=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
 if(wranglerConfig.main!=='cloudflare/worker.js')throw Error('Cloudflare must deploy API Worker entrypoint');
 if(wranglerConfig.workers_dev!==true)throw Error('Public Cloudflare workers.dev route must be enabled');
@@ -30,7 +37,7 @@ function requireText(source, marker, label) {
   if(!source.includes(marker))throw Error('Missing '+label+': '+marker);
 }
 
-for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/landing.js','assets/community.js','src/main.js','vite.config.js','api/ai.js','cloudflare/worker.js']){
+for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/ai-format.js','assets/landing.js','assets/community.js','src/main.js','vite.config.js','api/ai.js','cloudflare/worker.js']){
   const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' has a syntax error:\\n'+result.stderr);
 }
@@ -41,7 +48,7 @@ requireText(html,'href="/assets/app.css"','CSS independently loaded');
 requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
 requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
 requireText(html,'id="chapterContext"','Lesson detail area');
-for(const id of ['page-admin','adminList','adminMetrics','collaboratorStatusPanel','contributorMetrics','signupCollabExtras','approvedResourceGrid'])requireText(html,'id="'+id+'"','role-separated interface');
+for(const id of ['page-admin','adminList','adminMetrics','adminSearch','adminReviewFilter','collabBranch','collabResourceBranch','aiOutput','collaboratorStatusPanel','contributorMetrics','signupCollabExtras','approvedResourceGrid'])requireText(html,'id="'+id+'"','role-separated interface');
 requireText(html,'href="/assets/portals.css"','portal stylesheet');
 requireText(html,'data-admin-tab="ai"','admin diagnostic tab');
 for(const value of ['async function inspectOwnerAI()','async function testOwnerAI()','agent:\'smart_tutor\'','Authorization:\'Bearer \'+token'])requireText(community,value,'admin-only AI test flow');
@@ -52,13 +59,13 @@ const landingCSS=fs.readFileSync('assets/landing.css','utf8');
 requireText(landingCSS,'body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important','Public landing must remain vertically scrollable');
 for(const id of ['publicLanding','lpHeroTitle','signupKindStudent','signupKindCollaborator','signupNameInput','page-collaborate','collaboratorApplyForm','collabResourceForm'])requireText(html,'id="'+id+'"','public/auth/community UI');
 for(const css of ['/assets/landing.css','/assets/community.css'])requireText(html,'href="'+css+'"','new independent CSS');
-for(const asset of ['assets/landing.js','assets/community.js'])requireText(config,asset,'Vite runtime packaging');
+for(const asset of ['assets/landing.js','assets/community.js','assets/ai-format.js'])requireText(config,asset,'Vite runtime packaging');
 if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
 requireText(config,'resources.json','resource manifest build packaging');
 requireText(config,'assets/legacy-app.js','legacy runtime build packaging');
 requireText(main,"from '@supabase/supabase-js'",'bundled Supabase dependency');
 requireText(main,'window.supabase={createClient}','legacy Supabase adapter');
-const bootPaths=['/auth-config.js','/assets/chapter-search.js','/assets/legacy-app.js','/assets/chapters.js','/assets/landing.js','/assets/community.js'];
+const bootPaths=['/auth-config.js','/assets/chapter-search.js','/assets/legacy-app.js','/assets/chapters.js','/assets/ai-format.js','/assets/landing.js','/assets/community.js'];
 for(const file of bootPaths)requireText(main,file,'ordered bootstrap');
 if(bootPaths.some((file,i)=>i&&main.indexOf(file)<main.indexOf(bootPaths[i-1])))throw Error('Runtime scripts are loaded in an unsafe order');
 
@@ -90,16 +97,23 @@ if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
+requireText(app,'سؤال الطالب (الأولوية القصوى)', 'AI should prioritize precise user questions'.replace('سؤال الطالب (الأولوية القصوى)','السؤال الذي يجب الإجابة عنه أولاً'));
+requireText(app,'if(window.renderAIAnswer)window.renderAIAnswer(out,ans);','model output formatted safely');
+requireText(html,'class="result-box ai-answer"','readable AI result area');
+const worker=fs.readFileSync('cloudflare/worker.js','utf8');
+for(const part of ['QUESTION EXACTE',"reasoning_effort:'low'",'max_completion_tokens:4096'])
+  requireText(worker,part,'question-first Deploy backend');
+
 requireText(app,'signup_intent:signupIntent,...contributorInfo','signup metadata is onboarding only');
 requireText(app,'emailRedirectTo:location.origin+location.pathname','confirmation links must return to current origin');
-for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
+for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 
 for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','DEPLOY_API_KEY','DEPLOY_API_ENDPOINT','DEPLOY_MODEL_ID'])requireText(api,marker,'Deploy server-side security');
 if(/GEMINI_API_KEY|generativelanguage\\.googleapis\\.com|gemini-3\\./.test(api))throw Error('Unexpected obsolete Gemini integration');
 
-for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/check-cloudflare-worker.mjs','scripts/validate-resources.mjs']){
+for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/check-ai-render.mjs','scripts/check-cloudflare-worker.mjs','scripts/validate-resources.mjs']){
   const result=spawnSync(process.execPath,[file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' failed:\\n'+(result.stderr||result.stdout));
   console.log((result.stdout||'').trim());
