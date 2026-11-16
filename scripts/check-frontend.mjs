@@ -47,6 +47,13 @@ try{
   if(!html.includes('callProxyAI(agentId,ctx)'))throw Error('Student AI requests must use the authenticated server proxy');
   if(html.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Shared unscoped student cache must not be loaded');
   if(!html.includes('userStorageKey(studentAuthUser.id)'))throw Error('Student local cache is not scoped to the authenticated user');
+  for(const file of ['assets/chapter-search.js','assets/chapters.js']){
+    const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
+    if(check.status!==0)throw Error('Invalid external JavaScript '+file+': '+check.stderr);
+  }
+  const resourcesCheck=spawnSync(process.execPath,['scripts/validate-resources.mjs'],{encoding:'utf8'});
+  if(resourcesCheck.status!==0)throw Error('Resource manifest validation failed:\\n'+(resourcesCheck.stderr||resourcesCheck.stdout));
+  console.log((resourcesCheck.stdout||'').trim());
   const apiCheck=spawnSync(process.execPath,['--input-type=module','--check'],{input:api,encoding:'utf8'});
   if(apiCheck.status!==0)throw Error(`AI API syntax error:\n${apiCheck.stderr}`);
   if(!api.includes('match(/^Bearer\\s+(.+)$/i)'))throw Error('AI API Bearer token parser is not using the expected whitespace matcher');
