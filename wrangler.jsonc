@@ -13,5 +13,7 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "workers_dev": true,
+  "keep_vars": true
 }
