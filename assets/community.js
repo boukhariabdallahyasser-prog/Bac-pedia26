@@ -7,7 +7,9 @@ const user=()=>typeof studentAuthUser==='undefined'?null:studentAuthUser;
 const txt=v=>String(v??'').trim();
 const labels={pending:'قيد المراجعة',approved:'منشور / مقبول',rejected:'مرفوض'};
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null;
+const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
+const branchValid=value=>branchChoices.includes(value);
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -34,7 +36,7 @@ function statusPill(status){return el('span','comm-state-tag '+status,statusLabe
 async function loadMyApplication(id){
  const d=db();if(!d)return null;
  const {data,error}=await d.from('collaborator_applications')
-   .select('user_id,display_name,organization,contribution_type,motivation,status,created_at')
+   .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at')
    .eq('user_id',id).maybeSingle();
  if(error)throw error;return data||null;
 }
@@ -75,11 +77,9 @@ async function refreshPortalRole(){
    }
    if(user()?.id!==id)return ownerRole;
    request=application.data||null;
-   if(!request&&current.user_metadata?.signup_intent==='collaborator'){
-     await ensureApplicationFromSignup(current);
-     request=await loadMyApplication(id);
-   }
-   ownerRole=verifiedOwner?'admin':request?'applicant':'student';
+   // User metadata selects onboarding UI only; no publication permission.
+   const intendsContribution=current.user_metadata?.signup_intent==='collaborator';
+   ownerRole=verifiedOwner?'admin':(request||intendsContribution)?'applicant':'student';
    if(!verifiedOwner&&request?.status==='approved')ownerRole='contributor';
  }catch(error){
    console.warn('Portal access check failed',error);
@@ -101,7 +101,7 @@ async function loadApprovedResources(){
  const id=user().id;
  try{
    const {data,error}=await db().from('collaborator_resources')
-     .select('id,title,subject,description,resource_url,resource_kind,unit_title,status')
+     .select('id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status')
      .eq('status','approved').order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
    if(user()?.id!==id||ownerRole!=='student')return;
@@ -110,7 +110,7 @@ async function loadApprovedResources(){
    for(const item of data){
      const card=el('article','portal-resource');
      card.append(el('span','portal-type',kind[item.resource_kind]||'مورد'),
-       el('h3','',item.title),el('p','',item.subject+(item.unit_title?' · '+item.unit_title:'')),
+       el('h3','',item.title),el('p','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+(item.unit_title?' · '+item.unit_title:'')),
        el('p','',item.description||''));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فتح المصدر الموثق');
@@ -126,7 +126,7 @@ async function loadContributor(){
  try{
    request=await loadMyApplication(id);
    const result=await db().from('collaborator_resources')
-     .select('id,contributor_id,title,subject,description,resource_url,resource_kind,unit_title,status,created_at')
+     .select('id,contributor_id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
      .eq('contributor_id',id).order('created_at',{ascending:false}).limit(200);
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
@@ -142,11 +142,12 @@ function renderContributor(){
  if(!request){
    panel.append(el('p','','قدّم طلباً للمساهمة ليتم مراجعته. لا تمنح استمارة التسجيل أي صلاحية نشر.'));
  }else{
-   panel.append(statusPill(request.status),el('p','',request.display_name+' · '+request.organization));
+   panel.append(statusPill(request.status),el('p','',request.display_name+' · '+request.organization+' · '+(request.academic_branch||'الشعبة غير محددة')));
    panel.append(el('p','',active?'حسابك معتمد. يمكنك إضافة روابط Google Drive وتعديل المقترحات قبل النشر.':
      request.status==='pending'?'طلبك مسجّل، في انتظار مراجعة الإدارة.':'تم إيقاف صلاحية المساهمة. يمكنك التواصل مع الإدارة.'));
  }
- apply.classList.toggle('hidden',!!request);
+ if(request&&['pending','rejected'].includes(request.status))panel.append(button('تعديل بياناتي',()=>editContributorProfile(),'portal-action'));
+ apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
  metric('contributorMetrics',[
    resources.length,
@@ -169,6 +170,7 @@ function renderContributor(){
    }
    if(active){
      if(item.status!=='approved')tools.append(button('تعديل',()=>editResource(item)));
+     if(item.status==='rejected')tools.append(button('إعادة إرسال',()=>void resubmitResource(item.id),'portal-action success'));
      tools.append(button('حذف',()=>void removeResource(item),'portal-action danger'));
    }
    card.append(tools);grid.append(card);
@@ -178,6 +180,7 @@ function editResource(item){
  editId=item.id;
  $('collabResourceTitle').value=item.title;
  $('collabResourceSubject').value=item.subject;
+ $('collabResourceBranch').value=item.academic_branch||'جميع الشعب';
  $('collabResourceKind').value=item.resource_kind||'other';
  $('collabResourceUnit').value=item.unit_title||'';
  $('collabResourceUrl').value=item.resource_url;
@@ -199,12 +202,16 @@ async function saveResource(event){
  const data={
    title:txt($('collabResourceTitle').value),
    subject:txt($('collabResourceSubject').value),
+   academic_branch:$('collabResourceBranch').value,
    resource_kind:$('collabResourceKind').value,
    unit_title:txt($('collabResourceUnit').value),
    resource_url:txt($('collabResourceUrl').value),
    description:txt($('collabResourceDescription').value)
  };
- if(data.title.length<4||data.subject.length<2||!validUrl(data.resource_url)){notify('أدخل عنواناً ومادة ورابط Google Drive صحيحاً','warning');return;}
+ if(data.title.length<4||data.subject.length<2||!branchValid(data.academic_branch)||
+    data.unit_title.length<2||data.description.length<12||!validUrl(data.resource_url)){
+   notify('الشعبة، المادة، الوحدة، الوصف المفيد ورابط Google Drive جميعها مطلوبة','warning');return;
+ }
  busy=true;
  try{
    const client=db(),result=editId?
@@ -225,17 +232,26 @@ async function removeResource(item){
  }catch(error){failed(error,'حذف المورد');}finally{busy=false;}
 }
 async function sendApplication(event){
- event.preventDefault();if(busy||!user()||request)return;
+ event.preventDefault();if(busy||!user()||(request&&!profileEditing))return;
  const row={
    user_id:user().id,display_name:txt($('collabName').value),organization:txt($('collabOrg').value),
-   contribution_type:$('collabType').value,motivation:txt($('collabMotivation').value)
+   contribution_type:$('collabType').value,motivation:txt($('collabMotivation').value),
+   academic_branch:$('collabBranch').value
  };
- if(row.display_name.length<2||row.organization.length<2||row.motivation.length<15){notify('أكمل بيانات المساهمة','warning');return;}
+ if(row.display_name.length<2||row.organization.length<2||row.motivation.length<15||!branchValid(row.academic_branch)){notify('الاسم والمؤسسة والشعبة ووصف المساهمة مطلوبة','warning');return;}
  busy=true;
  try{
-   const result=await db().from('collaborator_applications').insert(row);
+   const result=profileEditing&&request?
+     await db().from('collaborator_applications').update({
+       display_name:row.display_name,organization:row.organization,
+       contribution_type:row.contribution_type,motivation:row.motivation,
+       academic_branch:row.academic_branch
+     }).eq('user_id',user().id):
+     await db().from('collaborator_applications').insert(row);
    if(result.error)throw result.error;
-   request=await loadMyApplication(user().id);await loadContributor();notify('تم إرسال الطلب للإدارة','success');
+   profileEditing=false;resetContributorProfileForm();
+   request=await loadMyApplication(user().id);await loadContributor();
+   notify('تم حفظ بياناتك للمراجعة','success');
  }catch(error){failed(error,'تقديم طلب المساهمة');}finally{busy=false;}
 }
 async function loadAdmin(){
@@ -246,9 +262,9 @@ async function loadAdmin(){
    const client=db();
    const [applications,proposals,students,audit]=await Promise.all([
      client.from('collaborator_applications')
-       .select('user_id,display_name,organization,contribution_type,motivation,status,created_at').order('created_at',{ascending:false}).limit(250),
+       .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
-       .select('id,contributor_id,title,subject,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
+       .select('id,contributor_id,title,subject,academic_branch,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
      client.from('student_profiles')
        .select('user_id,full_name,email,branch,created_at,last_activity_at').order('created_at',{ascending:false}).limit(250),
      client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100)
