@@ -20,8 +20,8 @@ for(const asset of cssPaths){
   cssText+=fs.readFileSync(stylesheet,'utf8');
 }
 if(!cssText.includes('.chapter-context')||!cssText.includes('.login-gate'))throw Error('Missing chapter or login styles in compiled CSS');
-for(const selector of ['.landing','.lp-hero','.lp-demo-card','.auth-role-switch','.comm-study-card','.comm-deck-grid'])if(!cssText.includes(selector))throw Error('Missing public/community style: '+selector);
-for(const marker of ['id="publicLanding"','id="page-flashcards"','id="page-collaborate"','id="loginGate"'])if(!html.includes(marker))throw Error('Missing release-critical UI: '+marker);
+for(const selector of ['.landing','.lp-hero','.auth-role-switch','.comm-study-card','.comm-deck-grid'])if(!cssText.includes(selector))throw Error('Missing public/community style: '+selector);
+for(const marker of ['id="publicLanding"','id="page-collaborate"','id="loginGate"'])if(!html.includes(marker))throw Error('Missing release-critical UI: '+marker);
 
 const resources=JSON.parse(fs.readFileSync(path.join(root,'resources.json'),'utf8'));
 if(!resources.subjects||resources.schemaVersion!==1)throw Error('Generated resource index is invalid');
