@@ -1,25 +1,33 @@
-// Vercel serverless function. Set GEMINI_API_KEY in Vercel project environment variables.
-// Keep the provider metadata check cached across warm invocations for 60 seconds.
-let aiProbeCache={at:0,result:null};
-const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','flashcards','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
+// Server-side Deploy.com API adapter. Never place DEPLOY_API_KEY into browser code.
+// An inference URL/model must come from verified provider documentation, not guesswork.
+const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
+function deployConfig(){
+  const key=process.env.DEPLOY_API_KEY;
+  const endpoint=process.env.DEPLOY_API_ENDPOINT;
+  const model=process.env.DEPLOY_MODEL_ID;
+  if(!key||!endpoint||!model)return null;
+  try{
+    const url=new URL(endpoint);
+    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)return null;
+    const blocked=/^(localhost|127\\.|10\\.|192\\.168\\.|169\\.254\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.)/i;
+    if(blocked.test(url.hostname))return null;
+    return {key,url:url.toString(),model};
+  }catch{return null;}
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
   // Public health check confirms provider reachability, not merely that an API URL exists.
   // It never discloses the configured secret or consumes a student's daily quota.
   if(req.method==='GET'){
-    if(!process.env.GEMINI_API_KEY)return res.status(200).json({ready:false,reason:'not_configured'});
-    if(aiProbeCache.result&&Date.now()-aiProbeCache.at<60000)return res.status(200).json(aiProbeCache.result);
-    try{
-      const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),5000);
-      let response;
-      try{
-        response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash',{
-          method:'GET',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY},
-          signal:controller.signal
-        });
-      }finally{clearTimeout(timeout);}
-      const result={ready:response.ok,reason:response.ok?'ok':response.status===400||response.status===401||response.status===403?'provider_auth':'provider_error'};
+    const ready=Boolean(deployConfig());
+    return res.status(200).json({
+      ready,verified:false,
+      provider:'deploy',
+      reason:ready?'configured_unverified':'provider_unconfigured'
+    });
+  }
+t result={ready:response.ok,reason:response.ok?'ok':response.status===400||response.status===401||response.status===403?'provider_auth':'provider_error'};
       aiProbeCache={at:Date.now(),result};
       return res.status(200).json(result);
     }catch(error){
@@ -28,6 +36,7 @@ export default async function handler(req,res){
       return res.status(200).json(result);
     }
   }
+  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   const siteOrigin='https://'+req.headers.host;
   if(req.headers.origin&&req.headers.origin!==siteOrigin)return res.status(403).json({error:'Origin not allowed'});
@@ -47,7 +56,8 @@ export default async function handler(req,res){
     return res.status(503).json({error:'Unable to verify session'});
   }
   if(Number(req.headers['content-length']||0)>32000)return res.status(413).json({error:'Request too large'});
-  if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'AI service is not configured. Set GEMINI_API_KEY in Vercel.'});
+  const deploy=deployConfig();
+  if(!deploy)return res.status(503).json({error:'Deploy.com provider configuration incomplete. Set DEPLOY_API_KEY, DEPLOY_API_ENDPOINT and DEPLOY_MODEL_ID.'});
   const {agent,prompt}=req.body||{};
   if(!allowedAgents.has(agent)||typeof prompt!=='string'||!prompt.trim()||prompt.length>14000)return res.status(400).json({error:'Invalid agent or prompt'});
 
@@ -68,19 +78,24 @@ export default async function handler(req,res){
     const timer=setTimeout(()=>controller.abort(),25000);
     let response;
     try{
-      response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',{
+      response=await fetch(deploy.url,{
         method:'POST',signal:controller.signal,
-        headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+deploy.key},
         body:JSON.stringify({
-          systemInstruction:{parts:[{text:'You are Bac-pedia 2027, a rigorous tutor for the Algerian baccalaureate. Respond in the language used by the student (Arabic or French). Explain concepts accurately, structure answers clearly, adapt to the selected subject and level, and never invent official exam facts or references.'}]},
-          contents:[{role:'user',parts:[{text:prompt}]}],
-          generationConfig:{maxOutputTokens:4096,thinkingConfig:{thinkingLevel:'medium'}}
+          model:deploy.model,
+          messages:[
+            {role:'system',content:'You are Bac-pedia 2027, a rigorous tutor for the Algerian baccalaureate. Answer the student in Arabic or French, explain correctly, and never invent official examination facts.'},
+            {role:'user',content:prompt}
+          ],
+          temperature:0.5,
+          max_tokens:2048
         })
       });
     }finally{clearTimeout(timer);}
-    if(!response.ok)return res.status(502).json({error:'AI provider unavailable'});
+    if(!response.ok)return res.status(502).json({error:'Deploy.com request failed. Check the documented endpoint, model and key.'});
     const result=await response.json();
-    const answer=result?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim();
+    const answer=typeof result?.choices?.[0]?.message?.content==='string'?
+      result.choices[0].message.content.trim():'';
     if(!answer)return res.status(502).json({error:'AI provider returned no answer'});
     return res.status(200).json({answer});
   }catch(error){
