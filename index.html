@@ -594,7 +594,18 @@
     .sub-branch-status.is-available{color:#34d399}
     .sub-branch-status.is-unavailable{color:#f59e0b}
     #subBranchRow .chip{display:flex;flex-direction:column;align-items:center;gap:3px}
-  </style>
+  
+    /* Study library visual system */
+    :root{--primary:#14b8a6;--primary-dark:#0f766e;--primary-light:#5eead4;--secondary:#0d9488;--bg-main:#101b27;--bg-card:#172633;--bg-glass:#203341;--border:#304450;--text-muted:#a6b8c4;--sidebar:280px}
+    body.light-mode{--bg-main:#f3f6f5;--bg-card:#fff;--bg-glass:#edf4f1;--text-main:#172e2b;--text-sub:#425e59;--text-muted:#546f69;--border:#d3e2dc;--primary-light:#0f766e}
+    #bgCanvas{display:none}.sidebar{background:var(--bg-card);box-shadow:none}.topbar{background:var(--bg-card);backdrop-filter:none;box-shadow:none}
+    .hero{background:linear-gradient(120deg,#123f3b,#172d3a);box-shadow:none}.hero::after{display:none}.hero h1,.light-mode .hero h1{color:#f0fdfa;background:none}.hero p{color:#c0d9d4}
+    .card{backdrop-filter:none;box-shadow:none;border-radius:16px}.btn.primary{background:var(--primary-dark)}.btn:hover,.card:hover{transform:none;box-shadow:none}.subject-card{padding:24px}.subject-name{font-size:1.25rem}.subject-desc{line-height:1.9}
+    .library-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}.library-toolbar label{display:flex;align-items:center;gap:10px}.library-toolbar p{margin-inline-start:auto;color:var(--text-muted)}
+    .library-result{display:flex;flex-direction:column;gap:14px;min-height:170px}.library-result h3{line-height:1.8}.library-link{margin-top:auto;color:var(--primary-light);font-weight:700}
+    @media(max-width:600px){.library-toolbar{gap:8px}.library-toolbar .btn{padding:10px;font-size:.85rem}.library-toolbar label{width:100%}.library-toolbar select{flex:1}.library-toolbar p{width:100%;margin:0}}
+
+</style>
 </head>
 <body>
 
@@ -743,14 +754,15 @@
         </div>
       </section>
       <section class="page" id="page-files">
-        <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div class="section-head"><div><h2>مكتبة الدراسة</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
         <div class="card">
           <div class="grid-2">
-            <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
-            <select id="sortSelect" class="select" onchange="state.sort=this.value;saveState();renderSubjects()"><option value="default">ترتيب عادي</option><option value="available">المتاحة أولاً</option><option value="progress">الأقل تقدماً أولاً</option><option value="az">أبجدي</option></select>
+            <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة أو فصل أو ملف… مثل الدوال أو maths" oninput="renderSubjects()"></div>
+            <select aria-label="ترتيب النتائج" id="sortSelect" class="select" onchange="state.sort=this.value;saveState();renderSubjects()"><option value="default">ترتيب عادي</option><option value="available">المتاحة أولاً</option><option value="progress">الأقل تقدماً أولاً</option><option value="az">أبجدي</option></select>
           </div>
           <div class="pill-row" id="fileFilters" style="margin-top:12px"></div>
         </div>
+        <div class="library-toolbar"><label>عرض <select id="libraryView" class="select" onchange="renderSubjects()"><option value="subjects">المواد</option><option value="chapters">الفصول والموارد</option></select></label><button class="btn" onclick="openSidebar(true)">تغيير الشعبة</button><button class="btn" onclick="resetLibrarySearch()">مسح البحث والفلاتر</button><p id="libraryCount" role="status"></p></div>
         <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
         <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
       </section>
@@ -1017,7 +1029,7 @@
     }
 
     function escapeHtml(t){return String(t??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-    function normalize(s){return String(s||'').toLowerCase().replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
+    function normalize(s){return String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670ـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').trim();}
     function subjectLabel(id,sub=allSubjects[id]){if(!sub)return''; if(id==='third_lang'&&state.subBranch)return({german:'اللغة الألمانية',spanish:'اللغة الإسبانية',italian:'اللغة الإيطالية'}[state.subBranch]||sub.name); if(id==='tech_subject'&&state.subBranch)return({civil:'الهندسة المدنية',electrical:'الهندسة الكهربائية',mechanical:'الهندسة الميكانيكية',process:'هندسة الطرائق'}[state.subBranch]||sub.name); return sub.name;}
     function subjectDesc(id,sub=allSubjects[id]){if(id==='third_lang'&&state.subBranch)return'دروس وتمارين '+subjectLabel(id,sub); if(id==='tech_subject'&&state.subBranch)return'ملفات ودروس '+subjectLabel(id,sub); return sub?.desc||'';}
     function getSubjects(){return Object.entries(allSubjects).filter(([id,s])=>s.branches.includes(state.branch)&&(!Array.isArray(s.subBranches)||s.subBranches.includes(state.subBranch))).map(([id,s])=>({id,...s,name:subjectLabel(id,s),desc:subjectDesc(id,s)}));}
@@ -1190,12 +1202,55 @@
     function selectBranch(id){state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');if(!branches[id].subs || window.matchMedia('(max-width:980px)').matches)closeSidebar();}
     function selectSubBranch(id){state.subBranch=id;saveState();renderAll();showToast('تم اختيار '+(branches[state.branch].subs?.[id]||''),'success');closeSidebar();}
     function renderFilters(){const filters=[['all','الكل'],['available','متاحة'],['preparing','قيد التحضير'],['favorites','المفضلة'],['special','موارد عامة']];$('#fileFilters').innerHTML=filters.map(f=>`<button class="chip ${state.filter===f[0]?'active':''}" onclick="state.filter='${f[0]}';saveState();renderSubjects();renderFilters()">${f[1]}</button>`).join('');$('#sortSelect').value=state.sort||'default';}
-    function renderSubjects(){const q=normalize($('#searchInput')?.value||'');let list=getSubjects().filter(s=>!q||normalize(s.name+' '+s.desc+' '+s.id).includes(q));if(state.filter==='available')list=list.filter(s=>!!s.url);if(state.filter==='preparing')list=list.filter(s=>!s.url);if(state.filter==='favorites')list=list.filter(s=>state.favorites.includes(s.id));if(state.filter==='special')list=list.filter(s=>s.special);if(state.sort==='available')list.sort((a,b)=>(!!b.url)-(!!a.url));if(state.sort==='progress')list.sort((a,b)=>((a.special?1:0)-(b.special?1:0)) || ((state.progress[a.id]||0)-(state.progress[b.id]||0)));if(state.sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));$('#subjectsGrid').innerHTML=list.map(subjectCard).join('');$('#noResults').classList.toggle('hide',!!list.length);renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();}
+    const subjectAliases={math:'math maths mathematiques mathematics رياضيات',physics:'physique physics فيزياء',natural:'science sciences svt علوم',french:'francais french فرنسية',english:'anglais english انجليزية',arabic:'arabe arabic عربية',history:'histoire geography geographie تاريخ جغرافيا',philo:'philosophie philosophy فلسفة',islamic:'islamique اسلامية'};
+    function libraryResources(subject){
+      if(!subject.url)return [];
+      const entry=resourceManifest?.subjects?.[subject.id];
+      const categories=entry?.categories||canonicalDriveFolders[subject.id]?.[1].map(([title,id])=>({title,url:'https://drive.google.com/drive/folders/'+id,type:'folder'}))||[];
+      const rows=categories.flatMap(category=>[category,...(category.items||[])]).concat(entry?.items||[]);
+      const seen=new Set();
+      return rows.filter(row=>{if(!isDriveResourceUrl(row.url)||seen.has(row.url))return false;seen.add(row.url);return true;});
+    }
+    function libraryMatches(query,text){
+      const haystack=normalize(text);
+      return normalize(query).split(/\s+/).filter(Boolean).every(word=>haystack.includes(word));
+    }
+    function resetLibrarySearch(){
+      $('#searchInput').value='';state.filter='all';state.sort='default';
+      saveState();renderFilters();renderSubjects();$('#searchInput').focus();
+    }
+    function renderSubjects(){
+      const query=$('#searchInput')?.value||'';
+      const chapterView=$('#libraryView')?.value==='chapters';
+      let subjects=getSubjects();
+      if(state.filter==='available')subjects=subjects.filter(s=>!!s.url);
+      if(state.filter==='preparing')subjects=subjects.filter(s=>!s.url);
+      if(state.filter==='favorites')subjects=subjects.filter(s=>state.favorites.includes(s.id));
+      if(state.filter==='special')subjects=subjects.filter(s=>s.special);
+      if(state.sort==='available')subjects.sort((a,b)=>Number(!!b.url)-Number(!!a.url));
+      if(state.sort==='progress')subjects.sort((a,b)=>Number(!!a.special)-Number(!!b.special)||(state.progress[a.id]||0)-(state.progress[b.id]||0));
+      if(state.sort==='az')subjects.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+      const cards=[];
+      for(const subject of subjects){
+        const aliases=subjectAliases[subject.id.split('_')[0]]||'';
+        const context=subject.name+' '+aliases;
+        const resources=libraryResources(subject);
+        const matched=resources.filter(row=>libraryMatches(query,context+' '+row.title));
+        if(!chapterView&&libraryMatches(query,context+' '+subject.desc+' '+resources.map(r=>r.title).join(' ')))cards.push(subjectCard(subject));
+        if(chapterView||query.trim())for(const row of matched){
+          cards.push(`<a class="card library-result" href="${escapeHtml(row.url)}" target="_blank" rel="noopener noreferrer"><span class="soft">${escapeHtml(subject.name)} · ${row.type==='folder'?'فصل / مجلد':'ملف'}</span><h3>${escapeHtml(row.title||'مورد دراسي')}</h3><span class="library-link">فتح في Google Drive ↗</span></a>`);
+        }
+      }
+      $('#subjectsGrid').innerHTML=cards.join('');
+      $('#noResults').classList.toggle('hide',cards.length>0);
+      $('#libraryCount').textContent=cards.length+' نتيجة';
+      renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();
+    }
     function subjectCard(s){
       const fav=state.favorites.includes(s.id),ok=!!s.url,isResource=!!s.special,prog=isResource?0:(state.progress[s.id]||0);
       const progressHtml=isResource?'':`<div class="year-progress" style="margin:0 0 12px"><span style="width:${prog}%"></span></div>`;
       const typeText=isResource?'مورد عام':`${prog}% تقدم`;
-      return`<article class="card subject-card ${isResource?'resource-card':''}" style="--accent-grad:${s.color}" onclick="openSubjectById('${s.id}')"><div class="subject-top"><div class="subject-icon"><i class="${s.icon}"></i></div><div class="subject-actions"><button class="round-btn ${fav?'active':''}" onclick="event.stopPropagation();toggleFavorite('${s.id}')"><i class="${fav?'fa-solid':'fa-regular'} fa-heart"></i></button><button class="round-btn" onclick="event.stopPropagation();shareSubject('${s.id}')"><i class="fa-solid fa-share-nodes"></i></button></div></div><div class="subject-name">${escapeHtml(s.name)}</div><p class="subject-desc">${escapeHtml(s.desc)}</p>${progressHtml}<div class="subject-footer"><span class="badge ${ok?'ok':'wait'}">${ok?'متاحة':'قيد التحضير'}</span><span class="soft">${typeText}</span></div></article>`;
+      return`<article tabindex="0" role="button" onkeydown="if(event.target===this &amp;&amp; (event.key==='Enter'||event.key===' ')){event.preventDefault();this.click()}" class="card subject-card ${isResource?'resource-card':''}" style="--accent-grad:${s.color}" onclick="openSubjectById('${s.id}')"><div class="subject-top"><div class="subject-icon"><i class="${s.icon}"></i></div><div class="subject-actions"><button class="round-btn ${fav?'active':''}" aria-label="تبديل المفضلة" onclick="event.stopPropagation();toggleFavorite('${s.id}')"><i class="${fav?'fa-solid':'fa-regular'} fa-heart"></i></button><button class="round-btn" aria-label="مشاركة المادة" onclick="event.stopPropagation();shareSubject('${s.id}')"><i class="fa-solid fa-share-nodes"></i></button></div></div><div class="subject-name">${escapeHtml(s.name)}</div><p class="subject-desc">${escapeHtml(s.desc)}</p>${progressHtml}<div class="subject-footer"><span class="badge ${ok?'ok':'wait'}">${ok?'متاحة':'قيد التحضير'}</span><span class="soft">${typeText}</span></div></article>`;
     }
     const canonicalDriveFolders={"math_math":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"french_sci":["1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",[["دروس","11UjJzruGDNXKoPMwnBV31O23x3CZ70CM"],["مواضيع وتمارين","16EFEC71B81BpRy1nrazmGk32s8PFEMJH"],["مصطلحات","1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q"],["المراجعة النهائية","10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB"]]],"arabic_sci":["19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",[["المراجعة النهائية","1nmG088y658tdbXtLpsjMt79lRK-dRdbs"],["دروس","1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk"],["تطبيقات ومواضيع","1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM"]]],"english_sci":["1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",[["Paragraphs","1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y"],["مصطلحات","1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO"],["مواضيع وتمارين","12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7"],["دروس","18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM"]]],"natural_math":["1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",[["نصوص علمية وملفات","13M7tPzxRcng3c1XpO-BXG_ti_zlmV481"],["المراجعة النهائية","10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn"],["منهجية","1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY"],["تمارين + بكالوريات","19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5"]]],"philo_sci":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"islamic":["1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk",[["المراجعة النهائية","1WNSLXbprV__yMqqNLHdMWcO2e7r67QIT"],["ملخصات ودروس PDF","1_MVnd4jCdHutVO5YhYXc_JNTdwA3vOMT"],["الدروس","1OHMj2ks5L3ZRXSrP09SDYBIpbLXcMK1A"],["التطبيقات والتمارين","19hdtiqy_sNvkcB--i-L8073ZzPVQK55p"]]],"history_sci":["1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",[["المراجعة النهائية","1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A"],["منهجية","1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY"],["ملخصات ودروس PDF","1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo"],["الدروس","1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9"],["التطبيقات والتمارين","1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh"]]],"bac_math":["1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",[["الرياضيات","1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B"],["الاجتماعيات","1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc"],["الإنجليزية","1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv"],["الشريعة","1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH"],["العربية","1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW"],["الفيزياء","1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy"],["العلوم الطبيعية","1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-"],["الفلسفة","14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB"],["الفرنسية","1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY"]]],"exams":["1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",[]],"math_science":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_tech":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_lit":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_eco":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"natural_science":["1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",[["نصوص علمية وملفات","13M7tPzxRcng3c1XpO-BXG_ti_zlmV481"],["المراجعة النهائية","10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn"],["منهجية","1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY"],["تمارين + بكالوريات","19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5"]]],"arabic_lit":["19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",[["المراجعة النهائية","1nmG088y658tdbXtLpsjMt79lRK-dRdbs"],["دروس","1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk"],["تطبيقات ومواضيع","1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM"]]],"french_lit":["1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",[["دروس","11UjJzruGDNXKoPMwnBV31O23x3CZ70CM"],["مواضيع وتمارين","16EFEC71B81BpRy1nrazmGk32s8PFEMJH"],["مصطلحات","1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q"],["المراجعة النهائية","10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB"]]],"english_lit":["1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",[["Paragraphs","1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y"],["مصطلحات","1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO"],["مواضيع وتمارين","12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7"],["دروس","18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM"]]],"history_lit":["1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",[["المراجعة النهائية","1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A"],["منهجية","1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY"],["ملخصات ودروس PDF","1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo"],["الدروس","1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9"],["التطبيقات والتمارين","1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh"]]],"philo_lit":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"philo_lang":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"philo_tech":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]]};
     function applyCanonicalDriveLinks(){for(const [id,[folderId]] of Object.entries(canonicalDriveFolders)){if(allSubjects[id])allSubjects[id].url='https://drive.google.com/drive/folders/'+folderId;}}
