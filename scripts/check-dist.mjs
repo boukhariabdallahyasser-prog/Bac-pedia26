@@ -1,0 +1,22 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve('dist');
+const required=['index.html','auth-config.js','resources.json','assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js'];
+for(const name of required){
+  const file=path.join(root,name);
+  if(!fs.existsSync(file)||fs.statSync(file).size===0)throw Error('Build output missing: '+name);
+}
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+if(!/<script[^>]+type="module"[^>]+src="\/assets\//.test(html)&&!/<script[^>]+src="\/assets\/[^"]+"[^>]+type="module"/.test(html)){
+  throw Error('No bundled JS module in built HTML');
+}
+if(/\/src\/main\.js/.test(html))throw Error('Uncompiled Vite entrypoint in build');
+const resources=JSON.parse(fs.readFileSync(path.join(root,'resources.json'),'utf8'));
+if(!resources.subjects||resources.schemaVersion!==1)throw Error('Generated resource index is invalid');
+const jsFiles=fs.readdirSync(path.join(root,'assets')).filter(x=>x.endsWith('.js'));
+if(jsFiles.length<4)throw Error('Missing bundled SDK or classic scripts');
+const boot=jsFiles.filter(x=>/^main-[a-z0-9_-]+\.js$/i.test(x)||/^index-[a-z0-9_-]+\.js$/i.test(x));
+if(!boot.length)throw Error('Bundled entry JavaScript not found');
+const entry=fs.readFileSync(path.join(root,'assets',boot[0]),'utf8');
+if(!entry.includes('legacy-app.js')||!entry.includes('chapter-search.js'))throw Error('Runtime bootstrap not present in compiled JS');
+console.log('Vite production build verified: '+required.length+' static resources and '+jsFiles.length+' JavaScript bundles.');
