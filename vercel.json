@@ -4,5 +4,8 @@
     "api/ai.js": {
       "maxDuration": 30
     }
-  }
+  },
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }
