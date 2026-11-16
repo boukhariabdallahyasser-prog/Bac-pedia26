@@ -40,9 +40,16 @@ for(const selector of ['.landing','.lp-hero','.auth-role-switch','.comm-study-ca
 if(!html.includes('id="publicLanding"')||html.includes('id="loginGate"'))throw Error('Public landing must not contain login form');
 for(const marker of ['id="loginGate"','id="loginEmailInput"','id="signupEmailInput"','id="passwordRecoveryPanel"'])
   if(!loginHtml.includes(marker))throw Error('Missing login interface: '+marker);
-const loginCss=path.join(root,'assets','auth-page.css');
-if(!fs.existsSync(loginCss))throw Error('Dedicated login stylesheet not bundled');
-if(!loginHtml.includes('auth-page.css'))throw Error('Login page has no dedicated stylesheet');
+const loginStylePaths=[...loginHtml.matchAll(/<link[^>]+href="([^"]+\\.css)"/g)]
+  .map(m=>m[1]).filter(href=>href.startsWith('/'));
+let loginStyles='';
+for(const href of loginStylePaths){
+  const filename=path.join(root,href.replace(/^\\//,''));
+  if(!fs.existsSync(filename))throw Error('Login has a broken built stylesheet: '+href);
+  loginStyles+=fs.readFileSync(filename,'utf8');
+}
+if(!loginStyles.includes('.auth-visual')||!loginStyles.includes('.auth-submit'))
+  throw Error('Dedicated premium auth styles were not bundled');
 for(const [role,markup] of [['student',studentHtml],['contributor',contributorHtml],['admin',adminHtml]])
   if(!markup.includes('class="app-shell"'))throw Error('Built '+role+' is missing app shell');
 
