@@ -393,7 +393,7 @@
       if(!s.url){showToast('هذه المادة قيد التحضير','warning');return;}
       currentModalSubject=s;renderSubjectFolders(id);$('#modalIcon').innerHTML=`<i class="${s.icon}"></i>`;$('#modalTitle').textContent=s.name;$('#modalDesc').textContent=s.desc;$('#modalHead').style.background=s.color;$('#modalOverlay').classList.add('show');$('#subjectModal').classList.add('show');
     }
-    function closeModal(){$('#modalOverlay').classList.remove('show');$('#subjectModal').classList.remove('show');currentModalSubject=null;}
+    function closeModal(){$('#modalOverlay')?.classList.remove('show');$('#subjectModal')?.classList.remove('show');currentModalSubject=null;}
     function openCurrentDrive(){if(!currentModalSubject?.url)return;const a=document.createElement('a');a.href=currentModalSubject.url;a.target='_blank';a.rel='noopener noreferrer';document.body.appendChild(a);a.click();a.remove();closeModal();}
     function shareCurrentSubject(){if(currentModalSubject)copyText(currentModalSubject.url,'تم نسخ الرابط');}
     function shareSubject(id){const s=allSubjects[id];if(s?.url&&s.branches.includes(state.branch)&&(!Array.isArray(s.subBranches)||s.subBranches.includes(state.subBranch)))copyText(s.url,'تم نسخ الرابط');else showToast('لا توجد موارد موثقة لهذا التخصص حالياً','warning');}
