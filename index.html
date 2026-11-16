@@ -22,7 +22,7 @@
     <header class="lp-header">
       <a class="lp-brand" href="#welcome" aria-label="Bac-pedia home"><span class="lp-brand-mark">B<span>+</span></span><span>BAC<span>PEDIA</span><small>ALGERIA 2027</small></span></a>
       <nav class="lp-nav" aria-label="الأقسام">
-        <a href="#why-us">المنصة</a><a href="#divisions">الشعب</a><a href="#flashcards-preview">Flashcards</a><a href="#collaborate">المساهمة</a>
+        <a href="#why-us">المنصة</a><a href="#divisions">الشعب</a><a href="#why-us">المميزات</a><a href="#collaborate">المساهمة</a>
       </nav>
       <div class="lp-header-actions"><button class="lp-text-btn" type="button" onclick="openAuthModal('login','student')">دخول</button><button class="lp-btn lp-btn-primary" type="button" onclick="openAuthModal('signup','student')">ابدأ الآن <i class="fa-solid fa-arrow-left"></i></button></div>
     </header>
@@ -50,11 +50,11 @@
                 <div class="lp-mini-list"><h4>واصل التعلم <span>→</span></h4>
                   <div><span class="lp-mini-icon violet"><i class="fa-solid fa-square-root-variable"></i></span><span>الرياضيات<small>الدوال والمتتاليات</small></span><b>إبدأ</b></div>
                   <div><span class="lp-mini-icon mint"><i class="fa-solid fa-atom"></i></span><span>الفيزياء<small>التحولات الكيميائية</small></span><b>إبدأ</b></div>
-                  <div><span class="lp-mini-icon coral"><i class="fa-solid fa-brain"></i></span><span>Flashcards<small>راجع ما تعلمته</small></span><b>إبدأ</b></div>
+                  <div><span class="lp-mini-icon coral"><i class="fa-solid fa-brain"></i></span><span>خطتك الدراسية<small>تابع مهام المراجعة</small></span><b>إبدأ</b></div>
                 </div>
               </div>
             </div>
-            <div class="lp-floating lp-floating-bottom"><span class="lp-flash-icon"><i class="fa-solid fa-layer-group"></i></span><span>Flashcards <b>مراجعة أسرع، تذكّر أفضل</b></span></div>
+            <div class="lp-floating lp-floating-bottom"><span class="lp-flash-icon"><i class="fa-solid fa-layer-group"></i></span><span>مراجعة منظمة <b>من المهام إلى الإنجاز</b></span></div>
           </div>
         </div>
         <div class="lp-hero-bottom"><span><i class="fa-solid fa-lock"></i> حساب شخصي محمي</span><span><i class="fa-solid fa-mobile-screen"></i> هاتف، حاسوب، جهاز لوحي</span><span><i class="fa-solid fa-book-open"></i> حسب الشعبة والمواد</span></div>
@@ -63,7 +63,7 @@
         <div class="lp-section-heading"><span class="lp-kicker">مساحتك الدراسية</span><h2>كل شيء تحتاجه،<br><span>بدون تشتيت.</span></h2><p>ليس مجرد أرشيف ملفات. أدوات واضحة لتنظيم المراجعة من البداية إلى النهاية.</p></div>
         <div class="lp-feature-grid">
           <article class="lp-feature"><span class="lp-feature-icon purple"><i class="fa-solid fa-folder-tree"></i></span><h3>مكتبة مرتبة</h3><p>تصفّح المادة ثم الوحدة ثم الملفات، مع بحث بالعربية والفرنسية.</p><span>01 / EXPLORE</span></article>
-          <article class="lp-feature"><span class="lp-feature-icon green"><i class="fa-solid fa-layer-group"></i></span><h3>بطاقات المراجعة</h3><p>أنشئ مجموعاتك، اقلب البطاقة وتدرّب على استرجاع المعلومات.</p><span>02 / REMEMBER</span></article>
+          <article class="lp-feature"><span class="lp-feature-icon green"><i class="fa-solid fa-layer-group"></i></span><h3>المخطط الدراسي</h3><p>رتّب مهام المراجعة وحدّد أهداف اليوم وتابع تقدّمك.</p><span>02 / REMEMBER</span></article>
           <article class="lp-feature"><span class="lp-feature-icon orange"><i class="fa-solid fa-chart-line"></i></span><h3>تابع تقدمك</h3><p>خطط مهامك، سجّل نقاطك واحتفظ بملاحظاتك في حسابك.</p><span>03 / IMPROVE</span></article>
           <article class="lp-feature"><span class="lp-feature-icon blue"><i class="fa-solid fa-users"></i></span><h3>مجتمع المساهمين</h3><p>يمكن للأساتذة والنوادي والطلبة طلب الانضمام وإرسال موارد للمراجعة.</p><span>04 / TOGETHER</span></article>
         </div>
@@ -75,10 +75,6 @@
           <article class="lp-division science"><div class="lp-division-top"><i class="fa-solid fa-flask"></i><span>02</span></div><h3>علوم تجريبية</h3><p>مكتبة علوم ورياضيات وفيزياء بموارد متاحة حسب الشعبة.</p><button type="button" onclick="openAuthModal('signup','student')">ابدأ الاستكشاف <i class="fa-solid fa-arrow-left"></i></button></article>
           <article class="lp-division tech"><div class="lp-division-top"><i class="fa-solid fa-gears"></i><span>03</span></div><h3>تقني رياضي</h3><p>الرياضيات والفيزياء وموارد التكنولوجيا المتحقَّق من وجودها.</p><button type="button" onclick="openAuthModal('signup','student')">ابدأ الاستكشاف <i class="fa-solid fa-arrow-left"></i></button></article>
         </div>
-      </section>
-      <section id="flashcards-preview" class="lp-section lp-flash-feature">
-        <div><span class="lp-kicker">ذاكر بذكاء</span><h2>قلب البطاقة.<br><span>ثبّت المعلومة.</span></h2><p>اختبر ذاكرتك بدل إعادة القراءة فقط. جرّب البطاقة التوضيحية، ثم أنشئ مجموعاتك الخاصة بعد التسجيل.</p><button type="button" class="lp-btn lp-btn-primary" onclick="openAuthModal('signup','student')">أنشئ بطاقاتك <i class="fa-solid fa-arrow-left"></i></button></div>
-        <div class="lp-demo-frame"><span class="lp-demo-label"><i class="fa-solid fa-layer-group"></i> DEMO FLASHCARD · 01/01</span><button id="lpDemoFlashcard" type="button" class="lp-demo-card" aria-pressed="false" aria-label="اقلب البطاقة لإظهار الإجابة"><span class="lp-demo-question">ما هي مشتقة الدالة f(x) = x² ؟</span><span class="lp-demo-answer">f′(x) = 2x</span><small><i class="fa-solid fa-arrows-rotate"></i> اضغط لقلب البطاقة</small></button><span class="lp-demo-hint">مثال توضيحي فقط • أنشئ محتواك الدراسي داخل حسابك</span></div>
       </section>
       <section id="collaborate" class="lp-section lp-collab-callout">
         <div class="lp-collab-spark"><i class="fa-solid fa-people-group"></i></div><div><span class="lp-kicker">دعنا نبنيها معاً</span><h2>عندك موارد تفيد طلبة الباك؟</h2><p>طالب متفوّق، أستاذ، نادي أو مؤسسة؟ قدّم طلب تعاون، وبعد مراجعته يمكنك اقتراح مصادر للمكتبة.</p></div>
@@ -376,13 +372,6 @@
       <section class="page" id="page-resources">
         <div class="section-head"><div><h2>إضافات مساعدة</h2><p>كتب، منهجيات، وفيديوهات منظمة دون ازدحام.</p></div><button class="btn" onclick="loadVideos()"><i class="fa-solid fa-video"></i> تحميل فيديوهات</button></div>
         <div class="grid-auto" id="resourcesGrid"></div>
-      </section>
-      <section class="page" id="page-flashcards">
-        <div class="comm-page-heading"><div><span class="comm-eyebrow">LEARN & REMEMBER</span><h2>بطاقات المراجعة</h2><p>أنشئ مجموعاتك، راجع إجاباتك وتابع مواعيد تذكرك.</p></div><button type="button" class="btn primary" id="flashNewDeckBtn"><i class="fa-solid fa-plus"></i> مجموعة جديدة</button></div>
-        <div class="comm-metrics" id="flashStats"><div><strong>0</strong><small>المجموعات</small></div><div><strong>0</strong><small>البطاقات</small></div><div><strong>0</strong><small>تحتاج مراجعة</small></div></div>
-        <div id="flashDeckForm" class="comm-panel hidden"><h3>إنشاء مجموعة مراجعة</h3><form id="flashDeckCreateForm" class="comm-form"><label>عنوان المجموعة<input id="flashDeckTitle" required minlength="2" maxlength="120" placeholder="مثلاً: الدوال والمتتاليات"></label><label>المادة<select id="flashDeckSubject"><option value="رياضيات">الرياضيات</option><option value="فيزياء">الفيزياء</option><option value="علوم طبيعية">العلوم الطبيعية</option><option value="لغة عربية">اللغة العربية</option><option value="لغة فرنسية">اللغة الفرنسية</option><option value="لغة إنجليزية">اللغة الإنجليزية</option><option value="تاريخ وجغرافيا">التاريخ والجغرافيا</option><option value="فلسفة">الفلسفة</option><option value="عام">عام</option></select></label><button type="submit" class="btn primary">حفظ المجموعة</button></form></div>
-        <div id="flashDecksView"><div class="comm-section-title"><h3>مجموعاتي</h3><span id="flashDeckCount">جار التحميل...</span></div><div id="flashDeckGrid" class="comm-deck-grid"></div></div>
-        <div id="flashStudyView" class="hidden"><button type="button" class="comm-back" id="flashBackBtn"><i class="fa-solid fa-arrow-right"></i> كل المجموعات</button><div class="comm-section-title"><h3 id="flashCurrentDeckTitle">المجموعة</h3><span id="flashCardProgress"></span></div><div id="flashStudyCard" class="comm-study-card" tabindex="0" role="button" aria-label="اقلب بطاقة المراجعة"><span id="flashCardFace">اختر مجموعة للبدء</span><span class="comm-tap-hint">اضغط لقلب البطاقة</span></div><div class="comm-review-buttons"><button type="button" id="flashAgainBtn">إعادة <small>10 دقائق</small></button><button type="button" id="flashHardBtn">صعب <small>غداً</small></button><button type="button" id="flashGoodBtn">تذكرت <small>لاحقاً</small></button></div><div class="comm-panel"><h3>أضف بطاقة للمجموعة</h3><form id="flashAddCardForm" class="comm-form"><label>السؤال أو وجه البطاقة<textarea id="flashCardFront" rows="2" minlength="2" maxlength="2000" required placeholder="ما هو ...؟"></textarea></label><label>الإجابة أو ظهر البطاقة<textarea id="flashCardBack" rows="2" minlength="1" maxlength="4000" required placeholder="الإجابة الصحيحة ..."></textarea></label><button type="submit" class="btn primary">إضافة البطاقة</button></form></div><div id="flashCardList" class="comm-card-list"></div></div>
       </section>
       <section class="page" id="page-collaborate">
         <div class="comm-page-heading"><div><span class="comm-eyebrow">CONTRIBUTE TO BAC-PEDIA</span><h2>مساحة المساهمين</h2><p>شارك خبرتك ومواردك بعد مراجعة طلب الانضمام.</p></div></div>
