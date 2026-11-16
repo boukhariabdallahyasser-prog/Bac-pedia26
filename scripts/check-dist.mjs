@@ -40,11 +40,11 @@ for(const selector of ['.landing','.lp-hero','.auth-role-switch','.comm-study-ca
 if(!html.includes('id="publicLanding"')||html.includes('id="loginGate"'))throw Error('Public landing must not contain login form');
 for(const marker of ['id="loginGate"','id="loginEmailInput"','id="signupEmailInput"','id="passwordRecoveryPanel"'])
   if(!loginHtml.includes(marker))throw Error('Missing login interface: '+marker);
-const loginStylePaths=[...loginHtml.matchAll(/<link[^>]+href="([^"]+\\.css)"/g)]
+const loginStylePaths=[...loginHtml.matchAll(/<link[^>]+href="([^"]+\.css)"/g)]
   .map(m=>m[1]).filter(href=>href.startsWith('/'));
 let loginStyles='';
 for(const href of loginStylePaths){
-  const filename=path.join(root,href.replace(/^\\//,''));
+  const filename=path.join(root,href.replace(/^\//,''));
   if(!fs.existsSync(filename))throw Error('Login has a broken built stylesheet: '+href);
   loginStyles+=fs.readFileSync(filename,'utf8');
 }
