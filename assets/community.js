@@ -82,8 +82,34 @@ async function refreshPortalRole(){
  const desired=ownerRole==='admin'?'admin':ownerRole==='contributor'||ownerRole==='applicant'?'collaborate':'home';
  if(typeof showPage==='function')showPage(desired);
  if(ownerRole==='admin')void loadAdmin();
+ if(ownerRole==='student')void loadApprovedResources();
  if(['contributor','applicant'].includes(ownerRole))void loadContributor();
  return ownerRole;
+}
+async function loadApprovedResources(){
+ if(!user()||ownerRole!=='student')return;
+ const grid=$('approvedResourceGrid');if(!grid)return;
+ const id=user().id;
+ try{
+   const {data,error}=await db().from('collaborator_resources')
+     .select('id,title,subject,description,resource_url,resource_kind,unit_title,status')
+     .eq('status','approved').order('created_at',{ascending:false}).limit(100);
+   if(error)throw error;
+   if(user()?.id!==id||ownerRole!=='student')return;
+   grid.replaceChildren();
+   if(!data?.length){grid.append(placeholder('لا توجد إضافات منشورة','ستظهر الملفات الجديدة بعد موافقة إدارة Bac-pedia.'));return;}
+   for(const item of data){
+     const card=el('article','portal-resource');
+     card.append(el('span','portal-type',kind[item.resource_kind]||'مورد'),
+       el('h3','',item.title),el('p','',item.subject+(item.unit_title?' · '+item.unit_title:'')),
+       el('p','',item.description||''));
+     if(validUrl(item.resource_url)){
+       const a=el('a','portal-action','فتح المصدر الموثق');
+       a.href=item.resource_url;a.rel='noopener noreferrer';a.target='_blank';card.append(a);
+     }
+     grid.append(card);
+   }
+ }catch(error){grid.replaceChildren(placeholder('تعذر تحميل الملفات','تحقق من الاتصال وأعد المحاولة.'));console.warn(error);}
 }
 async function loadContributor(){
  if(!user()||!['contributor','applicant'].includes(ownerRole))return;
@@ -300,6 +326,7 @@ function resetSession(){
 }
 window.refreshPortalRole=refreshPortalRole;
 window.renderCommunity=()=>{if(user()&&['contributor','applicant'].includes(ownerRole))void loadContributor();};
+window.renderApprovedResources=()=>{if(user()&&ownerRole==='student')void loadApprovedResources();};
 window.renderAdmin=()=>{if(user()&&ownerRole==='admin')void loadAdmin();};
 window.onCommunityAuthChanged=()=>{if(!user()){resetSession();return;}void refreshPortalRole();};
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
