@@ -395,7 +395,7 @@
       if($('#aiCtxDays'))$('#aiCtxDays').textContent=ctx.countdown.days+' يوم';
       if($('#aiCtxAverage'))$('#aiCtxAverage').textContent=ctx.average?ctx.average+'/20':'غير محدد';
     }
-    function renderAgents(){const groups=['فهم','تدريب','تنظيم'];const el=$('#agentGrid');if(!el)return;el.innerHTML=groups.map(g=>{const items=Object.entries(agents).filter(([id,a])=>a.group===g);if(!items.length)return '';return `<div class="agent-section"><div class="agent-section-title"><i class="fa-solid fa-layer-group"></i>${g}</div><div class="agent-grid">${items.map(([id,a])=>`<div class="card agent-card ${activeAgent===id?'active':''}" onclick="selectAgent('${id}')" role="button" tabindex="0"><div><div class="agent-icon"><i class="${a.icon}"></i></div><div><h3 style="margin-top:12px">${a.title}</h3><p class="muted">${a.desc}</p></div></div><button class="btn ${activeAgent===id?'primary':''}" onclick="event.stopPropagation();runAgent('${id}')">تشغيل</button></div>`).join('')}</div></div>`;}).join('');}
+    function renderAgents(){const groups=['فهم','تدريب','تنظيم'];const el=$('#agentGrid');if(!el)return;el.innerHTML=groups.map(g=>{const items=Object.entries(agents).filter(([id,a])=>a.group===g);if(!items.length)return '';return `<div class="agent-section"><div class="agent-section-title"><i class="fa-solid fa-layer-group"></i>${g}</div><div class="agent-grid">${items.map(([id,a])=>`<div class="card agent-card ${activeAgent===id?'active':''}" onclick="selectAgent('${id}')" role="button" tabindex="0"><div><div class="agent-icon"><i class="${a.icon}"></i></div><div><h3 style="margin-top:12px">${a.title}</h3><p class="muted">${a.desc}</p></div></div><button class="btn ${activeAgent===id?'primary':''}" onclick="event.stopPropagation();runAgent('${id}')" ${!hasLiveAI()&&!['daily_plan','mistake_analyzer','grade_advisor'].includes(id)?'disabled title="يتطلب AI متصلاً"':''}>تشغيل</button></div>`).join('')}</div></div>`;}).join('');}
     function selectAgent(id){activeAgent=id;renderAgents();showToast('تم اختيار: '+agents[id].title,'info');}
     function fillPrompt(text){$('#aiPrompt').value=text;$('#aiPrompt').focus();}
     function clearAIOutput(){$('#aiOutput').textContent='تم المسح. اكتب طلباً جديداً أو اختر أداة.';setAIStatus('جاهز. اكتب طلبك وسيحلله المساعد باستعمال بياناتك.','info');}
@@ -543,12 +543,35 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
 
 
-    function hasLiveAI(){return Boolean(CONFIG.aiProxyEndpoint);}
+    let aiBackendState='checking';
+    let aiBackendReason='';
+    function hasLiveAI(){return Boolean(CONFIG.aiProxyEndpoint&&aiBackendState==='ready');}
+    async function checkAIAvailability(){
+      if(!CONFIG.aiProxyEndpoint){aiBackendState='offline';aiBackendReason='المساعد متاح فقط في نسخة Vercel الرسمية.';updateAIModeIndicator();return false;}
+      aiBackendState='checking';updateAIModeIndicator();
+      try{
+        const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),7000);
+        let response;
+        try{response=await fetch(CONFIG.aiProxyEndpoint,{method:'GET',headers:{Accept:'application/json'},cache:'no-store',signal:controller.signal});}
+        finally{clearTimeout(timeout);}
+        const info=await response.json();
+        aiBackendState=response.ok&&info.ready===true?'ready':'offline';
+        const messages={
+          not_configured:'خدمة AI غير مفعّلة بعد. يجب ضبط GEMINI_API_KEY داخل إعدادات Vercel.',
+          provider_auth:'مفتاح Gemini الحالي مرفوض. يجب إصلاحه في Vercel.',
+          provider_error:'تعذر الاتصال بنموذج Gemini. الأدوات المحلية متاحة.',
+          provider_unreachable:'خادم Gemini لا يستجيب الآن؛ يمكنك استعمال أدوات المراجعة المحلية.'
+        };
+        aiBackendReason=aiBackendState==='ready'?'':messages[info.reason]||'تعذر التحقق من خدمة AI.';
+      }catch(error){aiBackendState='offline';aiBackendReason='تعذر التحقق من خادم المساعد. الأدوات المحلية تبقى متاحة.';}
+      updateAIModeIndicator();renderAgents();
+      return hasLiveAI();
+    }
     function updateAIModeIndicator(){
       const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
       if(dot)dot.classList.toggle('live',live);
-      if(title)title.textContent=live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
-      if(desc)desc.textContent=live?'تُعالج طلباتك عبر خادم Bac-pedia مع التحقق من الحساب وحد الاستخدام.':'خادم الذكاء الاصطناعي غير متاح على هذا النطاق. استخدم رابط Vercel الرسمي.';
+      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من خدمة Gemini...':live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
+      if(desc)desc.textContent=live?'تم التحقق من اتصال Gemini عبر خادم Bac-pedia. الطلبات محمية بحسابك وحد استخدام يومي.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
     }
     function renderHomeSummary(){
       const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
@@ -998,6 +1021,6 @@ resetStudentData();renderAll();
         $('#'+id)?.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.tagName==='INPUT'&&!authLoading){event.preventDefault();window[handler]?.();}});
       });
     }
-    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
+    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
     init();
   
