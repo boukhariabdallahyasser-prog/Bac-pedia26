@@ -3,8 +3,8 @@
 const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
 function deployConfig(){
  const key=process.env.DEPLOY_API_KEY;
- const endpoint=process.env.DEPLOY_API_ENDPOINT;
- const model=process.env.DEPLOY_MODEL_ID;
+ const endpoint=process.env.DEPLOY_API_ENDPOINT||'https://api-cdn.deploy.com/api/v1/chat/completions';
+ const model=process.env.DEPLOY_MODEL_ID||'deepseek-ai/deepseek-v4.1-flash';
  if(!key||!endpoint||!model)return null;
  try{
    const u=new URL(endpoint);
