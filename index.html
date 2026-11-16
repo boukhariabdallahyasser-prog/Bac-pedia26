@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/assets/chapters.css" />
   <link rel="stylesheet" href="/assets/landing.css" />
   <link rel="stylesheet" href="/assets/community.css" />
+  <link rel="stylesheet" href="/assets/portals.css" />
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -33,7 +34,7 @@
           <div class="lp-hero-copy">
             <span class="lp-pill"><i class="fa-solid fa-sparkles"></i> منصة مراجعة جزائرية • BAC 2027</span>
             <h1 id="lpHeroTitle">طريقك نحو <span>البكالوريا</span><br>يبدأ <em>من هنا.</em></h1>
-            <p>دروس منظمة حسب شعبتك، ملفات موثقة، بطاقات مراجعة، ومتابعة لتقدمك في مكان واحد. تجربة هادئة صُمّمت لتذاكر بوضوح وثقة.</p>
+            <p>دروس منظمة حسب شعبتك، ملفات موثقة، ومخطط مراجعة يساعدك على متابعة تقدمك في مكان واحد. تجربة هادئة صُمّمت لتذاكر بوضوح وثقة.</p>
             <div class="lp-hero-actions">
               <button type="button" class="lp-btn lp-btn-primary lp-btn-lg" onclick="openAuthModal('signup','student')">ابدأ رحلتك مجاناً <i class="fa-solid fa-arrow-left"></i></button>
               <a class="lp-btn lp-btn-outline lp-btn-lg" href="#divisions">اكتشف المواد <i class="fa-solid fa-arrow-down"></i></a>
@@ -121,6 +122,12 @@
       </div>
       <div class="login-form hidden" id="signupMainForm" role="tabpanel">
         <div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" maxlength="100" aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
+          <div class="signup-collab-extras hidden" id="signupCollabExtras">
+            <p><i class="fa-solid fa-circle-info"></i> بعد تأكيد البريد ستراجع الإدارة طلبك قبل السماح بنشر الموارد.</p>
+            <label>المؤسسة أو النادي<input id="signupOrganization" maxlength="150" placeholder="اسم المؤسسة أو مستقل"></label>
+            <label>صفة المساهم<select id="signupContributionType"><option value="teacher">أستاذ</option><option value="student">طالب</option><option value="club">نادي</option><option value="organization">مؤسسة</option><option value="other">أخرى</option></select></label>
+            <label>ما الذي تريد مشاركته؟<textarea id="signupMotivation" maxlength="2000" rows="3" placeholder="اشرح نوع الملفات أو الدروس التي ستساهم بها"></textarea></label>
+          </div>
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
         <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" oninput="updatePasswordStrength()" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
         <div class="password-strength" id="passwordStrengthStatus" role="status" aria-live="polite">استعمل 8 أحرف على الأقل، مع حرف ورقم.<div class="password-strength-meter"><span id="passwordStrengthBar"></span></div></div>
@@ -148,25 +155,25 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div><div class="brand-title">بوابة المراجعة</div><div class="brand-sub">باكالوريا الجزائر 2027</div></div>
+        <div><div class="brand-title">BAC<span>PEDIA</span></div><div class="brand-sub">منصتك للبكالوريا 2027</div></div>
       </div>
 
       <div class="session-card" id="sessionCard">
         <div class="session-avatar"><i class="fa-solid fa-user"></i></div>
-        <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div></div>
+        <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div><span id="sidebarRoleLabel">طالب بكالوريا</span></div>
         <button class="round-btn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user-gear"></i></button>
       </div>
       <div>
         <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
-        <nav class="side-nav" id="sideNav"></nav>
+        <nav class="side-nav" id="sideNav" aria-label="قائمة المساحة الشخصية"></nav>
       </div>
-      <div>
-        <div class="nav-group-title"><i class="fa-solid fa-layer-group"></i> الشعبة</div>
+      <div id="sidebarBranches">
+        <div class="nav-group-title" id="sidebarBranchTitle"><i class="fa-solid fa-layer-group"></i> الشعبة</div>
         <div class="branch-grid" id="branchGrid"></div>
         <div class="sub-branches" id="subBranchRow"></div>
         <div class="sub-branch-note" id="subBranchAvailabilityNote" hidden></div>
       </div>
-      <div>
+      <div id="sidebarStudyStats">
         <div class="nav-group-title"><i class="fa-solid fa-chart-simple"></i> إحصائيات سريعة</div>
         <div class="sidebar-stats">
           <div class="mini-stat"><strong id="statTotal">0</strong><span>مواد</span></div>
@@ -175,7 +182,7 @@
           <div class="mini-stat"><strong id="statProgress">0%</strong><span>تقدم</span></div>
         </div>
       </div>
-      <button class="btn primary full" onclick="showPage('ai'); setTimeout(()=>document.getElementById('aiPrompt').focus(),250)"><i class="fa-solid fa-robot"></i> افتح المساعد</button>
+      <button id="sidebarAIBtn" class="btn primary full" onclick="showPage('ai'); setTimeout(()=>document.getElementById('aiPrompt').focus(),250)"><i class="fa-solid fa-robot"></i> افتح المساعد</button>
     </aside>
     <main class="main">
       <div class="topbar">
@@ -277,6 +284,10 @@
         </div>
         <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
         <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
+        <section id="approvedResourcesSection" class="approved-resources">
+          <div class="portal-heading"><div><span class="portal-eyebrow">CURATED MATERIALS</span><h2>موارد تعليمية إضافية</h2><p>ملفات راجعتها إدارة الموقع قبل نشرها، مرتبة حسب المادة والوحدة.</p></div></div>
+          <div id="approvedResourceGrid" class="comm-deck-grid"></div>
+        </section>
       </section>
       <section class="page" id="page-ai">
         <div class="section-head ai-head">
@@ -374,10 +385,20 @@
         <div class="grid-auto" id="resourcesGrid"></div>
       </section>
       <section class="page" id="page-collaborate">
-        <div class="comm-page-heading"><div><span class="comm-eyebrow">CONTRIBUTE TO BAC-PEDIA</span><h2>مساحة المساهمين</h2><p>شارك خبرتك ومواردك بعد مراجعة طلب الانضمام.</p></div></div>
+        <div class="comm-page-heading"><div><span class="comm-eyebrow">CONTRIBUTOR STUDIO</span><h2>لوحة المساهم</h2><p>تابع حالة حسابك، وأضف المصادر، وعدّل المقترحات الخاصة بك.</p></div><button type="button" class="btn" id="collabRefresh"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div id="contributorMetrics" class="portal-metrics"><div><strong>0</strong><span>كل الموارد</span></div><div><strong>0</strong><span>قيد المراجعة</span></div><div><strong>0</strong><span>منشورة</span></div><div><strong>0</strong><span>مرفوضة</span></div></div>
         <div class="comm-collab-layout"><div class="comm-panel" id="collaboratorStatusPanel"><h3>حالة طلبك</h3><p>جار التحقق من حالة حساب المساهم...</p></div><div class="comm-panel" id="collaboratorApplyPanel"><h3>قدّم طلب مساهمة</h3><form id="collaboratorApplyForm" class="comm-form"><label>اسمك الكامل<input id="collabName" required minlength="2" maxlength="100" autocomplete="name" placeholder="الاسم واللقب"></label><label>المؤسسة أو الفريق<input id="collabOrg" required minlength="2" maxlength="150" placeholder="اسم النادي أو المؤسسة، أو مستقل"></label><label>صفة المساهم<select id="collabType"><option value="student">طالب / متخرج</option><option value="teacher">أستاذ</option><option value="club">نادي علمي</option><option value="organization">مؤسسة</option><option value="other">أخرى</option></select></label><label>كيف يمكن أن تساهم؟<textarea id="collabMotivation" required minlength="15" maxlength="2000" rows="4" placeholder="أخبرنا عن نوع الموارد أو الخبرة التي تريد مشاركتها"></textarea></label><button type="submit" class="btn primary">إرسال طلب المساهمة</button></form></div></div>
-        <div class="comm-panel hidden" id="collabSubmitPanel"><h3>اقترح مورداً تعليمياً</h3><p class="muted">لا يظهر المورد للطلاب قبل مراجعة فريق المنصة.</p><form id="collabResourceForm" class="comm-form"><label>عنوان المورد<input id="collabResourceTitle" required minlength="4" maxlength="180" placeholder="مثلاً: ملخص وحدة الدوال"></label><label>المادة<input id="collabResourceSubject" required minlength="2" maxlength="100" placeholder="مثلاً: رياضيات"></label><label>رابط Google Drive<input id="collabResourceUrl" required type="url" placeholder="https://drive.google.com/file/d/..."></label><label>وصف مختصر<textarea id="collabResourceDescription" rows="3" maxlength="2000"></textarea></label><button type="submit" class="btn primary">إرسال للمراجعة</button></form></div>
-        <div class="comm-section-title"><h3>موارد المجتمع</h3><span>الموارد المقبولة فقط تظهر للجميع</span></div><div id="collabResourcesGrid" class="comm-deck-grid"></div>
+        <div class="comm-panel hidden" id="collabSubmitPanel"><h3 id="collabEditorTitle">أضف مورداً تعليمياً</h3><p class="muted">كل مصدر يظهر في لوحة الإدارة أولاً للمراجعة. اكتب عنواناً واضحاً ووصفاً مفيداً.</p><form id="collabResourceForm" class="comm-form"><label>عنوان المورد<input id="collabResourceTitle" required minlength="4" maxlength="180" placeholder="مثلاً: ملخص وحدة الدوال"></label><label>المادة<input id="collabResourceSubject" required minlength="2" maxlength="100" placeholder="مثلاً: رياضيات"></label>
+          <label>ما نوع الملف؟<select id="collabResourceKind"><option value="lesson">درس</option><option value="summary">ملخص</option><option value="exercise">تمارين</option><option value="exam">موضوع بكالوريا</option><option value="video">فيديو</option><option value="other">آخر</option></select></label>
+          <label>الوحدة أو الفصل<input id="collabResourceUnit" maxlength="120" placeholder="مثلاً: الوحدة 01، الدوال"></label><label>رابط Google Drive<input id="collabResourceUrl" required type="url" placeholder="https://drive.google.com/file/d/..."></label><label>وصف مختصر<textarea id="collabResourceDescription" rows="3" maxlength="2000"></textarea></label><button type="submit" id="collabSaveResource" class="btn primary">إرسال للمراجعة</button><button type="button" id="collabCancelEdit" class="btn hidden">إلغاء التعديل</button></form></div>
+        <div class="comm-section-title"><h3>مواردي المرسلة</h3><span>إدارة الروابط وحالات المراجعة</span></div><div id="collabResourcesGrid" class="comm-deck-grid"></div>
+      </section>
+      <section class="page" id="page-admin">
+        <div class="portal-heading"><div><span class="portal-eyebrow"><i class="fa-solid fa-shield-halved"></i> OWNER CONTROL CENTER</span><h2>لوحة إدارة Bac-pedia</h2><p>مساحة خاصة بالمالك: راجع طلبات المساهمة والملفات وحالة المجتمع.</p></div><button id="adminReload" type="button" class="btn"><i class="fa-solid fa-rotate"></i> تحديث البيانات</button></div>
+        <div id="adminStatusNote" class="portal-notice" role="status" aria-live="polite"></div>
+        <div id="adminMetrics" class="portal-metrics"><div><strong>—</strong><span>الطلاب</span></div><div><strong>—</strong><span>طلبات المساهمة</span></div><div><strong>—</strong><span>المساهمون المقبولون</span></div><div><strong>—</strong><span>موارد قيد المراجعة</span></div></div>
+        <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة"><button type="button" data-admin-tab="applications" class="active">طلبات المساهمين</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button></div>
+        <div class="portal-panel"><div id="adminList" class="portal-list" aria-live="polite"></div></div>
       </section>
       <section class="page" id="page-help">
         <div class="section-head"><div><h2>المساعدة والتواصل</h2><p>طريقة استعمال الموقع وروابط الدعم.</p></div></div>

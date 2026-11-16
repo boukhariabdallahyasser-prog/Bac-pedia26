@@ -1,0 +1,63 @@
+/* Bac-pedia 2027 — calm navigation, contributor studio, single-owner control. */
+.sidebar{background:linear-gradient(180deg,#11172a 0%,#0c1223 100%)!important;border-left:1px solid rgba(188,198,241,.1)!important;box-shadow:12px 0 48px rgba(5,10,29,.15)!important;padding:20px 16px!important;gap:18px!important;scrollbar-width:thin}
+body.light-mode .sidebar{background:#fff!important;border-left-color:#e5e9f6!important}
+.sidebar-brand{background:transparent!important;border:0!important;box-shadow:none!important;padding:11px 9px!important;gap:13px}
+.sidebar-brand .brand-icon{width:47px;height:47px;border-radius:15px;background:linear-gradient(145deg,#8770ec,#5e66c1);animation:none;box-shadow:0 10px 25px rgba(126,104,233,.26)}
+.sidebar-brand .brand-title{font:900 1.17rem/1.3 Cairo,Tajawal,sans-serif;letter-spacing:-.03em;background:none;color:var(--text-main);-webkit-text-fill-color:initial}
+.sidebar-brand .brand-title span{color:#a8a0fe}
+.sidebar-brand .brand-sub{color:var(--text-muted);font-size:.73rem}
+.sidebar .session-card{border-radius:17px;border:1px solid rgba(157,164,227,.15);padding:13px;background:rgba(127,119,201,.075)}
+body.light-mode .sidebar .session-card{background:#f5f6ff}
+.sidebar .nav-group-title{font-size:.72rem;margin:5px 13px 9px;font-weight:900;letter-spacing:.01em;color:#8996b7}
+.sidebar .side-nav{gap:6px!important}
+.sidebar .nav-btn{width:100%;min-height:55px;border:1px solid transparent!important;border-radius:14px!important;padding:8px 11px!important;background:transparent!important;display:flex;align-items:center;gap:11px;text-align:right;transition:background .16s,color .16s,border-color .16s;transform:none!important;box-shadow:none!important}
+.sidebar .nav-btn:hover{background:rgba(145,141,222,.095)!important;color:var(--text-main);border-color:rgba(152,142,237,.13)!important}
+.sidebar .nav-btn.active{background:linear-gradient(110deg,rgba(123,107,229,.22),rgba(96,113,194,.095))!important;border-color:rgba(159,147,240,.28)!important;color:var(--text-main)}
+.sidebar .nav-btn .nav-icon{width:38px;height:38px;display:grid;place-items:center;flex:none;border-radius:12px;background:rgba(137,130,218,.1);color:#aba1ff}
+.sidebar .nav-btn.active .nav-icon{background:#8372e9;color:#fff;box-shadow:0 6px 15px rgba(107,92,212,.25)}
+.sidebar .nav-btn .nav-icon i{width:auto;font-size:1rem;color:inherit}
+.sidebar .nav-btn .nav-label{flex:1;min-width:0;display:grid;gap:2px}.sidebar .nav-btn .nav-label strong{font-size:.9rem;color:var(--text-main)}.sidebar .nav-btn .nav-label small{font-size:.69rem;line-height:1.3;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.sidebar .nav-chevron{color:var(--text-muted);font-size:.58rem;opacity:0}.sidebar .nav-btn.active .nav-chevron,.sidebar .nav-btn:hover .nav-chevron{opacity:1}
+.sidebar #sidebarBranches[hidden],.sidebar #sidebarStudyStats[hidden],.sidebar #sidebarAIBtn[hidden]{display:none!important}
+.sidebar #sidebarRoleLabel{margin-right:4px;color:var(--text-muted)}
+.sidebar .branch-grid{gap:7px}.sidebar .branch-btn{border-radius:12px}
+body.light-mode .sidebar .nav-btn.active{background:#ecebfe!important}
+.portal-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px}
+.portal-eyebrow{color:#a79efa;font:800 .76rem Arial;letter-spacing:.05em;display:inline-flex;align-items:center;gap:9px;direction:ltr}
+.portal-heading h2{font:900 clamp(1.5rem,3vw,2.35rem)/1.55 Cairo,Tajawal;margin:7px 0;color:var(--text-main)}
+.portal-heading p{color:var(--text-sub);font-size:.92rem;line-height:1.75}
+.portal-notice{padding:12px 16px;border:1px solid var(--border);border-radius:13px;background:var(--bg-card);color:var(--text-sub);font-size:.85rem;line-height:1.65;margin-bottom:16px}
+.portal-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:14px 0 22px}
+.portal-metrics>div{min-height:112px;display:grid;align-content:center;gap:6px;padding:19px;background:var(--bg-card);border:1px solid var(--border);border-radius:19px;box-shadow:0 8px 26px rgba(10,12,38,.04)}
+.portal-metrics strong{font:900 clamp(1.5rem,3vw,2.05rem) Cairo,Tajawal;color:var(--text-main);line-height:1.3;font-variant-numeric:tabular-nums}.portal-metrics span{color:var(--text-sub);font-size:.82rem}
+.portal-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.portal-tabs button{padding:11px 16px;border-radius:13px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-sub);font-weight:800;cursor:pointer}.portal-tabs button.active{background:#7967d9;color:#fff;border-color:transparent}
+.portal-panel{padding:clamp(15px,2.5vw,24px);border:1px solid var(--border);border-radius:22px;background:var(--bg-card);box-shadow:var(--shadow)}
+.portal-list{display:grid;gap:10px}
+.portal-admin-entry{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:17px 5px;border-bottom:1px solid var(--border)}.portal-admin-entry:last-child{border-bottom:0}
+.portal-admin-entry-text{flex:1;min-width:0}.portal-admin-entry-text strong{display:block;overflow-wrap:anywhere;font:900 1rem/1.55 Cairo,Tajawal}.portal-admin-entry-text span{display:block;color:var(--text-muted);font-size:.79rem;margin-top:5px;overflow-wrap:anywhere}.portal-admin-entry-text p{font-size:.84rem;line-height:1.7;color:var(--text-sub);margin-top:9px;white-space:pre-wrap;overflow-wrap:anywhere}
+.portal-admin-actions,.portal-resource-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.portal-admin-actions{justify-content:flex-end;max-width:440px}
+.portal-action{background:rgba(118,104,213,.09);color:var(--text-main);border:1px solid rgba(127,113,209,.21);border-radius:11px;padding:10px 12px;min-height:38px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:.84rem;font-weight:800;font-family:inherit}
+.portal-action:hover{border-color:#ae9ff5;background:rgba(124,107,224,.17)}
+.portal-action.success{background:rgba(33,194,123,.1);border-color:rgba(39,174,111,.2);color:#57d89c}.portal-action.danger{background:rgba(232,81,102,.08);border-color:rgba(232,81,102,.2);color:#ee8190}
+.portal-empty{min-height:170px;display:grid;place-content:center;text-align:center;gap:10px;padding:26px;color:var(--text-sub)}.portal-empty i{color:#a99af5;font-size:1.8rem}.portal-empty h3{font:900 1.15rem Cairo,Tajawal;color:var(--text-main)}.portal-empty p{line-height:1.7}
+.portal-resource{display:grid;gap:12px;padding:19px;border:1px solid var(--border);background:var(--bg-card);border-radius:18px;min-height:220px}.portal-resource h3{font:900 1.06rem/1.6 Cairo,Tajawal}.portal-resource p{color:var(--text-sub);font-size:.83rem;line-height:1.7;overflow-wrap:anywhere}.portal-resource-top{display:flex;gap:9px;align-items:center;justify-content:space-between}.portal-type{background:rgba(129,111,240,.1);border-radius:999px;padding:7px 11px;font-weight:800;font-size:.78rem;color:#a8a0f4}
+.signup-collab-extras{display:grid;gap:13px;margin:12px 0;padding:15px;border-radius:15px;background:rgba(141,129,221,.09);border:1px solid rgba(158,146,221,.21)}
+.signup-collab-extras.hidden{display:none}
+.signup-collab-extras>p{font-size:.79rem;color:#c7befa;line-height:1.6}
+.signup-collab-extras label{display:grid;gap:6px;font-size:.8rem;font-weight:800}
+.signup-collab-extras input,.signup-collab-extras select,.signup-collab-extras textarea{width:100%;border:1px solid rgba(193,185,239,.23);border-radius:11px;background:#111a30;color:#fff;padding:11px 12px;font:inherit;resize:vertical}
+.signup-collab-extras input::placeholder,.signup-collab-extras textarea::placeholder{color:#929dba}
+.landing .lp-hero-copy h1{letter-spacing:-.055em}.landing .lp-feature{border-radius:24px}
+.landing .lp-feature-icon{border:1px solid rgba(185,174,255,.15)}
+.landing .lp-section{scroll-margin-top:30px}
+@media(max-width:1000px){.portal-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-admin-entry{flex-direction:column}.portal-admin-actions{justify-content:flex-start;max-width:none}}
+@media(max-width:560px){.portal-metrics{gap:9px}.portal-metrics>div{padding:14px;min-height:89px}.portal-admin-entry{padding:14px 2px}.portal-tabs button{flex:1}.portal-admin-actions{width:100%}}
+@media(prefers-reduced-motion:reduce){.sidebar .nav-btn{transition:none}}
+
+.approved-resources{border-top:1px solid var(--border);margin:32px 0 0;padding-top:25px}
+.approved-resources .portal-heading{margin-bottom:13px}
+.approved-resources .portal-heading h2{font-size:1.4rem}
+.approved-resources .comm-deck-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr))}
+.sidebar #sidebarRoleLabel{display:inline-flex;padding:4px 8px;font-size:.67rem;font-weight:800;border:1px solid rgba(151,142,235,.22);background:rgba(133,119,215,.1);border-radius:9px;margin-top:6px}
+.portal-action:focus-visible,.portal-tabs button:focus-visible,.sidebar .nav-btn:focus-visible{outline:3px solid #a99bff;outline-offset:2px}

@@ -8,6 +8,7 @@ on:
       - "src/**"
       - "assets/**"
       - "api/**"
+      - "cloudflare/**"
       - "scripts/**"
       - "supabase/**"
       - "resources.json"
@@ -16,6 +17,7 @@ on:
       - "package-lock.json"
       - "vite.config.js"
       - "vercel.json"
+      - "wrangler.jsonc"
       - ".github/workflows/check-frontend.yml"
   pull_request:
     paths:
@@ -23,6 +25,7 @@ on:
       - "src/**"
       - "assets/**"
       - "api/**"
+      - "cloudflare/**"
       - "scripts/**"
       - "supabase/**"
       - "resources.json"
@@ -31,6 +34,7 @@ on:
       - "package-lock.json"
       - "vite.config.js"
       - "vercel.json"
+      - "wrangler.jsonc"
       - ".github/workflows/check-frontend.yml"
 
 permissions:
@@ -53,6 +57,8 @@ jobs:
         run: npm run build
       - name: Verify production bundle and manifest
         run: node scripts/check-dist.mjs
+      - name: Dry-run Cloudflare Worker deployment (API + static assets)
+        run: npx wrangler deploy --dry-run
       - name: Screenshot public landing (browser smoke test)
         run: |
           npm run preview -- --host 127.0.0.1 --port 4173 >/tmp/bacpedia-preview.log 2>&1 &

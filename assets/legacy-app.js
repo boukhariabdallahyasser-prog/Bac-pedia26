@@ -14,7 +14,8 @@
       ['files','fa-solid fa-folder-open','الملفات','مواد وروابط Drive حسب الشعبة'],
        ['chapters','fa-solid fa-layer-group','الدروس والوحدات','بحث ذكي في المواد والملفات والوحدات'],
       
-      ['collaborate','fa-solid fa-users','المساهمون','شارك الموارد واطلب الانضمام'],
+      ['collaborate','fa-solid fa-briefcase','لوحة المساهم','إدارة مواردي ومقترحاتي'],
+      ['admin','fa-solid fa-shield-halved','لوحة الإدارة','الطلبات والموارد والحسابات'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
       ['grades','fa-solid fa-calculator','المعدل','حاسبة ونصائح'],
@@ -193,7 +194,10 @@
     async function refreshFromDatabase(show=false){const ok=await loadResourceManifest();if(show)showToast(ok?'تم تحديث قائمة الموارد من الفهرس المحلي':'تعذر تحميل فهرس الموارد','info');return ok;}
     function showPage(id){
       if(!studentAuthUser){openLoginGate();return;}
-      if(!pages.some(p=>p[0]===id))id='home';
+      const role=window.BAC_PORTAL_ROLE||'student';
+      const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
+        ['home','files','chapters','ai','planner','grades','progress','resources','help'];
+      if(!allowed.includes(id))id=allowed[0];
       if(id==='files'){
         state.filter='all';
         state.sort='default';
@@ -223,6 +227,8 @@
       if(id==='ai'){renderAiSelectors();renderAgents();}
       
       if(id==='collaborate')window.renderCommunity?.();
+      if(id==='admin')window.renderAdmin?.();
+      if(id==='files')window.renderApprovedResources?.();
     }
     function openFilesAll(){
       state.filter='all';
@@ -242,13 +248,24 @@
       el.textContent=`يعرض الآن: الكل حسب شعبة ${branch}${suffix}${availabilityNote}.`;
     }
     function renderNavs(){
+      const role=window.BAC_PORTAL_ROLE||'student';
+      const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
+        ['home','chapters','files','ai','planner','grades','progress','resources','help'];
+      const visible=pages.filter(item=>allowed.includes(item[0]));
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
-      const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`;
-      $('#sideNav').innerHTML=pages.map(make).join('');
-      const bottom=pages.filter(p=>['home','chapters','files','ai'].includes(p[0]));
-      $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+`<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
+      const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}" aria-current="${state.page===p[0]?'page':'false'}"><span class="nav-icon"><i class="${p[1]}"></i></span><span class="nav-label"><strong>${p[2]}</strong><small>${p[3]}</small></span><i class="fa-solid fa-chevron-left nav-chevron"></i></button>`;
+      $('#sideNav').innerHTML=visible.map(make).join('');
+      const bottom=role==='student'?visible.filter(p=>['home','chapters','files','ai'].includes(p[0])):visible;
+      $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+
+        `<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
+      const nonStudent=role!=='student';
+      for(const id of ['sidebarBranches','sidebarStudyStats','sidebarAIBtn']){
+        const element=document.getElementById(id);if(element)element.hidden=nonStudent;
+      }
+      const roleLabel=$('#sidebarRoleLabel');if(roleLabel)roleLabel.textContent=
+        role==='admin'?'المالك':role==='contributor'?'مساهم معتمد':role==='applicant'?'طلب مساهمة':'طالب بكالوريا';
     }
-    function isMobileSidebar(){return window.matchMedia('(max-width:980px)').matches;}
+        function isMobileSidebar(){return window.matchMedia('(max-width:980px)').matches;}
     function isSidebarVisible(){
       const s=$('#sidebar');
       return isMobileSidebar() ? !!(s&&s.classList.contains('show')) : !document.body.classList.contains('sidebar-collapsed');
@@ -561,10 +578,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         const info=await response.json();
         aiBackendState=response.ok&&info.ready===true?'ready':'offline';
         const messages={
-          not_configured:'خدمة AI غير مفعّلة بعد. يجب ضبط GEMINI_API_KEY داخل إعدادات Vercel.',
-          provider_auth:'مفتاح Gemini الحالي مرفوض. يجب إصلاحه في Vercel.',
-          provider_error:'تعذر الاتصال بنموذج Gemini. الأدوات المحلية متاحة.',
-          provider_unreachable:'خادم Gemini لا يستجيب الآن؛ يمكنك استعمال أدوات المراجعة المحلية.'
+          provider_unconfigured:'خدمة Deploy تحتاج مفتاح API سرياً صالحاً في إعدادات Cloudflare Worker.',
+          configured_unverified:'إعداد Deploy مكتمل مبدئياً، لكن لم يُختبر توليد الإجابات بعد.',
+          provider_error:'تعذر اتصال Deploy. أدوات المراجعة المحلية متاحة.',
+          provider_unreachable:'تعذر الوصول إلى Deploy. الأدوات المحلية متاحة.'
         };
         aiBackendReason=aiBackendState==='ready'?'':messages[info.reason]||'تعذر التحقق من خدمة AI.';
       }catch(error){aiBackendState='offline';aiBackendReason='تعذر التحقق من خادم المساعد. الأدوات المحلية تبقى متاحة.';}
@@ -574,8 +591,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updateAIModeIndicator(){
       const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
       if(dot)dot.classList.toggle('live',live);
-      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من خدمة Gemini...':live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
-      if(desc)desc.textContent=live?'تم التحقق من اتصال Gemini عبر خادم Bac-pedia. الطلبات محمية بحسابك وحد استخدام يومي.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
+      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من إعدادات Deploy...':live?'مساعد Deploy — الإعداد جاهز للتجربة':'أدوات المراجعة المحلية — دون اتصال';
+      if(desc)desc.textContent=live?'الإعداد موجود في الخادم. يتأكد عمل النموذج عند إرسال أول طلب بنجاح، وقد تحتاج مفتاحاً صالحاً.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
     }
     function renderHomeSummary(){
       const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
@@ -751,6 +768,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       $('#signupKindCollaborator')?.classList.toggle('active',signupIntent==='collaborator');
       $('#signupKindStudent')?.setAttribute('aria-pressed',String(signupIntent==='student'));
       $('#signupKindCollaborator')?.setAttribute('aria-pressed',String(signupIntent==='collaborator'));
+      $('#signupCollabExtras')?.classList.toggle('hidden',signupIntent!=='collaborator');
       const hint=$('#signupRoleDescription');
       if(hint)hint.textContent=signupIntent==='collaborator'?
         'أنشئ حساباً ثم قدّم طلب مساهمة. صلاحية النشر تحتاج موافقة الإدارة.':
@@ -883,7 +901,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       renderAll();renderSession();closeLoginGate();
       window.onCommunityAuthChanged?.();
-      if(u.user_metadata?.signup_intent==='collaborator')showPage('collaborate');
+      // Roles come from RLS-protected database rows, not user-editable signup metadata.
       // Enter immediately; cloud hydration and last-activity tracking must not block the interface.
       void loadStudentProgress().catch(error=>console.warn('Progress hydration failed:',error));
       void studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id).then(({error})=>{if(error)console.warn('Student profile activity update failed:',error.message);});
@@ -962,13 +980,21 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
       const fullName=($('#signupNameInput')?.value||'').trim();
+      const contributorInfo=signupIntent==='collaborator'?{
+        organization:($('#signupOrganization')?.value||'').trim(),
+        contribution_type:$('#signupContributionType')?.value||'other',
+        motivation:($('#signupMotivation')?.value||'').trim()
+      }:{};
+      if(signupIntent==='collaborator'&&(contributorInfo.organization.length<2||contributorInfo.motivation.length<15)){
+        showToast('أدخل اسم المؤسسة ووصفاً لمساهمتك قبل إنشاء الحساب','warning');return;
+      }
       if(fullName.length<2){showToast('اكتب اسمك الكامل لإنشاء الحساب','warning');return;}
       if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){
         showToast('أدخل بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;
       }
       setAuthBusy(true);showAuthNotice('جارٍ إنشاء الحساب...');
       try{
-        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:fullName,signup_intent:signupIntent}}});
+        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:fullName,signup_intent:signupIntent,...contributorInfo}}});
         if(error)throw error;
         if(!data.session){
           if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');

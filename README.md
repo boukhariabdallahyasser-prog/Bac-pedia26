@@ -1,3 +1,82 @@
+## Cloudflare Workers deployment (new hosting)
+
+Cloudflare currently hosts `https://bac-pedia26.boukhariabdallahyasser.workers.dev`.
+The first deployment successfully uploaded the **frontend assets only**. Cloudflare does
+not automatically execute Vercel's `api/ai.js`. The checked-in `wrangler.jsonc`
+and `cloudflare/worker.js` add a real Worker backend on `/api/ai` and send
+all other requests to the Vite static assets. The settings implement a
+`run_worker_first` API route to avoid SPA fallback returning HTML to API calls.
+
+Cloudflare GitHub project settings:
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- Worker name: `bac-pedia26`
+- Output folder: `dist`
+- Production branch: `main` (keep automatic branch previews optional)
+
+Server-only configuration in **Cloudflare Dashboard → Workers & Pages → bac-pedia26
+→ Settings → Variables and Secrets** (never put credentials in GitHub,
+`wrangler.jsonc`, `auth-config.js`, or `VITE_*` variables):
+- `DEPLOY_API_KEY`: the owner's **Deploy.com** inference API credential, type **Secret**.
+- `DEPLOY_API_ENDPOINT`: optional override. The official default is `https://api-cdn.deploy.com/api/v1/chat/completions` (CDN nearest region).
+- `DEPLOY_MODEL_ID`: optional override. The official documented default is `deepseek-ai/deepseek-v4.1-flash`.
+
+**Official reference:** https://deployai.readme.io/docs/quickstart and
+https://deployai.readme.io/docs/deepseek . Deploy explicitly documents
+OpenAI-compatible chat completions with these values. `GET /api/ai` returns
+`provider_unconfigured` when the **secret key** is missing, and
+`configured_unverified` when credentials are present. A configured status
+does **not** prove that a key is valid or that the owner's Deploy account has
+access to the chosen model. Test a real authenticated student request to verify
+AI generation. Confirm any model usage charges in the Deploy dashboard.
+
+The Worker verifies the Supabase Auth bearer session, requires email
+confirmation, and enforces the existing daily quota through
+`consume_ai_quota`. The worker never serves the API credential to the browser.
+
+For signup confirmation and password recovery on Cloudflare, add the exact
+`workers.dev` origin to **Supabase Authentication → URL Configuration → Redirect URLs**.
+Keep Vercel in the redirect list during the transition. Change the default
+`Site URL` only after testing signup and recovery end to end on Cloudflare.
+Do not delete the older Vercel deployment until then.
+
+Test locally with `npm test` and `npm run build`. Use `npm run cf:preview`
+for Worker testing, and `npm run cf:deploy` to publish only after validation.
+
+## 2026-11-16: role-separated dashboards and moderation
+
+The platform now has three database-backed experiences. **Student** users see only learning tools plus approved resources; **contributor applicants/approved contributors** see their personal resource-management workspace instead of student pages; and **the one verified owner** sees a moderation dashboard.
+
+### Owner bootstrap (requires the owner's actual verified login)
+
+The database enforces **at most one** `platform_roles.role='admin'`. No publicly submitted name, email, signup intent or `user_metadata` can authorize an administrator. The owner should first register an ordinary account and verify its email via Supabase Auth. Only then the project administrator can run the documented INSERT in `supabase/role_portals_admin_2026.sql` from the **private Supabase SQL Editor**, substituting that account's exact verified email. Never add the owner password to GitHub or Vercel. Until the verified account is explicitly associated, the admin dashboard is intentionally inaccessible.
+
+### Contributor workspace
+
+A contributor signup collects full name, email/password, organization, contributor category and motivation. After confirmation, an application is stored as pending in `collaborator_applications`. A database-approved contributor sees resource statistics and can add, edit or delete their own Google Drive resource proposals (title, subject, unit/chapter, type, URL and description). New resources remain private to owner/contributor until the administrator approves them.
+
+The owner dashboard uses owner-only checked RPCs for approval, rejection, revocation, publication and deletion. Revoking a contributor also withdraws all their approved and pending links. Actions are logged in `moderation_audit`. Every security-changing action is enforced in PostgreSQL rather than by hiding UI buttons. Students never receive links to contributor or admin dashboards. Approved educational links appear in their existing Files view, without publishing the contributor management interface.
+
+### Deploy.com AI provider
+
+AI generation is handled by Deploy.com, not Gemini. The **official Deploy quickstart**
+confirms the OpenAI-compatible chat completions API and the documented default
+model (`deepseek-ai/deepseek-v4.1-flash`) at
+`https://api-cdn.deploy.com/api/v1/chat/completions`. Both Vercel and Cloudflare
+adapters use these as defaults and allow secure server-side overrides.
+
+**Required for Cloudflare:** set `DEPLOY_API_KEY` as a Cloudflare Worker secret.
+Setting it previously on Vercel does not copy it to Cloudflare. A published
+`workers.dev` deployment can serve the site while the AI endpoint remains
+unconfigured. Always test a signed-in student's first AI request and check the
+Deploy service's billing/authorization. Never embed secrets in JavaScript.
+
+### Migrations and security tests
+
+The following migrations have been applied to the connected Supabase project: `role_portals_admin_2026.sql`, `resource_categories_2026.sql`, and `admin_moderation_audit_2026.sql`. All previously saved student progress and retired flashcard data are preserved. RLS protects individual records; an immutable-style moderation audit records privileged decisions. The privileged moderation implementations live in the private `bac_private` schema with an empty search path and explicit owner checks. The public API exposes only SECURITY INVOKER wrappers; the private schema is not part of the exposed Supabase Data API. The owner dashboard also displays a private moderation audit log.
+
+Run `npm test`, `npm run build`, and `node scripts/check-dist.mjs` before merging, then check the Vercel preview. Real signup, SMTP confirmation, contributor approval and cross-account RLS require authenticated browser tests. Supabase Auth leaked-password protection must be enabled separately in Auth settings.
+
 ## 2026-11-16: landing page and AI configuration follow-up
 
 - Public landing now scrolls vertically on desktop and mobile. The global logged-out overflow lock is overridden only while a login modal is **not** open. Navigation anchors scroll to their target sections.
