@@ -137,6 +137,7 @@ function renderContributor(){
      request.status==='pending'?'طلبك مسجّل، في انتظار مراجعة الإدارة.':'تم إيقاف صلاحية المساهمة. يمكنك التواصل مع الإدارة.'));
  }
  if(request&&['pending','rejected'].includes(request.status))panel.append(button('تعديل بياناتي',()=>editContributorProfile(),'portal-action'));
+ if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
  apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
  metric('contributorMetrics',[
@@ -242,6 +243,19 @@ function resetContributorProfileForm(){
  if($('collabProfileSave'))$('collabProfileSave').textContent='إرسال الطلب للمراجعة';
  $('collabProfileCancel')?.classList.add('hidden');
  if(request)$('collaboratorApplyPanel')?.classList.add('hidden');
+}
+async function resubmitContributorApplication(){
+ if(busy||!user()||request?.status!=='rejected')return;
+ busy=true;
+ try{
+   const result=await db().rpc('resubmit_collaborator_application');
+   if(result.error)throw result.error;
+   if(result.data!==true)throw new Error('This application is not eligible for resubmission');
+   resetContributorProfileForm();
+   await loadContributor();
+   notify('تمت إعادة إرسال طلبك للمراجعة','success');
+ }catch(error){failed(error,'إعادة تقديم طلب المساهمة');}
+ finally{busy=false;}
 }
 async function resubmitResource(id){
  if(busy||ownerRole!=='contributor'||request?.status!=='approved')return;
