@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a1a" />
+  <meta name="color-scheme" content="dark light" />
   <meta name="description" content="Bac-pedia 2027: موارد البكالوريا، الدروس والوحدات، مراجعة ذكية ومخطط دراسي حسب الشعبة." />
   <title>Bac-pedia | بكالوريا 2027</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
@@ -169,6 +170,8 @@
     <div><i class="fa-solid fa-file-pdf"></i><strong>الملفات</strong></div>
     <div><i class="fa-solid fa-magnifying-glass-chart"></i><strong>بحث ذكي</strong></div>
   </div></div>
+  <nav class="chapter-breadcrumbs" id="chapterBreadcrumbs" aria-label="مسار التصفح"></nav>
+  <div class="chapter-context" id="chapterContext" hidden></div>
   <div class="chapters-tools">
     <div class="chapters-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="chapterQuery" type="search" placeholder="مثلاً: الدوال، fonctions، متتاليات، bac..." aria-label="ابحث عن وحدة أو درس أو ملف" autocomplete="off"></div>
     <select id="chapterSubject" aria-label="تصفية حسب المادة"><option value="">كل المواد</option></select>
@@ -182,7 +185,7 @@
     <button type="button" id="chapterFavFilter" aria-pressed="false"><i class="fa-regular fa-heart"></i> مفضلتي</button>
     <button type="button" id="chapterClear"><i class="fa-solid fa-rotate-left"></i> مسح الفلاتر</button>
   </div>
-  <div class="chapter-results-title"><h2>استكشف المكتبة</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
+  <div class="chapter-results-title"><h2 id="chapterSectionTitle">اختر مادة للبدء</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
   <div class="chapter-results" id="chapterResults" aria-live="polite"></div>
   <p class="chapter-source-note"><i class="fa-solid fa-circle-info"></i> النتائج مبنية على فهرس الموارد المتاحة لشعبتك. الروابط تفتح في Google Drive؛ قد تتطلب بعض الملفات صلاحية وصول.</p>
 </section>
