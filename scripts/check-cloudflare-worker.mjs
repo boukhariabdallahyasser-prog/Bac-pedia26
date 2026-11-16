@@ -9,7 +9,7 @@ const call=async(path,opts={},env=base)=>worker.fetch(new Request(origin+path,op
 const home=await call('/');
 assert.equal(home.status,200);
 assert.equal(await home.text(),'STATIC:/');
-for(const role of ['student','contributor','admin']){
+for(const role of ['login','student','contributor','admin']){
   const withSlash=await call('/'+role+'/');
   assert.equal(withSlash.status,200);
   assert.equal(await withSlash.text(),'STATIC:/'+role+'/index.html');
