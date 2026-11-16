@@ -154,3 +154,30 @@ comment on function private.consume_ai_quota() is
 'Private SECURITY DEFINER implementation. Enforces a hard limit of 30 AI requests per authenticated user per UTC day. The exposed public RPC is SECURITY INVOKER and ignores client-supplied limits.';
 comment on function public.consume_ai_quota(integer) is
 'SECURITY INVOKER RPC wrapper. Client-supplied p_daily_limit is intentionally ignored; the private implementation enforces a hard limit of 30 per UTC day.';
+
+-- Per-user educational bookmarks. Resource IDs come from the verified Drive catalog.
+create table if not exists public.student_resource_bookmarks (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  resource_key text not null check (length(resource_key) between 3 and 240),
+  subject_id text not null check (length(subject_id) between 1 and 80),
+  created_at timestamptz not null default now(),
+  primary key (user_id, resource_key)
+);
+alter table public.student_resource_bookmarks enable row level security;
+revoke all on public.student_resource_bookmarks from public, anon, authenticated;
+grant select, insert, update, delete on public.student_resource_bookmarks to authenticated;
+
+drop policy if exists "Student bookmarks select own" on public.student_resource_bookmarks;
+create policy "Student bookmarks select own" on public.student_resource_bookmarks
+  for select to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists "Student bookmarks insert own" on public.student_resource_bookmarks;
+create policy "Student bookmarks insert own" on public.student_resource_bookmarks
+  for insert to authenticated with check ((select auth.uid()) = user_id);
+drop policy if exists "Student bookmarks update own" on public.student_resource_bookmarks;
+create policy "Student bookmarks update own" on public.student_resource_bookmarks
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+drop policy if exists "Student bookmarks delete own" on public.student_resource_bookmarks;
+create policy "Student bookmarks delete own" on public.student_resource_bookmarks
+  for delete to authenticated using ((select auth.uid()) = user_id);
