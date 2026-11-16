@@ -19,6 +19,10 @@ for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/cha
 
 requireText(html,'<html lang="ar" dir="rtl">','Arabic RTL interface');
 requireText(html,'<script type="module" src="/src/main.js"></script>','Vite entrypoint');
+requireText(html,'href="/assets/app.css"','CSS independently loaded');
+requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
+requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
+requireText(html,'id="chapterContext"','Lesson detail area');
 if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
 requireText(config,'resources.json','resource manifest build packaging');
 requireText(config,'assets/legacy-app.js','legacy runtime build packaging');
@@ -57,7 +61,7 @@ requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
 for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','gemini-3.8-flash:generateContent'])requireText(api,marker,'AI server-side security');
 if(api.includes('gemini-2.5-flash'))throw Error('Obsolete AI provider configured');
 
-for(const file of ['scripts/check-chapter-search.mjs','scripts/validate-resources.mjs']){
+for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/validate-resources.mjs']){
   const result=spawnSync(process.execPath,[file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' failed:\\n'+(result.stderr||result.stdout));
   console.log((result.stdout||'').trim());
