@@ -1675,7 +1675,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const password=$('#signupPassInput')?.value||'';
       const indicator=$('#passwordStrengthStatus'),bar=$('#passwordStrengthBar');
       if(!indicator||!bar)return;
-      const length=password.length>=8,letter=/\\p{L}/u.test(password),digit=/\\d/.test(password),long=password.length>=12,symbol=/[^\\p{L}\\d]/u.test(password);
+      const length=password.length>=8,letter=/\p{L}/u.test(password),digit=/\d/.test(password),long=password.length>=12,symbol=/[^\p{L}\d]/u.test(password);
       const score=[length,letter,digit,long,symbol].filter(Boolean).length;
       bar.style.width=(password?Math.max(12,score*20):0)+'%';
       bar.style.background=length&&letter&&digit?(long&&symbol?'#10b981':'#a78bfa'):'#f59e0b';
