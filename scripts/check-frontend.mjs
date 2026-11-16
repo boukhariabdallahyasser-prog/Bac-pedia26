@@ -97,7 +97,7 @@ if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
-requireText(app,'سؤال الطالب (الأولوية القصوى)', 'AI should prioritize precise user questions'.replace('سؤال الطالب (الأولوية القصوى)','السؤال الذي يجب الإجابة عنه أولاً'));
+requireText(app,'السؤال الذي يجب الإجابة عنه أولاً','AI should prioritize precise user questions');
 requireText(app,'if(window.renderAIAnswer)window.renderAIAnswer(out,ans);','model output formatted safely');
 requireText(html,'class="result-box ai-answer"','readable AI result area');
 const worker=fs.readFileSync('cloudflare/worker.js','utf8');
