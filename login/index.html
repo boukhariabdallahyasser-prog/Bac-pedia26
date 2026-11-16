@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a1a" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Bac-pedia 2027: موارد البكالوريا، الدروس والوحدات، مراجعة ذكية ومخطط دراسي حسب الشعبة." />
+  <title>تسجيل الدخول | Bac-pedia 2027</title><meta name="robots" content="noindex,follow" />
+  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/chapters.css" />
+  <link rel="stylesheet" href="/assets/landing.css" />
+  <link rel="stylesheet" href="/assets/community.css" />
+  <link rel="stylesheet" href="/assets/portals.css" />
+  <link rel="stylesheet" href="/assets/auth-page.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+</head>
+<body class="public-mode auth-route" data-portal="login" data-auth-tab="login">
+  <main class="login-gate" id="loginGate" aria-labelledby="loginHeading" role="main">
+    <div class="login-card">
+      <aside class="login-story" aria-label="Bac-pedia 2027">
+        <div class="story-brand"><span class="story-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span>BAC-PEDIA <b>2027</b></span></div>
+        <div class="story-copy">
+          <span class="auth-story-eyebrow"><i class="fa-solid fa-sparkles"></i> خطوتك التالية نحو البكالوريا</span>
+          <h2>التركيز يبدأ<br><em>من هنا.</em></h2>
+          <p>دروس واضحة، موارد موثوقة، وخطتك الدراسية في مساحة مصممة للتركيز. تابع طريقك نحو بكالوريا 2027 بثقة.</p>
+          <div class="auth-visual" aria-label="مزايا المنصة">
+            <div class="auth-visual-title"><span class="auth-visual-orb"><i class="fa-solid fa-graduation-cap"></i></span><div><strong>مساحتك للتقدم</strong><small>كل ما تحتاجه في مكان واحد</small></div><i class="fa-solid fa-arrow-trend-up"></i></div>
+            <div class="auth-visual-item"><span class="auth-visual-icon lavender"><i class="fa-solid fa-book-open"></i></span><span><strong>دروس وملفات</strong><small>حسب المادة والشعبة</small></span><i class="fa-solid fa-check"></i></div>
+            <div class="auth-visual-item"><span class="auth-visual-icon mint"><i class="fa-solid fa-calendar-check"></i></span><span><strong>تنظيم المراجعة</strong><small>خطط ومهام قابلة للمتابعة</small></span><i class="fa-solid fa-check"></i></div>
+            <div class="auth-visual-item"><span class="auth-visual-icon peach"><i class="fa-solid fa-brain"></i></span><span><strong>مساعد المراجعة</strong><small>اسأل وتعلّم وفق هدفك</small></span><i class="fa-solid fa-check"></i></div>
+          </div>
+        </div>
+        <div class="story-bottom"><div class="auth-story-safety"><i class="fa-solid fa-shield-halved"></i><span>مساحة شخصية ومعلومات محمية</span></div><span class="auth-story-location">BAC-PEDIA · ALGERIA 2027</span></div>
+      </aside>
+      <div class="login-content">
+
+      <div class="auth-premium-badge"><i class="fa-solid fa-star"></i> مرحباً بك في Bac-pedia</div>
+      <div class="login-logo">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><span class="auth-login-kicker">YOUR STUDY SPACE</span><h1 id="loginHeading">أهلاً بعودتك <span class="auth-year">.</span></h1><p id="authSubtitle">تابع مراجعتك من حيث توقفت، بخطوة واحدة.</p></div>
+      </div>
+      <div class="auth-role-switch" aria-label="نوع الحساب"><button type="button" class="active" id="signupKindStudent" aria-pressed="true" onclick="setSignupIntent('student')"><i class="fa-solid fa-user-graduate"></i> طالب</button><button type="button" id="signupKindCollaborator" aria-pressed="false" onclick="setSignupIntent('collaborator')"><i class="fa-solid fa-handshake"></i> مساهم</button></div>
+      <p id="signupRoleDescription" class="auth-role-description">سجّل حساب الطالب للوصول إلى المراجعة.</p>
+      <div class="login-tabs" role="tablist" aria-label="تسجيل الدخول أو إنشاء حساب">
+        <button type="button" role="tab" aria-selected="true" class="login-tab active" id="loginMainTab" onclick="switchLoginTab('login')">دخول</button>
+        <button type="button" role="tab" aria-selected="false" class="login-tab" id="signupMainTab" onclick="switchLoginTab('signup')">حساب جديد</button>
+      </div>
+      <div class="login-form" id="loginMainForm" role="tabpanel">
+        <p class="auth-form-intro">سجّل الدخول إلى حسابك</p>
+        <label class="auth-field-label" for="loginEmailInput">البريد الإلكتروني</label><div class="login-field"><i class="fa-solid fa-envelope"></i><input id="loginEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
+        <label class="auth-field-label" for="loginPassInput">كلمة المرور</label><div class="login-field"><i class="fa-solid fa-lock"></i><input id="loginPassInput" type="password" autocomplete="current-password" required aria-label="كلمة المرور" placeholder="كلمة المرور"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('loginPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <button class="auth-reset" id="authResetButton" type="button" onclick="resetStudentPassword()"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button>
+        <button class="btn primary full auth-submit" onclick="loginWithForm()"><i class="fa-solid fa-arrow-left"></i> تسجيل الدخول</button>
+        <p class="login-note">حسابك شخصي ومحمي. لا يمكن استخدام المنصة دون تسجيل الدخول.</p>
+      </div>
+      <div class="login-form hidden" id="signupMainForm" role="tabpanel">
+        <p class="auth-form-intro">أنشئ حسابك في دقائق</p>
+        <label class="auth-field-label" for="signupNameInput">الاسم الكامل</label><div class="login-field"><i class="fa-solid fa-user"></i><input id="signupNameInput" type="text" autocomplete="name" maxlength="100" aria-label="الاسم الكامل" placeholder="الاسم الكامل"></div>
+          <div class="signup-collab-extras hidden" id="signupCollabExtras">
+            <p><i class="fa-solid fa-circle-info"></i> أنشئ حسابك أولاً، ثم ستفتح لك صفحة المساهمة لتعبئة البيانات والشعبة. لن تتمكن من إرسال الروابط إلا بعد موافقة الإدارة.</p>
+          </div>
+        <label class="auth-field-label" for="signupEmailInput">البريد الإلكتروني</label><div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
+        <label class="auth-field-label" for="signupPassInput">كلمة المرور</label><div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" oninput="updatePasswordStrength()" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="password-strength" id="passwordStrengthStatus" role="status" aria-live="polite">استعمل 8 أحرف على الأقل، مع حرف ورقم.<div class="password-strength-meter"><span id="passwordStrengthBar"></span></div></div>
+         <button class="btn success full auth-submit" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء حساب مجاني</button>
+        <p class="login-note">أنشئ حسابك باستخدام البريد الإلكتروني وكلمة المرور فقط.</p>
+      </div>
+<div class="login-form hidden" id="passwordRecoveryPanel">
+        <h3>تعيين كلمة مرور جديدة</h3>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordInput" type="password" autocomplete="new-password" minlength="8" required placeholder="كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="recoveryPasswordConfirmInput" type="password" autocomplete="new-password" minlength="8" required placeholder="تأكيد كلمة المرور الجديدة"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('recoveryPasswordConfirmInput',this)" aria-label="إظهار تأكيد كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <button class="btn primary full" type="button" onclick="saveRecoveredPassword()"><i class="fa-solid fa-check"></i> حفظ كلمة المرور</button>
+      </div>
+      <a class="auth-back-link" href="/"><i class="fa-solid fa-arrow-right"></i> العودة إلى الصفحة الرئيسية</a>
+      
+      <p id="authSetupNotice" class="login-note" role="status"></p>
+      <div class="auth-trust-row"><span><i class="fa-solid fa-lock"></i> حساب آمن</span><span><i class="fa-solid fa-cloud-arrow-up"></i> تقدّم محفوظ</span><span><i class="fa-solid fa-graduation-cap"></i> بكالوريا 2027</span></div>
+      </div>
+    </div>
+  </main>
+  <div id="toastArea" class="toast-area"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

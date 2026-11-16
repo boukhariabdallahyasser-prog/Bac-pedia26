@@ -39,6 +39,7 @@ export default defineConfig({
       // A genuine multi-page app: each role has an independent HTML build.
       input:{
         landing:resolve('index.html'),
+        login:resolve('login/index.html'),
         student:resolve('student/index.html'),
         contributor:resolve('contributor/index.html'),
         admin:resolve('admin/index.html')

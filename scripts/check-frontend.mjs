@@ -3,6 +3,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 const html=fs.readFileSync('index.html','utf8');
+const loginHtml=fs.readFileSync('login/index.html','utf8');
 const studentHtml=fs.readFileSync('student/index.html','utf8');
 const contributorHtml=fs.readFileSync('contributor/index.html','utf8');
 const adminHtml=fs.readFileSync('admin/index.html','utf8');
@@ -61,12 +62,13 @@ for(const id of ['page-collaborate','collaboratorApplyForm','collaboratorStatusP
   requireText(contributorHtml,'id="'+id+'"','contributor-only interface');
 for(const id of ['page-admin','adminList','adminMetrics','adminSearch','adminReviewFilter'])
   requireText(adminHtml,'id="'+id+'"','admin-only interface');
-for(const [doc,role] of [[html,'landing'],[studentHtml,'student'],[contributorHtml,'contributor'],[adminHtml,'admin']]){
+for(const [doc,role] of [[html,'landing'],[loginHtml,'login'],[studentHtml,'student'],[contributorHtml,'contributor'],[adminHtml,'admin']]){
   requireText(doc,'data-portal="'+role+'"','separate role document');
   requireText(doc,'<script type="module" src="/src/main.js"></script>','shared bootstrap script');
 }
 for(const [role,doc,prohibited] of [
-  ['landing',html,['id="page-home"','id="page-admin"','id="page-collaborate"']],
+  ['landing',html,['id="loginGate"','id="page-home"','id="page-admin"','id="page-collaborate"']],
+  ['login',loginHtml,['id="publicLanding"','id="page-home"','id="page-admin"','id="page-collaborate"']],
   ['student',studentHtml,['id="page-admin"','id="page-collaborate"']],
   ['contributor',contributorHtml,['id="page-admin"','id="page-home"','id="page-ai"']],
   ['admin',adminHtml,['id="page-home"','id="page-collaborate"','id="page-ai"']]
@@ -79,8 +81,13 @@ for(const marker of ['window.BAC_PORTAL_ROLE','sidebarBranches','sidebarStudySta
 if([html,studentHtml,contributorHtml,adminHtml].some(doc=>/id="(?:page-flashcards|lpDemoFlashcard|flashcards-preview)"/.test(doc)))throw Error('Removed flashcard UI was reintroduced');
 const landingCSS=fs.readFileSync('assets/landing.css','utf8');
 requireText(landingCSS,'body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important','Public landing must remain vertically scrollable');
-for(const id of ['publicLanding','lpHeroTitle','signupKindStudent','signupKindCollaborator','signupNameInput','loginGate'])requireText(html,'id="'+id+'"','public landing and auth UI');
-for(const htmlFile of ['student/index.html','contributor/index.html','admin/index.html'])
+for(const id of ['publicLanding','lpHeroTitle'])requireText(html,'id="'+id+'"','public landing UI');
+for(const id of ['signupKindStudent','signupKindCollaborator','signupNameInput','loginGate','loginEmailInput','signupEmailInput','passwordRecoveryPanel','authSetupNotice'])
+  requireText(loginHtml,'id="'+id+'"','standalone auth interface');
+requireText(loginHtml,'href="/assets/auth-page.css"','auth stylesheet');
+requireText(loginHtml,'auth-submit','auth CTA style');
+if(html.includes('id="loginEmailInput"'))throw Error('Login form leaked into public landing HTML');
+for(const htmlFile of ['login/index.html','student/index.html','contributor/index.html','admin/index.html'])
   requireText(config,htmlFile,'Vite multi-page build input');
 for(const css of ['/assets/landing.css','/assets/community.css'])requireText(html,'href="'+css+'"','new independent CSS');
 for(const asset of ['assets/landing.js','assets/community.js','assets/ai-format.js'])requireText(config,asset,'Vite runtime packaging');
@@ -115,7 +122,7 @@ const authRequirements=[
   "document.querySelectorAll('#loginGate .login-form button"
 ];
 for(const requirement of authRequirements)requireText(app,requirement,'auth safeguard');
-for(const id of ['id="passwordRecoveryPanel"','id="loginGate"'])requireText(html,id,'public authentication interface');
+for(const id of ['id="passwordRecoveryPanel"','id="loginGate"'])requireText(loginHtml,id,'dedicated authentication interface');
 for(const id of ['id="page-chapters"','id="chapterResults"'])requireText(studentHtml,id,'student learning interface');
 requireText(app,'userStorageKey(studentAuthUser.id)','private student storage key');
 if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped progress cache is not allowed');
@@ -136,6 +143,14 @@ for(const part of ['QUESTION EXACTE',"reasoning_effort:'low'",'max_completion_to
 
 requireText(app,'signup_intent:signupIntent,...contributorInfo','signup metadata is onboarding only');
 requireText(app,'emailRedirectTo:location.origin+location.pathname','confirmation links must return to current origin');
+for(const marker of ["location.assign('/login/?'","document.body.dataset.portal==='login'","function openAuthModal(tab="])
+  requireText(app,marker,'login route navigation');
+requireText(main,"location.replace('/login/'+location.search+location.hash)",'legacy recovery redirection');
+const authStyle=fs.readFileSync('assets/auth-page.css','utf8');
+for(const marker of ['[data-portal="login"]','.auth-visual','.login-field:focus-within','@media(max-width:760px)'])
+  requireText(authStyle,marker,'premium login styling');
+requireText(worker,"'/login/'",'Cloudflare login path');
+
 for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","resubmit_collaborator_application","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');

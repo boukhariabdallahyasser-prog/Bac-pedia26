@@ -757,6 +757,10 @@
       note.textContent=message;note.dataset.status=type;
     }
     function switchLoginTab(tab){
+      document.body.dataset.authTab=tab==='signup'?'signup':'login';
+      const heading=$('#loginHeading'),subtitle=$('#authSubtitle');
+      if(heading)heading.textContent=tab==='signup'?'أنشئ حسابك.':'أهلاً بعودتك.';
+      if(subtitle)subtitle.textContent=tab==='signup'?'ابدأ رحلتك الدراسية بحساب شخصي مجاني.':'تابع مراجعتك من حيث توقفت، بخطوة واحدة.';
       showAuthNotice('');
       $('#passwordRecoveryPanel')?.classList.add('hidden');
       $$('.login-tab').forEach(button=>button.classList.remove('hidden'));
@@ -784,6 +788,8 @@
         'سجّل حساب طالب للاطلاع على المواد وإنشاء بطاقات المراجعة.';
     }
     function openLoginGate(showModal=false){
+      // Standalone /login/ is the actual authentication page, not a popup.
+      if(document.body.dataset.portal==='login')showModal=true;
       const gate=$('#loginGate');
       if(!gate)return;
       document.body.classList.remove('authenticated');
@@ -795,13 +801,19 @@
         requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
     }
     function openAuthModal(tab='login',intent='student'){
-      if(studentAuthUser){showPage(intent==='collaborator'?'collaborate':'home');return;}
+      if(document.body.dataset.portal!=='login'){
+        const query=new URLSearchParams({tab:tab==='signup'?'signup':'login',role:intent==='collaborator'?'collaborator':'student'});
+        location.assign('/login/?'+query.toString());
+        return;
+      }
+      if(studentAuthUser){window.refreshPortalRole?.();return;}
       setSignupIntent(intent);
       switchLoginTab(tab==='signup'?'signup':'login');
       openLoginGate(true);
       requestAnimationFrame(()=>$('#'+(tab==='signup'?'signupNameInput':'loginEmailInput'))?.focus({preventScroll:true}));
     }
     function closeAuthModal(){
+      if(document.body.dataset.portal==='login'){location.assign('/');return;}
       if(studentAuthUser)return;
       $('#loginGate')?.classList.add('hidden');
       document.body.classList.remove('auth-modal-open');
@@ -898,13 +910,13 @@
     }
     async function applyStudentSession(session){
       const u=session?.user||null;
-      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
+      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}
       if(!u.email_confirmed_at){
         studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();
         renderAll();renderSession();openLoginGate();
         showAuthNotice('يرجى تأكيد البريد الإلكتروني قبل فتح حسابك.','warning');
         if(studentAuth)void studentAuth.auth.signOut().catch(error=>console.warn('Unconfirmed session sign-out failed:',error));
-        if(document.body.dataset.portal!=='landing')window.location.replace('/');
+        if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');
         return;
       }
       resetStudentData();studentAuthUser=u;state.guest=false;
@@ -922,7 +934,7 @@
       const note=$('#authSetupNotice');
       if(!auth){
         if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
-        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;
+        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;
       }
       if(note)note.textContent='';
       let recoveryFlow=/(?:^|[&#?])type=recovery(?:&|$)/i.test(location.hash+location.search);
@@ -933,7 +945,7 @@
           setTimeout(()=>{openLoginGate(true);completePasswordRecovery();},0);
           return;
         }
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}
         if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>{if(session?.user?.id!==studentAuthUser?.id)void applyStudentSession(session);},0);
       });
       const {data,error}=await auth.auth.getSession();
@@ -958,7 +970,7 @@
           await applyStudentSession({...data.session,user:verified.data.user});
         }
       }
-      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');}
+      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');}
     }
 
     function enterAsGuest(){
@@ -1110,6 +1122,11 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
     function init(){
       initAuthKeyboard();
       const portal=document.body.dataset.portal||'landing';
+      if(portal==='login'){
+        const search=new URLSearchParams(location.search);
+        setSignupIntent(search.get('role')==='collaborator'?'collaborator':'student');
+        switchLoginTab(search.get('tab')==='signup'?'signup':'login');
+      }
       if(portal==='student'){
         applyBackupUrls();
         initCanvas();

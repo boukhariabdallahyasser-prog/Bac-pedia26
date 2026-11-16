@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "login/**"
       - "student/**"
       - "contributor/**"
       - "admin/**"
@@ -25,6 +26,7 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "login/**"
       - "student/**"
       - "contributor/**"
       - "admin/**"
@@ -86,6 +88,12 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:4173/ | grep -q 'publicLanding'
+          curl -fsS http://127.0.0.1:4173/login/ > /tmp/bac-login.html
+          grep -q 'data-portal="login"' /tmp/bac-login.html
+          grep -q 'id="loginEmailInput"' /tmp/bac-login.html
+          grep -q 'id="signupEmailInput"' /tmp/bac-login.html
+          ! grep -q 'id="loginEmailInput"' <(curl -fsS http://127.0.0.1:4173/)
+
           for ROLE in student contributor admin; do
             curl -fsS "http://127.0.0.1:4173/${ROLE}/" > "/tmp/bac-${ROLE}.html"
             grep -q "data-portal=\"${ROLE}\"" "/tmp/bac-${ROLE}.html"
@@ -94,10 +102,26 @@ jobs:
           ! grep -q 'id="page-home"' /tmp/bac-admin.html
           ! grep -q 'id="page-collaborate"' /tmp/bac-student.html
           if command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --headless --no-sandbox --disable-gpu --virtual-time-budget=5000 --dump-dom http://127.0.0.1:4173/login/ > login-rendered.html
+            grep -q 'data-portal="login"' login-rendered.html
+            grep -q 'id="loginEmailInput"' login-rendered.html
+            ! grep -q 'id="publicLanding"' login-rendered.html
+            ! grep -q 'class="login-gate hidden"' login-rendered.html
+            google-chrome --headless --no-sandbox --disable-gpu --virtual-time-budget=5000 --dump-dom 'http://127.0.0.1:4173/login/?tab=signup&role=collaborator' > signup-rendered.html
+            grep -q 'data-auth-tab="signup"' signup-rendered.html
+            grep -q 'id="signupMainForm" role="tabpanel"' signup-rendered.html
+
+
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=5000 --screenshot=landing-desktop.png http://127.0.0.1:4173/
             test -s landing-desktop.png
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=landing-mobile.png http://127.0.0.1:4173/
             test -s landing-mobile.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1024 --virtual-time-budget=5000 --screenshot=login-desktop.png http://127.0.0.1:4173/login/
+            test -s login-desktop.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=login-mobile.png http://127.0.0.1:4173/login/
+            test -s login-mobile.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=signup-mobile.png 'http://127.0.0.1:4173/login/?tab=signup&role=collaborator'
+            test -s signup-mobile.png
           fi
       - uses: actions/upload-artifact@v4
         if: always()
@@ -106,5 +130,8 @@ jobs:
           path: |
             landing-desktop.png
             landing-mobile.png
+            login-desktop.png
+            login-mobile.png
+            signup-mobile.png
           if-no-files-found: ignore
 

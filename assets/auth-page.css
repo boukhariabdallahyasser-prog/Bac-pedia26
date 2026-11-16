@@ -1,0 +1,202 @@
+/* BAC-PEDIA 2027 — premium dedicated authentication.
+   This style is exclusively scoped to /login/ and never changes a student portal. */
+html:has(body[data-portal="login"]){min-height:100%;background:#080d1d}
+body[data-portal="login"]{
+  --auth-ink:#f1f3ff;--auth-soft:#a7b0d1;--auth-violet:#a996ff;--auth-mint:#a1e8d2;
+  margin:0;min-height:100dvh;overflow:auto!important;background:#080d1d;
+  color:var(--auth-ink);font-family:Tajawal,Cairo,sans-serif
+}
+body[data-portal="login"] .login-gate{
+  isolation:isolate;position:relative;inset:auto;min-height:100dvh;z-index:1;
+  display:flex;align-items:center;justify-content:center;padding:clamp(16px,3.5vw,42px);
+  background:
+    radial-gradient(circle at 8% 0%,rgba(140,107,255,.25),transparent 42%),
+    radial-gradient(circle at 92% 95%,rgba(76,195,190,.11),transparent 32%),
+    #080d1d;
+  opacity:1;visibility:visible;overflow:visible;transition:none
+}
+body[data-portal="login"] .login-gate::before{
+  position:absolute;inset:0;z-index:-1;content:"";pointer-events:none;
+  background-image:radial-gradient(rgba(184,186,255,.13) .8px,transparent .8px);
+  background-size:33px 33px;mask-image:linear-gradient(to bottom,#000,transparent 95%);
+}
+body[data-portal="login"] .login-card{
+  display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);
+  direction:ltr;width:min(1120px,100%);max-width:1120px;min-height:min(730px,calc(100dvh - 52px));
+  max-height:none;overflow:visible;padding:0;border:1px solid rgba(201,198,249,.16);
+  border-radius:32px;background:#12192d;
+  box-shadow:0 40px 100px rgba(0,0,0,.43),0 0 0 1px rgba(255,255,255,.035);
+  backdrop-filter:none;
+}
+body[data-portal="login"] .login-card::before{content:none}
+body[data-portal="login"] .login-story{
+  position:relative;overflow:hidden;direction:rtl;min-height:720px;display:flex;
+  flex-direction:column;justify-content:space-between;gap:24px;
+  padding:clamp(29px,4vw,48px);border:0;border-radius:31px 0 0 31px;
+  background:
+    radial-gradient(circle at 6% 84%,rgba(100,234,194,.12),transparent 39%),
+    radial-gradient(circle at 95% 10%,rgba(169,150,255,.25),transparent 43%),
+    linear-gradient(150deg,#282e65 0%,#171e43 52%,#10253b 100%);
+}
+body[data-portal="login"] .login-story::after{
+  content:"";position:absolute;left:-140px;bottom:-160px;width:410px;height:410px;
+  border-radius:50%;border:1px solid rgba(189,197,250,.11);
+  box-shadow:0 0 0 44px rgba(166,174,246,.024),0 0 0 96px rgba(166,174,246,.018);
+  pointer-events:none
+}
+body[data-portal="login"] .story-brand{display:flex;align-items:center;gap:12px;font:900 .95rem/1.3 Tajawal,Cairo;color:#f6f7ff;letter-spacing:.085em}
+body[data-portal="login"] .story-brand-icon{
+  width:46px;height:46px;display:grid;place-items:center;flex:none;border-radius:15px;
+  background:linear-gradient(135deg,#c8baff,#8ee3d3);color:#182343;font-size:1.25rem;
+  box-shadow:0 9px 26px rgba(93,81,194,.2)
+}
+body[data-portal="login"] .story-brand b{color:#9ce8d5;font-weight:900}
+body[data-portal="login"] .story-copy{position:relative;z-index:1;display:grid;gap:16px}
+body[data-portal="login"] .story-copy .auth-story-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;width:max-content;max-width:100%;
+  padding:9px 13px;border-radius:100px;border:1px solid rgba(158,231,219,.19);
+  background:rgba(130,230,212,.075);color:#a5f1d9;font-size:.76rem;font-weight:900
+}
+body[data-portal="login"] .story-copy h2{
+  font:900 clamp(2.25rem,3.5vw,3.25rem)/1.38 Cairo,Tajawal,sans-serif;
+  letter-spacing:-.06em;color:#f8f7ff;margin:1px 0 0
+}
+body[data-portal="login"] .story-copy h2 em{font-style:normal;background:linear-gradient(100deg,#b7acff,#99efdc);background-clip:text;-webkit-background-clip:text;color:transparent}
+body[data-portal="login"] .story-copy>p{max-width:420px;color:#c4cee3;font-size:.93rem;line-height:2.05}
+body[data-portal="login"] .auth-visual{
+  margin-top:9px;display:grid;gap:7px;border:1px solid rgba(200,210,250,.16);
+  border-radius:22px;background:rgba(9,18,42,.44);padding:15px;
+  box-shadow:0 18px 50px rgba(5,12,35,.17)
+}
+body[data-portal="login"] .auth-visual-title,
+body[data-portal="login"] .auth-visual-item{
+  display:flex;align-items:center;gap:12px;min-width:0;padding:7px 5px
+}
+body[data-portal="login"] .auth-visual-title{padding-bottom:12px;margin-bottom:3px;border-bottom:1px solid rgba(189,197,241,.11)}
+body[data-portal="login"] .auth-visual-title>div,body[data-portal="login"] .auth-visual-item>span:nth-child(2){display:grid;flex:1;gap:3px}
+body[data-portal="login"] .auth-visual-title strong{font-size:.9rem}
+body[data-portal="login"] .auth-visual-title small,body[data-portal="login"] .auth-visual-item small{color:#a9b6d3;font-size:.74rem}
+body[data-portal="login"] .auth-visual-title>i{color:#a7f0d2}
+body[data-portal="login"] .auth-visual-orb{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:12px;background:#8b7ce5;color:#fff}
+body[data-portal="login"] .auth-visual-item strong{font-size:.83rem;font-weight:900}
+body[data-portal="login"] .auth-visual-item>i{color:#a7f0d2;font-size:.77rem}
+body[data-portal="login"] .auth-visual-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border-radius:11px}
+body[data-portal="login"] .auth-visual-icon.lavender{background:rgba(169,148,250,.16);color:#cfbdff}
+body[data-portal="login"] .auth-visual-icon.mint{background:rgba(120,225,190,.13);color:#9af0d2}
+body[data-portal="login"] .auth-visual-icon.peach{background:rgba(255,197,144,.13);color:#ffd19c}
+body[data-portal="login"] .story-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;color:#c4cee6}
+body[data-portal="login"] .auth-story-safety{display:flex;align-items:center;gap:9px;font-size:.74rem}
+body[data-portal="login"] .auth-story-safety i{color:#91e8d1}
+body[data-portal="login"] .auth-story-location{font:800 .62rem Tajawal,Cairo;letter-spacing:.08em;color:#b6b8d6}
+body[data-portal="login"] .login-content{
+  direction:rtl;min-width:0;align-self:center;padding:clamp(24px,4.2vw,57px);
+  width:100%;max-width:555px;
+}
+body[data-portal="login"] .auth-premium-badge{
+  display:inline-flex;align-items:center;gap:8px;margin:0 0 20px;
+  border:1px solid rgba(160,143,239,.21);background:rgba(148,127,229,.10);
+  border-radius:100px;padding:9px 14px;font-weight:900;font-size:.73rem;color:#d7cfff
+}
+body[data-portal="login"] .auth-premium-badge i{margin:0;color:#bdb0ff}
+body[data-portal="login"] .login-logo{display:flex;align-items:center;gap:14px;margin:0 0 24px}
+body[data-portal="login"] .login-logo .brand-icon{width:55px;height:55px;flex:0 0 55px;border-radius:16px;font-size:1.35rem;background:linear-gradient(135deg,#a391ff,#6c6ee9);color:#fff;box-shadow:0 10px 23px rgba(109,98,217,.2)}
+body[data-portal="login"] .auth-login-kicker{color:#979bb6;font:800 .64rem/1.4 Tajawal,Cairo;letter-spacing:.09em;direction:ltr;display:block;width:max-content;margin-bottom:7px}
+body[data-portal="login"] .login-logo h1{font:900 clamp(1.55rem,2.6vw,2.05rem)/1.45 Cairo,Tajawal;color:#f8f8ff;letter-spacing:-.04em}
+body[data-portal="login"] .auth-year{color:#b7a7ff}
+body[data-portal="login"] .login-logo p{margin-top:4px;color:#a8b0ca;line-height:1.8;font-size:.84rem}
+body[data-portal="login"] .login-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:13px 0 23px;
+  padding:5px;border:1px solid rgba(171,178,223,.16);border-radius:15px;
+  background:#0c1427
+}
+body[data-portal="login"] .login-tab{
+  border:0;border-radius:11px;min-height:43px;background:transparent;color:#aeb7d2;
+  font:900 .91rem Tajawal,Cairo;cursor:pointer;transition:background .2s,color .2s
+}
+body[data-portal="login"] .login-tab.active{background:#282e54;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.14)}
+body[data-portal="login"] .login-tab:not(.active):hover{background:rgba(132,143,210,.08)}
+body[data-portal="login"] .auth-form-intro{margin-bottom:6px;color:#eaeaff;font-size:.92rem;font-weight:900}
+body[data-portal="login"] .login-form{display:grid;gap:10px}
+body[data-portal="login"] .login-form.hidden,body[data-portal="login"] .hidden{display:none!important}
+body[data-portal="login"] .auth-field-label{color:#e1e5fa;font-size:.82rem;font-weight:800;margin-top:5px;display:block}
+body[data-portal="login"] .login-field{position:relative;display:flex;align-items:center;margin:0;padding:0;min-height:50px;background:#0c152b;border:1px solid rgba(155,165,218,.22);border-radius:13px;transition:border-color .18s,box-shadow .18s}
+body[data-portal="login"] .login-field:focus-within{border-color:#aaa0fa;box-shadow:0 0 0 4px rgba(163,143,247,.11)}
+body[data-portal="login"] .login-field>i{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#a396fa;pointer-events:none;font-size:.96rem}
+body[data-portal="login"] .login-field input{
+  min-height:50px;min-width:0;flex:1;width:100%;margin:0;border:0;border-radius:13px;
+  background:transparent!important;padding:12px 42px 12px 16px;box-shadow:none!important;
+  font:700 .91rem/1.5 Tajawal,Cairo;color:#f5f5ff;outline:none;direction:rtl
+}
+body[data-portal="login"] .login-field input[type=email]{direction:ltr;text-align:right;unicode-bidi:plaintext}
+body[data-portal="login"] .login-field input[type=password]{direction:ltr;text-align:right}
+body[data-portal="login"] .login-field input::placeholder{color:#72809f;font-weight:500}
+body[data-portal="login"] .password-toggle{position:relative;display:grid;place-items:center;flex:none;width:42px;height:42px;color:#b1b9d0;margin-inline-end:3px;border-radius:10px;cursor:pointer;z-index:1}
+body[data-portal="login"] .password-toggle i{position:static;transform:none;color:inherit}
+body[data-portal="login"] .password-toggle:hover{color:#fff;background:rgba(146,140,226,.11)}
+body[data-portal="login"] .auth-reset{width:max-content;margin:2px 0 4px auto;border:0;background:transparent;color:#baaefd;font-weight:800;font-size:.79rem;text-decoration:none;padding:5px 0;cursor:pointer}
+body[data-portal="login"] .auth-reset:hover{text-decoration:underline;text-underline-offset:4px}
+body[data-portal="login"] .auth-submit{
+  min-height:51px;width:100%;border:0;border-radius:14px;
+  background:linear-gradient(120deg,#8f80ef,#7169db);color:#fff;
+  box-shadow:0 13px 24px rgba(108,94,213,.21);
+  font:900 .94rem Tajawal,Cairo;display:flex;align-items:center;justify-content:center;gap:13px;
+  transition:transform .18s,filter .18s;cursor:pointer;margin:9px 0 0
+}
+body[data-portal="login"] .auth-submit:hover{transform:translateY(-1px);filter:brightness(1.09)}
+body[data-portal="login"] .auth-submit:disabled{opacity:.55;cursor:wait;transform:none}
+body[data-portal="login"] .login-note{font-size:.77rem;line-height:1.75;color:#99a4c1;text-align:center;margin-top:7px}
+body[data-portal="login"] .auth-back-link{display:flex;align-items:center;justify-content:center;gap:9px;width:max-content;max-width:100%;margin:22px auto 0;text-align:center;color:#c2c7df;font-weight:800;font-size:.82rem;text-decoration:none;cursor:pointer}
+body[data-portal="login"] .auth-back-link:hover{color:#fff}
+body[data-portal="login"] #authSetupNotice{margin-top:14px;border:1px solid rgba(239,179,95,.18);border-radius:12px;padding:13px;color:#ffe0ad;background:rgba(246,175,79,.07);font-size:.83rem;line-height:1.7}
+body[data-portal="login"] #authSetupNotice:empty{display:none}
+body[data-portal="login"] .auth-trust-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:11px;margin-top:23px;border-top:1px solid rgba(168,170,220,.11);padding-top:18px;color:#8491b1;font-size:.68rem}
+body[data-portal="login"] .auth-trust-row span{display:inline-flex;align-items:center;gap:6px}
+body[data-portal="login"] .auth-trust-row i{color:#97b8d7}
+body[data-portal="login"] .auth-role-switch{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 9px;
+  background:transparent;padding:0;border:0
+}
+body[data-portal="login"] .auth-role-switch button{
+  min-height:52px;display:flex;align-items:center;justify-content:center;gap:9px;
+  border-radius:13px;border:1px solid rgba(158,171,223,.20);
+  background:#0e172c;color:#c2cbe2;font:900 .88rem Tajawal,Cairo;cursor:pointer
+}
+body[data-portal="login"] .auth-role-switch button.active{
+  border-color:#a697fa;background:rgba(148,131,236,.14);color:#f3efff
+}
+body[data-portal="login"] .auth-role-switch button:focus-visible,
+body[data-portal="login"] a:focus-visible,
+body[data-portal="login"] button:focus-visible{outline:3px solid #aca0ff;outline-offset:3px}
+body[data-portal="login"] .auth-role-description{color:#9eaac7;font-size:.77rem;line-height:1.75;margin:0 0 16px}
+body[data-portal="login"][data-auth-tab="login"] .auth-role-switch,
+body[data-portal="login"][data-auth-tab="login"] .auth-role-description{display:none}
+body[data-portal="login"] #signupCollabExtras{margin:4px 0;padding:12px;border:1px solid rgba(157,146,230,.2);background:rgba(149,136,230,.09);border-radius:12px}
+body[data-portal="login"] #signupCollabExtras p{font-size:.78rem;line-height:1.7;color:#d4cef5}
+body[data-portal="login"] #passwordStrengthStatus{line-height:1.6;font-size:.73rem;color:#b9c4df}
+body[data-portal="login"] .password-strength-meter{height:5px;border-radius:999px;overflow:hidden;background:#25344e;margin-top:9px}
+body[data-portal="login"] .password-strength-meter span{display:block;height:100%;transition:width .2s}
+body[data-portal="login"] .toast-area{z-index:3000}
+@media(max-width:900px){
+  body[data-portal="login"] .login-card{grid-template-columns:minmax(0,.8fr) minmax(0,1fr)}
+  body[data-portal="login"] .login-story{padding:29px;min-height:680px}
+  body[data-portal="login"] .login-content{padding:28px}
+  body[data-portal="login"] .story-copy h2{font-size:2.18rem}
+}
+@media(max-width:760px){
+  body[data-portal="login"] .login-gate{min-height:100dvh;padding:12px;align-items:flex-start}
+  body[data-portal="login"] .login-card{grid-template-columns:1fr;max-width:510px;min-height:calc(100dvh - 24px);border-radius:25px;overflow:hidden}
+  body[data-portal="login"] .login-story{display:none!important}
+  body[data-portal="login"] .login-content{padding:clamp(23px,6vw,37px);max-width:none;align-self:center}
+  body[data-portal="login"] .auth-trust-row{padding-top:14px}
+}
+@media(max-width:390px){
+  body[data-portal="login"] .login-content{padding:24px 19px}
+  body[data-portal="login"] .login-logo .brand-icon{width:48px;height:48px;flex-basis:48px}
+  body[data-portal="login"] .login-logo h1{font-size:1.38rem}
+  body[data-portal="login"] .auth-premium-badge{font-size:.68rem}
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-portal="login"] .auth-submit,
+  body[data-portal="login"] .login-tab,
+  body[data-portal="login"] .login-field{transition:none}
+}
