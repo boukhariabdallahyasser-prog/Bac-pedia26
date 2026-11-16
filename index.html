@@ -7,6 +7,7 @@
   <title>Bac-pedia | بكالوريا 2027</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="./assets/chapters.css" />
   <style>
     :root{
       --primary:#6366f1; --primary-dark:#4f46e5; --primary-light:#818cf8;
@@ -709,7 +710,7 @@
             </div>
             <div class="year-progress"><span id="yearProgress"></span></div>
             <div class="hero-actions">
-              <button class="btn primary" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> الملفات</button>
+              <button class="btn primary" onclick="showPage('chapters')"><i class="fa-solid fa-layer-group"></i> الدروس والوحدات</button><button class="btn" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> الملفات</button>
               <button class="btn success" onclick="showPage('ai'); runAgent('daily_plan')"><i class="fa-solid fa-wand-magic-sparkles"></i> خطة اليوم</button>
               <button class="btn" onclick="showPage('planner')"><i class="fa-solid fa-stopwatch"></i> جلسة تركيز</button>
             </div>
@@ -742,7 +743,36 @@
           <div class="card quick-card" onclick="showPage('ai')"><div class="quick-icon"><i class="fa-solid fa-robot"></i></div><div><h3>المساعد</h3><p class="muted">شرح، تلخيص، اختبارات وخطط باستعمال بياناتك.</p></div></div>
         </div>
       </section>
-      <section class="page" id="page-files">
+      <section class="page" id="page-chapters">
+  <div class="chapters-hero"><div>
+    <div class="chapters-eyebrow"><i class="fa-solid fa-layer-group"></i> BAC-PEDIA · CHAPTERS STUDIO</div>
+    <h1>كل دروسك ووحداتك.<br>بحث واحد، نتائج أوضح.</h1>
+    <p>تصفّح موارد شعبتك في مكان واحد. ابحث بالعربية أو الفرنسية أو الإنجليزية، حتى عند وجود خطأ بسيط في الكتابة.</p>
+    <button class="chapter-quicklink" onclick="document.getElementById('chapterQuery').focus()"><i class="fa-solid fa-magnifying-glass"></i> ابدأ البحث</button>
+  </div><div class="chapter-visual" aria-hidden="true">
+    <div><i class="fa-solid fa-book-open-reader"></i><strong>الدروس</strong></div>
+    <div><i class="fa-solid fa-folder-tree"></i><strong>الوحدات</strong></div>
+    <div><i class="fa-solid fa-file-pdf"></i><strong>الملفات</strong></div>
+    <div><i class="fa-solid fa-magnifying-glass-chart"></i><strong>بحث ذكي</strong></div>
+  </div></div>
+  <div class="chapters-tools">
+    <div class="chapters-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="chapterQuery" type="search" placeholder="مثلاً: الدوال، fonctions، متتاليات، bac..." aria-label="ابحث عن وحدة أو درس أو ملف" autocomplete="off"></div>
+    <select id="chapterSubject" aria-label="تصفية حسب المادة"><option value="">كل المواد</option></select>
+    <select id="chapterSort" aria-label="ترتيب النتائج"><option value="relevant">الأكثر صلة</option><option value="az">بالاسم</option><option value="subject">حسب المادة</option></select>
+  </div>
+  <div class="chapter-filter-line" role="group" aria-label="نوع المورد">
+    <button type="button" data-chapter-type="all" aria-pressed="true">الكل</button>
+    <button type="button" data-chapter-type="subject" aria-pressed="false">المواد</button>
+    <button type="button" data-chapter-type="folder" aria-pressed="false">الوحدات والمجلدات</button>
+    <button type="button" data-chapter-type="file" aria-pressed="false">الملفات</button>
+    <button type="button" id="chapterFavFilter" aria-pressed="false"><i class="fa-regular fa-heart"></i> مفضلتي</button>
+    <button type="button" id="chapterClear"><i class="fa-solid fa-rotate-left"></i> مسح الفلاتر</button>
+  </div>
+  <div class="chapter-results-title"><h2>استكشف المكتبة</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
+  <div class="chapter-results" id="chapterResults" aria-live="polite"></div>
+  <p class="chapter-source-note"><i class="fa-solid fa-circle-info"></i> النتائج مبنية على فهرس الموارد المتاحة لشعبتك. الروابط تفتح في Google Drive؛ قد تتطلب بعض الملفات صلاحية وصول.</p>
+</section>
+<section class="page" id="page-files">
         <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
         <div class="card">
           <div class="grid-2">
@@ -865,6 +895,7 @@
   <div class="toast-area" id="toastArea"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="./auth-config.js"></script>
+  <script src="./assets/chapter-search.js"></script>
   <script>
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
@@ -879,6 +910,7 @@
     const pages = [
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
       ['files','fa-solid fa-folder-open','الملفات','مواد وروابط Drive حسب الشعبة'],
+       ['chapters','fa-solid fa-layer-group','الدروس والوحدات','بحث ذكي في المواد والملفات والوحدات'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
       ['grades','fa-solid fa-calculator','المعدل','حاسبة ونصائح'],
@@ -1049,7 +1081,7 @@
           if(Array.isArray(item.subBranches))allSubjects[id].subBranches=[...item.subBranches];
           if(isDriveResourceUrl(item.url))allSubjects[id].url=item.url;
         }
-        resourceManifest=data;renderAll();return true;
+        resourceManifest=data;renderAll();if(typeof window.renderChapters==='function')window.renderChapters();return true;
       }catch(error){console.warn('Resource manifest unavailable; using embedded fallback links.',error);applyBackupUrls();renderAll();return false;}
     }
     function parseCsv(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],nx=text[i+1];if(ch==='"'&&q&&nx==='"'){cell+='"';i++;}else if(ch==='"'){q=!q;}else if(ch===','&&!q){row.push(cell);cell='';}else if((ch==='\n'||ch==='\r')&&!q){if(cell||row.length){row.push(cell);rows.push(row);row=[];cell='';}if(ch==='\r'&&nx==='\n')i++;}else cell+=ch;}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
@@ -1083,6 +1115,7 @@
       if(id==='grades')renderGrades();
       if(id==='progress')renderProgress();
       if(id==='resources')renderResources();
+       if(id==='chapters' && typeof window.renderChapters==='function')window.renderChapters();
       if(id==='ai'){renderAiSelectors();renderAgents();}
     }
     function openFilesAll(){
@@ -1106,7 +1139,7 @@
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`;
       $('#sideNav').innerHTML=pages.map(make).join('');
-      const bottom=pages.filter(p=>['home','files','ai','planner'].includes(p[0]));
+      const bottom=pages.filter(p=>['home','chapters','files','ai'].includes(p[0]));
       $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+`<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
     }
     function isMobileSidebar(){return window.matchMedia('(max-width:980px)').matches;}
@@ -1562,7 +1595,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updateCountdown(){const diff=Math.max(0,CONFIG.bacStart.getTime()-Date.now());const d=Math.floor(diff/86400000),h=Math.floor(diff/3600000)%24,m=Math.floor(diff/60000)%60,s=Math.floor(diff/1000)%60;$('#cdDays').textContent=String(d).padStart(3,'0');$('#cdHours').textContent=String(h).padStart(2,'0');$('#cdMins').textContent=String(m).padStart(2,'0');$('#cdSecs').textContent=String(s).padStart(2,'0');const start=new Date('2025-09-01T00:00:00+01:00').getTime();const pct=Math.max(0,Math.min(100,(Date.now()-start)/(CONFIG.bacStart.getTime()-start)*100));$('#yearProgress').style.width=pct+'%';}
     function showToast(message,type='info'){const div=document.createElement('div');div.className='toast';const icon=type==='success'?'fa-circle-check':type==='warning'?'fa-triangle-exclamation':type==='danger'?'fa-circle-xmark':'fa-circle-info';div.innerHTML=`<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;$('#toastArea').appendChild(div);setTimeout(()=>div.remove(),3200);}
     function initCanvas(){const c=$('#bgCanvas');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width: 760px)').matches)return;const ctx=c.getContext('2d');if(!ctx)return;let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
-    function renderAll(){cleanSpecialProgress();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
+    function renderAll(){cleanSpecialProgress();if(typeof window.renderChapters==='function')window.renderChapters();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
 
     function showAuthNotice(message,type='info'){
       const note=$('#authSetupNotice');if(!note)return;
@@ -1844,5 +1877,6 @@ resetStudentData();renderAll();
     function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
     init();
   </script>
+  <script src="./assets/chapters.js"></script>
 </body>
 </html>
