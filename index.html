@@ -642,7 +642,8 @@
       </div>
       <div class="login-form hidden" id="signupMainForm" role="tabpanel">
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" oninput="updatePasswordStrength()" aria-describedby="passwordStrength" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <p id="passwordStrength" class="muted" role="status">8 أحرف على الأقل، تتضمن حرفاً ورقماً.</p>
         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
         <p class="login-note">أنشئ حسابك باستخدام البريد الإلكتروني وكلمة المرور فقط.</p>
       </div>
@@ -764,7 +765,7 @@
         </div>
         <div class="library-toolbar"><label>عرض <select id="libraryView" class="select" onchange="renderSubjects()"><option value="subjects">المواد</option><option value="chapters">الفصول والموارد</option></select></label><button class="btn" onclick="openSidebar(true)">تغيير الشعبة</button><button class="btn" onclick="resetLibrarySearch()">مسح البحث والفلاتر</button><p id="libraryCount" role="status"></p></div>
         <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
-        <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
+        <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو امسح الفلاتر.</p><div id="searchSuggestions" class="pill-row"></div></div>
       </section>
       <section class="page" id="page-ai">
         <div class="section-head ai-head">
@@ -1244,6 +1245,15 @@
       $('#subjectsGrid').innerHTML=cards.join('');
       $('#noResults').classList.toggle('hide',cards.length>0);
       $('#libraryCount').textContent=cards.length+' نتيجة';
+      const suggestions=$('#searchSuggestions');suggestions.replaceChildren();
+      if(!cards.length){
+        const text=document.createElement('p');text.textContent='يمكنك تجربة مادة من شعبتك';suggestions.appendChild(text);
+        getSubjects().filter(subject=>subject.url).slice(0,5).forEach(subject=>{
+          const button=document.createElement('button');button.className='chip';button.textContent=subject.name;
+          button.onclick=()=>{$('#searchInput').value=subject.name;state.filter='all';$('#libraryView').value='subjects';renderFilters();renderSubjects();};
+          suggestions.appendChild(button);
+        });
+      }
       renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();
     }
     function subjectCard(s){
@@ -1669,10 +1679,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const code=String(e?.code||e?.name||'');
       const detail=(m+' '+code).toLowerCase();
       if(/535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp/.test(detail)){
-        return 'فشل إرسال رسالة التأكيد: Brevo رفض بيانات SMTP (535). لتسجيل الدخول بالبريد وكلمة المرور فقط، عطّل Confirm email في إعدادات Supabase. لا تكرر إنشاء الحساب قبل تعديل الإعداد.';
+        return 'تعذر إرسال رسالة التأكيد. يرجى المحاولة لاحقاً أو التواصل مع إدارة المنصة.';
       }
       if(/email confirmation is still enabled|email not confirmed|unexpected_failure|error sending confirmation email/.test(detail)){
-        return 'Supabase ما زال يطلب تأكيد البريد. افتح Auth > Providers > Email في Supabase وأوقف Confirm email ثم احفظ الإعداد.';
+        return 'يرجى فتح رسالة تأكيد الحساب في بريدك الإلكتروني. تحقق أيضاً من مجلد الرسائل غير المرغوب فيها.';
       }
       if(/invalid login credentials/.test(detail)){
         return 'هذا البريد أو كلمة المرور غير صحيحين. إذا كان الحساب موجوداً، استخدم استعادة كلمة المرور بدلاً من إنشاء حساب جديد.';
@@ -1680,7 +1690,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(/already registered|user_already_exists/.test(detail)){
         return 'هذا البريد مسجل مسبقاً. انتقل إلى تسجيل الدخول أو استعادة كلمة المرور.';
       }
-      if(/rate limit|too many requests|429/.test(detail)){
+      if(/rate limit|too many requests|429|over_email_send_rate_limit/.test(detail)){
         return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً.';
       }
       if(/network|failed to fetch|fetch failed|load failed/.test(detail)){
@@ -1689,6 +1699,11 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(/password/.test(detail))return 'تحقق من كلمة المرور؛ يجب أن تتكون من 8 أحرف على الأقل.';
       console.error('[Bac-pedia Auth]',{message:m,code,status:e?.status});
       return 'فشل طلب المصادقة. افتح الموقع المنشور بعد تحديثه، وإذا استمرت المشكلة أرسل تفاصيل الخطأ من وحدة التحكم.';
+    }
+    function updatePasswordStrength(){
+      const value=$('#signupPassInput').value;
+      const valid=value.length>=8 && /\p{L}/u.test(value) && /\d/.test(value);
+      $('#passwordStrength').textContent=valid?'كلمة المرور تستوفي المتطلبات.':'8 أحرف على الأقل، تتضمن حرفاً ورقماً.';
     }
     function togglePasswordVisibility(inputId,button){
       const input=$('#'+inputId);if(!input)return;
@@ -1804,7 +1819,14 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         if(error)throw error;
         if(!data.session){
           if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');
-          throw new Error('email confirmation is still enabled');
+          if(data.user&&!data.user.email_confirmed_at){
+            authCooldownUntil=Date.now()+120000;
+            $('#signupPassInput').value='';updatePasswordStrength();
+            switchLoginTab('login');
+            showAuthNotice('تم إنشاء الحساب. افتح رابط التأكيد في بريدك الإلكتروني ثم سجّل الدخول.','success');
+            return;
+          }
+          throw new Error('تعذر إنشاء جلسة الحساب');
         }
         authCooldownUntil=Date.now()+5000;
         await applyStudentSession(data.session);
