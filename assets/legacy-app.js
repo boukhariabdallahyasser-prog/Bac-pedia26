@@ -904,6 +904,7 @@
         renderAll();renderSession();openLoginGate();
         showAuthNotice('يرجى تأكيد البريد الإلكتروني قبل فتح حسابك.','warning');
         if(studentAuth)void studentAuth.auth.signOut().catch(error=>console.warn('Unconfirmed session sign-out failed:',error));
+        if(document.body.dataset.portal!=='landing')window.location.replace('/');
         return;
       }
       resetStudentData();studentAuthUser=u;state.guest=false;
@@ -921,7 +922,7 @@
       const note=$('#authSetupNotice');
       if(!auth){
         if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
-        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;
+        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;
       }
       if(note)note.textContent='';
       let recoveryFlow=/(?:^|[&#?])type=recovery(?:&|$)/i.test(location.hash+location.search);
