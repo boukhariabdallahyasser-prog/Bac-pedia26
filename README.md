@@ -1,3 +1,27 @@
+## 2026-11-16: role-separated dashboards and moderation
+
+The platform now has three database-backed experiences. **Student** users see only learning tools plus approved resources; **contributor applicants/approved contributors** see their personal resource-management workspace instead of student pages; and **the one verified owner** sees a moderation dashboard.
+
+### Owner bootstrap (requires the owner's actual verified login)
+
+The database enforces **at most one** `platform_roles.role='admin'`. No publicly submitted name, email, signup intent or `user_metadata` can authorize an administrator. The owner should first register an ordinary account and verify its email via Supabase Auth. Only then the project administrator can run the documented INSERT in `supabase/role_portals_admin_2026.sql` from the **private Supabase SQL Editor**, substituting that account's exact verified email. Never add the owner password to GitHub or Vercel. Until the verified account is explicitly associated, the admin dashboard is intentionally inaccessible.
+
+### Contributor workspace
+
+A contributor signup collects full name, email/password, organization, contributor category and motivation. After confirmation, an application is stored as pending in `collaborator_applications`. A database-approved contributor sees resource statistics and can add, edit or delete their own Google Drive resource proposals (title, subject, unit/chapter, type, URL and description). New resources remain private to owner/contributor until the administrator approves them.
+
+The owner dashboard uses owner-only checked RPCs for approval, rejection, revocation, publication and deletion. Revoking a contributor also withdraws all their approved and pending links. Actions are logged in `moderation_audit`. Every security-changing action is enforced in PostgreSQL rather than by hiding UI buttons. Students never receive links to contributor or admin dashboards. Approved educational links appear in their existing Files view, without publishing the contributor management interface.
+
+### Deploy.com AI provider
+
+The previously supplied API token belongs to Deploy.com, not Google Gemini. The server-only Vercel secret is `DEPLOY_API_KEY`. The backend adapter no longer calls Gemini. **The Deploy portal link is a private account dashboard, not a published inference API contract.** To enable verified generation, add the actual supported inference endpoint to `DEPLOY_API_ENDPOINT` and the authorized model ID to `DEPLOY_MODEL_ID` in Vercel, after confirming its OpenAI-compatible request and response format in the user's Deploy account. Do not invent these details. If unset, `GET /api/ai` reports `provider_unconfigured` rather than falsely claiming live AI availability. Environment secrets are never embedded in source or browser bundles.
+
+### Migrations and security tests
+
+The following migrations have been applied to the connected Supabase project: `role_portals_admin_2026.sql`, `resource_categories_2026.sql`, and `admin_moderation_audit_2026.sql`. All previously saved student progress and retired flashcard data are preserved. RLS protects individual records; an immutable-style moderation audit records privileged decisions. The admin RPCs are deliberately SECURITY DEFINER with explicit in-function owner checks, restricted authenticated execution and an empty search path. These privileged functions must be security-reviewed carefully.
+
+Run `npm test`, `npm run build`, and `node scripts/check-dist.mjs` before merging, then check the Vercel preview. Real signup, SMTP confirmation, contributor approval and cross-account RLS require authenticated browser tests. Supabase Auth leaked-password protection must be enabled separately in Auth settings.
+
 ## 2026-11-16: landing page and AI configuration follow-up
 
 - Public landing now scrolls vertically on desktop and mobile. The global logged-out overflow lock is overridden only while a login modal is **not** open. Navigation anchors scroll to their target sections.
