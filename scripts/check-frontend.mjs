@@ -7,12 +7,14 @@ const app=fs.readFileSync('assets/legacy-app.js','utf8');
 const api=fs.readFileSync('api/ai.js','utf8');
 const main=fs.readFileSync('src/main.js','utf8');
 const config=fs.readFileSync('vite.config.js','utf8');
+const community=fs.readFileSync('assets/community.js','utf8');
+const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
 
 function requireText(source, marker, label) {
   if(!source.includes(marker))throw Error('Missing '+label+': '+marker);
 }
 
-for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','src/main.js','vite.config.js','api/ai.js']){
+for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/landing.js','assets/community.js','src/main.js','vite.config.js','api/ai.js']){
   const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' has a syntax error:\\n'+result.stderr);
 }
@@ -23,12 +25,15 @@ requireText(html,'href="/assets/app.css"','CSS independently loaded');
 requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
 requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
 requireText(html,'id="chapterContext"','Lesson detail area');
+for(const id of ['publicLanding','lpHeroTitle','lpDemoFlashcard','signupKindStudent','signupKindCollaborator','signupNameInput','page-flashcards','page-collaborate','flashDeckCreateForm','flashStudyCard','collaboratorApplyForm','collabResourceForm'])requireText(html,'id="'+id+'"','public/auth/community UI');
+for(const css of ['/assets/landing.css','/assets/community.css'])requireText(html,'href="'+css+'"','new independent CSS');
+for(const asset of ['assets/landing.js','assets/community.js'])requireText(config,asset,'Vite runtime packaging');
 if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
 requireText(config,'resources.json','resource manifest build packaging');
 requireText(config,'assets/legacy-app.js','legacy runtime build packaging');
 requireText(main,"from '@supabase/supabase-js'",'bundled Supabase dependency');
 requireText(main,'window.supabase={createClient}','legacy Supabase adapter');
-const bootPaths=['/auth-config.js','/assets/chapter-search.js','/assets/legacy-app.js','/assets/chapters.js'];
+const bootPaths=['/auth-config.js','/assets/chapter-search.js','/assets/legacy-app.js','/assets/chapters.js','/assets/landing.js','/assets/community.js'];
 for(const file of bootPaths)requireText(main,file,'ordered bootstrap');
 if(bootPaths.some((file,i)=>i&&main.indexOf(file)<main.indexOf(bootPaths[i-1])))throw Error('Runtime scripts are loaded in an unsafe order');
 
@@ -43,6 +48,9 @@ const authRequirements=[
   'history.replaceState(null',
   'email_confirmed_at',
   'function switchLoginTab(tab)',
+  'function openAuthModal(tab=',
+  'function setSignupIntent(intent=',
+  'window.onCommunityAuthChanged?.()',
   'authCooldownUntil=Date.now()+120000',
   'over_email_send_rate_limit',
   'renderAll();renderSession();closeLoginGate()',
@@ -57,6 +65,10 @@ if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
+requireText(app,"options:{data:{full_name:fullName,signup_intent:signupIntent}}",'signup role is explicitly only an intent');
+for(const marker of ["from('flashcard_decks')","from('flashcard_cards')","from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=",'status===\'approved\''])requireText(community,marker,'database-backed learning/community flows');
+for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
+if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 
 for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','gemini-3.8-flash:generateContent'])requireText(api,marker,'AI server-side security');
 if(api.includes('gemini-2.5-flash'))throw Error('Obsolete AI provider configured');

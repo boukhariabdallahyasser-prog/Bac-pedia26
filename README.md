@@ -26,6 +26,31 @@ node scripts/check-dist.mjs
 
 Node.js 22.12+ is required. To deploy on Vercel, use Framework Preset **Vite**, Build Command `npm run build`, Output Directory `dist`, and keep the root `api/` function. The `GEMINI_API_KEY` must remain server-only. Never add `VITE_GEMINI_API_KEY` or service-role credentials to client bundles. A green Vite build does **not** verify live Supabase Auth/SMTP or Google Drive sharing.
 
+## Bac-pedia 2027 public landing and student / collaborator experience
+
+The public entry point is a redesigned Arabic-first landing page. Visitors can explore the product, supported Mathematics, Experimental Sciences and Technical Mathematics divisions, and a self-contained interactive flashcard preview before creating an account. The real student application and progress data appear only after Supabase authentication and email confirmation. The existing private learning features are retained.
+
+### Two signup journeys
+
+- **Student:** name, email, password, email confirmation, then personal learning dashboard, chapters, grades, planner, and new cloud-backed Flashcards.
+- **Collaborator:** the same verified personal account, marked with `signup_intent: 'collaborator'` as **onboarding context only**. A submitted `collaborator_applications` record is created from the separate contributor form. Its approval status cannot be changed by the applicant. Admins review applications in the Supabase dashboard before a contributor can submit verified Google Drive resource links. Submitted links are private until reviewed and approved by an administrator.
+
+**Security:** Browser-controlled metadata or role tabs never confer collaborator authorization. PostgreSQL RLS and restricted insert-column grants enforce permissions. No anonymous user can read private decks, cards, profiles, or contributions awaiting review. The privileged service role key is never bundled into the browser.
+
+### Flashcards
+
+Every student can create private decks with a subject, add front/back cards, flip them, study due cards, and schedule review for 10 minutes, the next day, or after a growing interval. Tables: `flashcard_decks` and `flashcard_cards` with owner-only RLS, cascading deletion through database keys, and indexed due dates. Unlike a static UI demo, these cards persist in Supabase and are scoped to the logged-in account.
+
+### Database deployment
+
+Migration `supabase/landing_collaboration_flashcards.sql` has been applied to the connected Supabase project. Its tables are `collaborator_applications`, `collaborator_resources`, `flashcard_decks`, and `flashcard_cards`. Existing `student_progress`, `student_profiles`, `ai_usage_daily` and `student_resource_bookmarks` were not replaced or cleared.
+
+**Administrator action:** to approve an applicant, a trusted database administrator must update `public.collaborator_applications.status` to `approved` through authenticated database administration, after verifying the applicant. For published submissions, review `collaborator_resources` and update `status` to `approved`. Never provide this permission to the `authenticated` browser role.
+
+### Local development and release checks
+
+Run `npm install`, `npm test`, `npm run build` and `node scripts/check-dist.mjs`. The CI guards now verify that the landing page, signup controls, flashcard flows, RLS migration, required compiled CSS and JS are present. Real email delivery, student login, database CRUD, and cross-user privacy require authenticated end-to-end testing with separate test accounts.
+
 ## Application architecture
 
 - `index.html`: Arabic RTL page markup, loaded by Vite.

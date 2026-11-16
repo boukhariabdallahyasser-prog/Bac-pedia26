@@ -13,6 +13,8 @@
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
       ['files','fa-solid fa-folder-open','الملفات','مواد وروابط Drive حسب الشعبة'],
        ['chapters','fa-solid fa-layer-group','الدروس والوحدات','بحث ذكي في المواد والملفات والوحدات'],
+      ['flashcards','fa-solid fa-clone','Flashcards','بطاقات مراجعة محفوظة في حسابك'],
+      ['collaborate','fa-solid fa-users','المساهمون','شارك الموارد واطلب الانضمام'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
       ['grades','fa-solid fa-calculator','المعدل','حاسبة ونصائح'],
@@ -219,6 +221,8 @@
       if(id==='resources')renderResources();
        if(id==='chapters' && typeof window.renderChapters==='function')window.renderChapters();
       if(id==='ai'){renderAiSelectors();renderAgents();}
+      if(id==='flashcards')window.renderFlashcards?.();
+      if(id==='collaborate')window.renderCommunity?.();
     }
     function openFilesAll(){
       state.filter='all';
@@ -241,7 +245,7 @@
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`;
       $('#sideNav').innerHTML=pages.map(make).join('');
-      const bottom=pages.filter(p=>['home','chapters','files','ai'].includes(p[0]));
+      const bottom=pages.filter(p=>['home','chapters','flashcards','files'].includes(p[0]));
       $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+`<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
     }
     function isMobileSidebar(){return window.matchMedia('(max-width:980px)').matches;}
@@ -740,19 +744,51 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const source=tab==='signup'?'loginEmailInput':'signupEmailInput',target=tab==='signup'?'signupEmailInput':'loginEmailInput';
       if($('#'+source)?.value&&!$('#'+target)?.value)$('#'+target).value=$('#'+source).value;
     }
-    function openLoginGate(){
+    let signupIntent='student';
+    function setSignupIntent(intent='student'){
+      signupIntent=intent==='collaborator'?'collaborator':'student';
+      $('#signupKindStudent')?.classList.toggle('active',signupIntent==='student');
+      $('#signupKindCollaborator')?.classList.toggle('active',signupIntent==='collaborator');
+      $('#signupKindStudent')?.setAttribute('aria-pressed',String(signupIntent==='student'));
+      $('#signupKindCollaborator')?.setAttribute('aria-pressed',String(signupIntent==='collaborator'));
+      const hint=$('#signupRoleDescription');
+      if(hint)hint.textContent=signupIntent==='collaborator'?
+        'أنشئ حساباً ثم قدّم طلب مساهمة. صلاحية النشر تحتاج موافقة الإدارة.':
+        'سجّل حساب طالب للاطلاع على المواد وإنشاء بطاقات المراجعة.';
+    }
+    function openLoginGate(showModal=false){
       const gate=$('#loginGate');
       if(!gate)return;
-      gate.classList.remove('hidden');
       document.body.classList.remove('authenticated');
+      document.body.classList.add('public-mode');
       document.querySelector('.app-shell')?.setAttribute('inert','');
-      if(!document.activeElement?.closest?.('#loginGate'))requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
+      gate.classList.toggle('hidden',!showModal);
+      document.body.classList.toggle('auth-modal-open',showModal);
+      if(showModal&&!document.activeElement?.closest?.('#loginGate'))
+        requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
+    }
+    function openAuthModal(tab='login',intent='student'){
+      if(studentAuthUser){showPage(intent==='collaborator'?'collaborate':'home');return;}
+      setSignupIntent(intent);
+      switchLoginTab(tab==='signup'?'signup':'login');
+      openLoginGate(true);
+      requestAnimationFrame(()=>$('#'+(tab==='signup'?'signupNameInput':'loginEmailInput'))?.focus({preventScroll:true}));
+    }
+    function closeAuthModal(){
+      if(studentAuthUser)return;
+      $('#loginGate')?.classList.add('hidden');
+      document.body.classList.remove('auth-modal-open');
+      document.body.classList.add('public-mode');
+      const recovery=$('#passwordRecoveryPanel');
+      if(recovery&&!recovery.classList.contains('hidden'))switchLoginTab('login');
+      const note=$('#authSetupNotice');if(note)note.textContent='';
     }
     function closeLoginGate(){
       if(!studentAuthUser)return;
       const gate=$('#loginGate');
       if(gate)gate.classList.add('hidden');
       document.body.classList.add('authenticated');
+      document.body.classList.remove('public-mode','auth-modal-open');
       document.querySelector('.app-shell')?.removeAttribute('inert');
     }
     let studentAuth=null,studentAuthUser=null,authLoading=false,authCooldownUntil=0;
@@ -810,7 +846,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     }
     function setAuthBusy(busy){
       authLoading=busy;
-      ['loginEmailInput','loginPassInput','signupEmailInput','signupPassInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
+      ['loginEmailInput','loginPassInput','signupEmailInput','signupPassInput','signupNameInput','recoveryPasswordInput','recoveryPasswordConfirmInput'].forEach(id=>{const el=$('#'+id);if(el)el.disabled=busy});
       document.querySelectorAll('#loginGate .login-form button, #loginGate .auth-reset, #loginGate .login-tab').forEach(button=>{button.disabled=busy;if(button.classList.contains('btn')){button.setAttribute('aria-busy',String(busy));}});
     }
     async function syncStudentProgress(){
@@ -846,6 +882,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       renderAll();renderSession();closeLoginGate();
+      window.onCommunityAuthChanged?.();
+      if(u.user_metadata?.signup_intent==='collaborator')showPage('collaborate');
       // Enter immediately; cloud hydration and last-activity tracking must not block the interface.
       void loadStudentProgress().catch(error=>console.warn('Progress hydration failed:',error));
       void studentAuth.from('student_profiles').update({last_activity_at:new Date().toISOString()}).eq('user_id',u.id).then(({error})=>{if(error)console.warn('Student profile activity update failed:',error.message);});
@@ -864,10 +902,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         if(event==='PASSWORD_RECOVERY'){
           recoveryFlow=true;
           if(session?.user){resetStudentData();studentAuthUser=session.user;state.guest=false;}
-          setTimeout(()=>{openLoginGate();completePasswordRecovery();},0);
+          setTimeout(()=>{openLoginGate(true);completePasswordRecovery();},0);
           return;
         }
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();return;}
         if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>{if(session?.user?.id!==studentAuthUser?.id)void applyStudentSession(session);},0);
       });
       const {data,error}=await auth.auth.getSession();
@@ -875,14 +913,23 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(recoveryFlow){
         if(data?.session){
           resetStudentData();studentAuthUser=data.session.user;state.guest=false;
-          openLoginGate();completePasswordRecovery();
+          openLoginGate(true);completePasswordRecovery();
         }else{
           studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();
           showToast('رابط استعادة كلمة المرور غير صالح أو انتهت صلاحيته. اطلب رابطاً جديداً.','warning');
         }
         return;
       }
-      if(data?.session){if(data.session.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);}
+      if(data?.session){
+        // Revalidate a stored session with Supabase Auth before revealing private data.
+        const verified=await auth.auth.getUser();
+        if(verified.error||!verified.data?.user?.id){
+          console.warn('Saved session is no longer valid:',verified.error?.message);
+          await auth.auth.signOut();openLoginGate();
+        }else if(verified.data.user.id!==studentAuthUser?.id){
+          await applyStudentSession({...data.session,user:verified.data.user});
+        }
+      }
       else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
     }
 
@@ -914,12 +961,14 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(authLoading)return;
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
+      const fullName=($('#signupNameInput')?.value||'').trim();
+      if(fullName.length<2){showToast('اكتب اسمك الكامل لإنشاء الحساب','warning');return;}
       if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){
         showToast('أدخل بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;
       }
       setAuthBusy(true);showAuthNotice('جارٍ إنشاء الحساب...');
       try{
-        const {data,error}=await auth.auth.signUp({email,password});
+        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:fullName,signup_intent:signupIntent}}});
         if(error)throw error;
         if(!data.session){
           if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');
@@ -978,7 +1027,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       clearTimeout(cloudSaveTimer);
       if(studentAuth){const {error}=await studentAuth.auth.signOut();if(error){showToast(authErrorMessage(error),'warning');return;}}
       studentAuthUser=null;state.user=null;state.guest=false;state.page='home';
-resetStudentData();renderAll();
+window.onCommunityAuthChanged?.();resetStudentData();renderAll();
       renderSession();showPage('home');openLoginGate();showToast('تم تسجيل الخروج','info');
     }
     function renderSession(){
@@ -1021,6 +1070,6 @@ resetStudentData();renderAll();
         $('#'+id)?.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.tagName==='INPUT'&&!authLoading){event.preventDefault();window[handler]?.();}});
       });
     }
-    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
+    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();if(!studentAuthUser&&!$('#loginGate')?.classList.contains('hidden'))closeAuthModal();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
     init();
   
