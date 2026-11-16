@@ -68,3 +68,47 @@ body.light-mode .sidebar .nav-btn.active{background:#ecebfe!important}
 .portal-ai-status{font:700 .94rem/1.8 Tajawal,Cairo,sans-serif;color:var(--text-main);overflow-wrap:anywhere}
 .portal-ai-footnote{font-size:.82rem;line-height:1.8;color:var(--text-sub)}
 .portal-ai-panel .portal-admin-actions{justify-content:flex-start;gap:10px;margin-top:6px}
+
+/* Contributor onboarding: clear required fields and readable moderation workspace. */
+.portal-required{display:inline-flex;align-items:center;margin-inline:5px;padding:2px 7px;font-size:.65rem;font-weight:900;border-radius:7px;color:#ffe1ba;background:rgba(238,155,70,.13)}
+.comm-form label,.portal-editor-field{line-height:1.7}
+.comm-form label>input,.comm-form label>select,.comm-form label>textarea{min-height:46px}
+.portal-filters{display:grid;grid-template-columns:minmax(0,1fr) 205px;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:17px;border-bottom:1px solid var(--border)}
+.portal-filters[hidden]{display:none!important}
+.portal-filters label{min-width:0;display:flex;align-items:center;gap:9px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-sub);border-radius:13px;padding:0 13px}
+.portal-filters input{width:100%;min-height:45px;min-width:0;background:transparent;border:0;outline:0;color:var(--text-main);font:700 .88rem Tajawal,Cairo;direction:rtl}
+.portal-filters select{width:100%;min-height:45px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-main);border-radius:13px;padding:0 12px;font:800 .85rem Tajawal,Cairo}
+.portal-filters :focus-visible{outline:2px solid #aa9eff;outline-offset:2px}
+.portal-editor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;max-width:900px;margin-inline:auto;padding:5px}
+.portal-editor>h3,.portal-editor>.portal-editor-hint,.portal-editor-actions{grid-column:1/-1}
+.portal-editor>h3{font:900 1.3rem/1.5 Cairo,Tajawal;color:var(--text-main)}
+.portal-editor-hint{color:var(--text-sub);font-size:.84rem;line-height:1.8}
+.portal-editor-field{display:grid;gap:6px;color:var(--text-main);font-size:.86rem;font-weight:900;min-width:0}
+.portal-editor-field:has(textarea){grid-column:1/-1}
+.portal-editor-field input,.portal-editor-field select,.portal-editor-field textarea{width:100%;min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:12px;background:var(--bg-main);color:var(--text-main);font:600 .88rem/1.6 Tajawal,Cairo;resize:vertical}
+.portal-editor-field input:focus,.portal-editor-field select:focus,.portal-editor-field textarea:focus{outline:2px solid #a59bff;outline-offset:1px}
+.portal-editor-actions{display:flex;gap:9px;justify-content:flex-start;margin-top:8px}
+
+/* The AI answer is a reading surface, not a raw code block. */
+.ai-reading-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:5px 0 12px;color:var(--text-sub);font-size:.82rem;font-weight:900}
+.ai-reading-bar>span{display:flex;align-items:center;gap:9px}
+.ai-reading-bar>.btn{padding:8px 13px;min-height:37px;font-size:.8rem}
+.result-box.ai-answer{white-space:normal;text-align:start;line-height:1.9;max-height:min(72vh,860px);overflow-wrap:anywhere;padding:clamp(18px,3vw,31px);background:linear-gradient(160deg,rgba(38,38,77,.24),rgba(16,26,51,.14));border:1px solid rgba(139,133,224,.26);border-radius:21px;font-size:1rem;letter-spacing:0}
+body.light-mode .result-box.ai-answer{background:linear-gradient(160deg,#fff,#f9faff)}
+.ai-answer .ai-paragraph{margin:0 0 18px;white-space:pre-wrap;line-height:2.05;font-size:1rem}
+.ai-answer .ai-heading{color:var(--text-main);font-family:Cairo,Tajawal,sans-serif;font-weight:900;line-height:1.55;margin:23px 0 11px;scroll-margin-top:30px}
+.ai-answer h3.ai-heading{font-size:1.23rem;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.ai-answer h4.ai-heading{font-size:1.09rem}
+.ai-answer h5.ai-heading,.ai-answer h6.ai-heading{font-size:.98rem}
+.ai-answer .ai-list{padding:0 22px 0 0;margin:0 0 18px;line-height:2.05}
+.ai-answer .ai-list li{padding:2px 4px;margin-bottom:5px}
+.ai-answer strong{color:var(--text-main);font-weight:900}
+.ai-answer code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;direction:auto;color:#c5bcff;background:rgba(129,114,235,.13);border-radius:5px;padding:2px 5px;font-size:.93em}
+.ai-answer .ai-code-block{direction:ltr;text-align:left;white-space:pre;overflow:auto;padding:17px;border:1px solid var(--border);border-radius:13px;background:rgba(8,13,32,.65);margin:10px 0 20px;max-width:100%}
+.ai-answer .ai-code-block code{background:transparent;padding:0;color:#e8eaf8;white-space:inherit}
+.ai-answer .ai-quote{border-inline-start:4px solid #9185e7;padding:9px 15px;margin:12px 0 18px;background:rgba(126,111,221,.075);color:var(--text-sub);border-radius:8px}
+.ai-answer .ai-table{border-collapse:separate;border-spacing:0;width:100%;margin:14px 0 20px;font-size:.9rem}
+.ai-answer .ai-table td{padding:10px 12px;border:1px solid var(--border);min-width:80px;overflow-wrap:anywhere;vertical-align:top}
+.ai-answer .ai-table tr:first-child{background:rgba(141,124,230,.12);font-weight:900}
+.ai-answer hr{border:0;border-top:1px solid var(--border);margin:19px 0}
+@media(max-width:650px){.portal-filters{grid-template-columns:1fr}.portal-editor{grid-template-columns:1fr}.portal-editor-field:has(textarea){grid-column:1}.ai-reading-bar{flex-wrap:wrap}.result-box.ai-answer{max-height:65vh;padding:17px}.ai-answer .ai-paragraph{font-size:.94rem}}
