@@ -70,6 +70,28 @@ Configure Supabase Auth:
 3. Set the production Site URL to the Vercel domain.
 4. Add the exact production and preview callback URLs to the allowed redirect URLs.
 
+## Subject → unit → resource navigation
+
+The `الدروس والوحدات` section now opens each BAC subject on a separate in-app view, followed by the verified folder/unit structure and individual file detail screens. URL fragments such as `#/chapters/math_math` support back/forward navigation and direct links to nested units. The hierarchy is derived from the existing verified `resources.json` catalogue, not AI-generated course titles. If a Drive folder is indexed without its children, the UI explicitly states that its contents have not been indexed and offers the original Drive link.
+
+### Bookmark synchronization
+
+The live Supabase project has a `public.student_resource_bookmarks` table with an owning `user_id`, unique `resource_key`, timestamps, and owner-scoped SELECT/INSERT/UPDATE/DELETE Row Level Security policies. Each student's bookmarks are synchronized to Supabase after login. A user-scoped localStorage cache provides an offline fallback, and failures are indicated rather than silently claimed as synchronized.
+
+### AI service readiness
+
+The `GET /api/ai` endpoint checks whether Gemini is configured and if the server-side model metadata request succeeds. It returns a non-secret `ready` and reason, and does **not** consume a student's AI quota. The UI enables generative tools only after a successful readiness result. Offline study planner, mistakes, and grades tools remain available even without a Gemini API key. Real generation is still performed through the authenticated POST endpoint with Supabase session verification, email confirmation, daily quota, request validation, and `GEMINI_API_KEY` set in Vercel.
+
+### Styling and deployment
+
+Both CSS sources are now explicit HTML stylesheet links. Vercel is explicitly configured to run `npm run build` and serve `dist`, and CI verifies the styles exist inside the generated production output. This avoids serving source HTML without its corresponding compiled styling.
+
+## Verification and caveats
+
+Run `npm test`, `npm run build`, and `node scripts/check-dist.mjs`. Automated checks cover the resource tree, exact links, AI readiness API contract and compiled styles. They cannot replace end-to-end tests using a real student email for signup, SMTP confirmation, password recovery, and Drive access.
+
+Supabase's security advisor currently reports **Leaked Password Protection Disabled**. Enable this in Supabase Dashboard → Authentication → Settings → Password Security: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection. This project setting is not changed by database SQL.
+
 ## Chapters Studio and smart search
 
 The `الدروس والوحدات` page is a resource-discovery interface backed by `resources.json`, not an independent syllabus or a generated lesson library. It indexes the verified subject roots, resource categories, Drive folders, and listed files for the **currently selected branch and specialization**. Resources unavailable for that specialization must not appear as verified.

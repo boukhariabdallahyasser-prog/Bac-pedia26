@@ -11,6 +11,16 @@ if(!/<script[^>]+type="module"[^>]+src="\/assets\//.test(html)&&!/<script[^>]+sr
   throw Error('No bundled JS module in built HTML');
 }
 if(/\/src\/main\.js/.test(html))throw Error('Uncompiled Vite entrypoint in build');
+const cssPaths=[...html.matchAll(/<link[^>]+href="([^"]+\.css)"/g)].map(m=>m[1]).filter(p=>p.startsWith('/'));
+if(!cssPaths.length)throw Error('No independently loadable production CSS link');
+let cssText='';
+for(const asset of cssPaths){
+  const stylesheet=path.join(root,asset.replace(/^\//,''));
+  if(!fs.existsSync(stylesheet))throw Error('Generated CSS link is broken: '+asset);
+  cssText+=fs.readFileSync(stylesheet,'utf8');
+}
+if(!cssText.includes('.chapter-context')||!cssText.includes('.login-gate'))throw Error('Missing chapter or login styles in compiled CSS');
+
 const resources=JSON.parse(fs.readFileSync(path.join(root,'resources.json'),'utf8'));
 if(!resources.subjects||resources.schemaVersion!==1)throw Error('Generated resource index is invalid');
 const jsFiles=fs.readdirSync(path.join(root,'assets')).filter(x=>x.endsWith('.js'));

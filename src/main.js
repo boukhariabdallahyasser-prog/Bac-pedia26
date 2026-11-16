@@ -1,7 +1,5 @@
 // Modern build entry. Existing classic-script APIs are intentionally
 // maintained during the progressive migration from the old single-file app.
-import '../assets/app.css';
-import '../assets/chapters.css';
 import {createClient} from '@supabase/supabase-js';
 
 // Keep the existing student-auth initialization contract intact.

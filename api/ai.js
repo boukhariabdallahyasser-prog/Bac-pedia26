@@ -1,8 +1,33 @@
 // Vercel serverless function. Set GEMINI_API_KEY in Vercel project environment variables.
+// Keep the provider metadata check cached across warm invocations for 60 seconds.
+let aiProbeCache={at:0,result:null};
 const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','flashcards','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
+  // Public health check confirms provider reachability, not merely that an API URL exists.
+  // It never discloses the configured secret or consumes a student's daily quota.
+  if(req.method==='GET'){
+    if(!process.env.GEMINI_API_KEY)return res.status(200).json({ready:false,reason:'not_configured'});
+    if(aiProbeCache.result&&Date.now()-aiProbeCache.at<60000)return res.status(200).json(aiProbeCache.result);
+    try{
+      const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),5000);
+      let response;
+      try{
+        response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash',{
+          method:'GET',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY},
+          signal:controller.signal
+        });
+      }finally{clearTimeout(timeout);}
+      const result={ready:response.ok,reason:response.ok?'ok':response.status===400||response.status===401||response.status===403?'provider_auth':'provider_error'};
+      aiProbeCache={at:Date.now(),result};
+      return res.status(200).json(result);
+    }catch(error){
+      const result={ready:false,reason:'provider_unreachable'};
+      aiProbeCache={at:Date.now(),result};
+      return res.status(200).json(result);
+    }
+  }
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   const siteOrigin='https://'+req.headers.host;
   if(req.headers.origin&&req.headers.origin!==siteOrigin)return res.status(403).json({error:'Origin not allowed'});
