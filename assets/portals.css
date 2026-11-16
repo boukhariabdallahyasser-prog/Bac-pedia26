@@ -112,3 +112,17 @@ body.light-mode .result-box.ai-answer{background:linear-gradient(160deg,#fff,#f9
 .ai-answer .ai-table tr:first-child{background:rgba(141,124,230,.12);font-weight:900}
 .ai-answer hr{border:0;border-top:1px solid var(--border);margin:19px 0}
 @media(max-width:650px){.portal-filters{grid-template-columns:1fr}.portal-editor{grid-template-columns:1fr}.portal-editor-field:has(textarea){grid-column:1}.ai-reading-bar{flex-wrap:wrap}.result-box.ai-answer{max-height:65vh;padding:17px}.ai-answer .ai-paragraph{font-size:.94rem}}
+
+/* Independent HTML entry points, access-gated after Supabase role resolution.
+   Route guards improve UX only; Supabase RLS remains the security boundary. */
+body[data-portal="student"]:not(.portal-authorized) .app-shell,
+body[data-portal="contributor"]:not(.portal-authorized) .app-shell,
+body[data-portal="admin"]:not(.portal-authorized) .app-shell{display:none!important}
+body[data-portal="landing"] .portal-auth-loading{display:none!important}
+body[data-portal].portal-authorized .portal-auth-loading{display:none!important}
+.portal-auth-loading{position:fixed;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;text-align:center;padding:26px;background:#0b1020;color:#e8e9ff;font:800 1.05rem/1.8 Tajawal,Cairo,sans-serif}
+.portal-auth-loading i{font-size:2.3rem;color:#a79bff}
+.portal-auth-loading a{color:#c8c1ff;text-decoration:underline;text-underline-offset:5px}
+body[data-portal="admin"] #sidebarAIBtn,
+body[data-portal="contributor"] #sidebarAIBtn{display:none!important}
+@media(prefers-reduced-motion:reduce){.portal-auth-loading{transition:none}}
