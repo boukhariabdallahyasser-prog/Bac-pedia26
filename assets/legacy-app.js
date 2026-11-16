@@ -467,55 +467,44 @@
     }
     function agentTitle(id){return (agents[id]?.title||'المساعد').replace(/^[^\u0600-\u06FFA-Za-z0-9]+/,'').trim();}
     function compactStudentSnapshot(ctx){
-      return `اسم الطالب: ${ctx.user?.name||'زائر'}\nالشعبة: ${ctx.branch}${ctx.subBranch?' / '+ctx.subBranch:''}\nالمادة المختارة: ${ctx.subject}\nحالة ملفات المادة: ${ctx.subjectAvailable?'متاحة':'غير متاحة حالياً'}\nالمستوى المطلوب: ${ctx.level}\nأسلوب الجواب: ${ctx.tone}\nالمدة: ${ctx.duration} يوم\nالأيام المتبقية: ${ctx.countdown.days}\nالمعدل: ${ctx.average??'غير محدد'}\nأضعف مواد حسب التقدم: ${ctx.weakSubjects.map(x=>x.name+' '+x.progress+'%').join('، ')||'غير محدد'}\nالمفضلة: ${ctx.favorites.join('، ')||'لا توجد'}\nالأخطاء المسجلة: ${ctx.mistakes.map(m=>m.text).join(' | ')||'لا توجد'}\nالمهام غير المنجزة: ${ctx.pendingTasks.map(t=>t.text).join(' | ')||'لا توجد'}\nالمهام المنجزة: ${ctx.completedTasks.map(t=>t.text).join(' | ')||'لا توجد'}\nملف تطور المساعد: أهداف=${(ctx.aiProfile.goals||[]).join('، ')||'غير محدد'} / نقاط ضعف=${(ctx.aiProfile.weaknesses||[]).join('، ')||'غير محدد'} / أسلوب=${ctx.aiProfile.preferredStyle||'منظم وواضح'}\nآخر إجابات لتجنب التكرار: ${ctx.aiHistory.map(h=>h.title+': '+h.signature).join(' | ')||'لا توجد'}`;
+      // Keep the user's actual question salient. Avoid unrelated grades, history and email.
+      return [
+        'الشعبة: '+(ctx.branch||'غير محددة'),
+        'المادة المختارة: '+(ctx.subject||'غير محددة'),
+        'المستوى: '+(ctx.level||'متوسط'),
+        'طول الإجابة: '+(ctx.tone||'مختصر وواضح')
+      ].join('\n');
     }
     function buildAIPrompt(agentId,ctx){
-      const toolName=agentTitle(agentId);
-      const toolInstructions={
-        smart_tutor:'اشرح المطلوب كأستاذ باكالوريا: تشخيص السؤال، شرح مختصر، خطوات حل، مثال جديد، تدريب صغير، أخطاء شائعة.',
-        summarizer:'لخص النص أو الدرس: فكرة عامة، عناوين، كلمات مفتاحية، قوانين/مصطلحات، خريطة ذهنية نصية، أسئلة مراجعة.',
-        flashcards:'أنشئ بطاقات حفظ عملية: سؤال/جواب، مستوى صعوبة، سبب الأهمية، وجدول مراجعة متباعدة.',
-        quiz:'اصنع اختباراً تدريبياً متدرجاً: تمارين، نقاط، تصحيح، أخطاء متوقعة، ونصيحة بعد كل تمرين.',
-        qcm:'اصنع اختيار من متعدد: أسئلة دقيقة، 4 اختيارات، الإجابة، شرح السبب، ولماذا الباقي خاطئ.',
-        mock_exam:'اصنع محاكاة امتحان: توقيت، موضوع مصغر، طريقة إنجاز، سلم تصحيح، وقرار ماذا يراجع بعدها.',
-        daily_plan:'ابن خطة تنفيذية حسب مدة الطالب والتقدم: أولويات، جلسات، مهام صغيرة، راحة، ومؤشر نجاح اليوم.',
-        mistake_analyzer:'حلل أخطاء الطالب: نوع الخطأ، سبب حدوثه، تمرين علاجي، قاعدة منع التكرار، ومتابعة 3 أيام.',
-        grade_advisor:'حلل العلامات والمعاملات: أين يربح النقاط أسرع، هدف واقعي، خطة أسبوع، ومواد لا يجب إهمالها.',
-        essay_coach:'للمقال واللغات: قالب، مقدمة، حجج، أمثلة، روابط، خاتمة، ونموذج قصير قابل للحفظ.'
+      const task={
+        smart_tutor:'اشرح أو حل المطلوب مباشرة حسب صياغة السؤال.',
+        summarizer:'لخص النص أو الدرس المعطى دون افتراض قراءة مستند غير متاح.',
+        quiz:'أنشئ اختباراً في الموضوع المطلوب مع تصحيح دقيق.',
+        qcm:'أنشئ اختيارات متعددة حول المطلوب مع تبرير الإجابات.',
+        mock_exam:'جهّز نموذج اختبار قصير مناسب للمطلوب مع التصحيح.',
+        daily_plan:'قدّم خطة واقعية حسب الوقت والأهداف المذكورة.',
+        mistake_analyzer:'حدد الخطأ وأسبابه وكيفية تجنّبه.',
+        grade_advisor:'حلّل المعدل باستخدام العلامات والمعاملات المتوفرة فقط.',
+        essay_coach:'اكتب أو صحح المقال أو التعبير المقدم بدقة.'
       };
-      const varietyAngles=['ابدأ بتشخيص سريع ثم خطة تطبيق','ابدأ بخطأ شائع ثم صححه','ابدأ بجدول صغير ثم شرح','ابدأ بخطوات تنفيذ قصيرة','ابدأ بمثال جديد ثم قاعدة عامة'];
-      const angle=varietyAngles[hashText(ctx.uniqueSeed+agentId)%varietyAngles.length];
-      return `أنت أداة "${toolName}" داخل منصة باكالوريا الجزائر 2027.
-
-هدف الأداة:
-${toolInstructions[agentId]||toolInstructions.smart_tutor}
-
-سياق الطالب من الموقع:
-${compactStudentSnapshot(ctx)}
-
-طلب الطالب:
-${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة المختارة وسياق الطالب.'}
-
-طريقة إخراج منظمة:
-1) نتيجة مباشرة بعنوان قصير.
-2) خطوات عملية مخصصة للمادة والشعبة.
-3) مثال أو تمرين جديد لا يشبه الإجابات السابقة.
-4) أخطاء محتملة وطريقة منعها.
-5) خطوة واحدة يطبقها الطالب الآن.
-
-قواعد مهمة جداً:
-- أجب بلغة طلب الطالب: الفرنسية إذا كان الطلب بالفرنسية، والعربية إذا كان بالعربية.
-- لا تعط جواباً عاماً أو مكرراً. اصنع جواباً جديداً يناسب seed: ${ctx.uniqueSeed}.
-- زاوية هذه المرة: ${angle}.
-- لا تكرر أمثلة أو جمل من آخر الإجابات التالية: ${JSON.stringify(ctx.aiHistory)}.
-- لا تبدأ بمقدمة طويلة. ابدأ مباشرة بالنتيجة.
-- استخدم عناوين واضحة، خطوات مرقمة، وجدول نصي صغير عند الحاجة.
-- لا تذكر API ولا اسم الخدمة ولا أنك نموذج لغة.
-- استعمل بيانات الطالب بوضوح: اذكر لماذا اخترت هذه الأولوية بناءً على التقدم/الأخطاء/المهام/المعدل.
-- لا تعتبر الملخصات، الاختبارات والفروض، مواضيع البكالوريا، أو البكالوريات التجريبية مواداً دراسية؛ اعتبرها موارد تدريب ومراجعة فقط.
-- في آخر الجواب أضف سطرين بعنوان: "تحديث الذاكرة" فيهما: هدف محتمل + نقطة ضعف محتملة، حتى يستفيد الموقع من ذلك لاحقاً.
-
-اكتب النتيجة الآن.`;
+      const question=(ctx.prompt||'').trim();
+      const fallback={
+        smart_tutor:'اشرح فكرة أساسية من المادة المختارة بمثال.',
+        summarizer:'أعطني ملخصاً تمهيدياً منظماً في المادة المختارة.',
+        quiz:'أنشئ اختباراً قصيراً في المادة المختارة مع التصحيح.',
+        qcm:'أنشئ خمسة أسئلة اختيار متعدد في المادة المختارة.',
+        mock_exam:'جهّز تدريباً قصيراً للمادة والشعبة المختارة.',
+        daily_plan:'ضع خطة مراجعة واقعية للمادة المختارة.',
+        mistake_analyzer:'ما الأخطاء الشائعة في المادة وكيف أصلحها؟',
+        grade_advisor:'كيف أرتب أولوياتي لتحسين المعدل؟',
+        essay_coach:'أعطني نموذج مقدمة وفق المادة المختارة.'
+      };
+      const focus=question||fallback[agentId]||fallback.smart_tutor;
+      const extra=['daily_plan','mistake_analyzer','grade_advisor'].includes(agentId)?
+        '، معدل الطالب المحسوب: '+(ctx.average??'غير متاح')+
+        '، أخطاء مذكورة: '+(ctx.mistakes||[]).slice(0,3).map(x=>x.text).filter(Boolean).join('؛ ')+
+        '، مهام مذكورة: '+(ctx.pendingTasks||[]).slice(0,3).map(x=>x.text).filter(Boolean).join('؛ '):'';
+      return `السؤال الذي يجب الإجابة عنه أولاً:\n${focus}\n\nسياق مساعد فقط إذا كان مناسباً:\n${compactStudentSnapshot(ctx)}${extra}\n\nنوع المساعدة: ${task[agentId]||task.smart_tutor}\n\nقواعد الإجابة:\n- لا تغيّر السؤال ولا تستبدله بنصائح عامة أو بخطة غير مطلوبة.\n- استعمل المعطيات والشروط والأرقام التي أعطاها الطالب كما هي.\n- ابدأ بجواب مباشر. أضف خطوات الحل فقط في مسائل أو أسئلة تحتاج شرحاً.\n- حافظ على طول مناسب: السؤال البسيط يستحق إجابة قصيرة؛ السؤال المركّب شرحاً منظماً.\n- أجب بلغة سؤال الطالب، سواء العربية أو الفرنسية أو الإنجليزية.\n- استخدم Markdown مقروءاً: عناوين قليلة وقوائم عند الحاجة، دون زخرفة زائدة.\n- لا تخترع قوانين، نتائج حسابية، مراجع أو محتوى ملفات لم تُقدم. اذكر أي افتراض بوضوح.\n- لا تكتب فقرة تحديث ذاكرة ولا معلومات داخلية عن الموقع أو الـ API.`;
     }
     function readResponseText(data){
       if(!data)return '';
@@ -771,7 +760,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       $('#signupCollabExtras')?.classList.toggle('hidden',signupIntent!=='collaborator');
       const hint=$('#signupRoleDescription');
       if(hint)hint.textContent=signupIntent==='collaborator'?
-        'أنشئ حساباً ثم قدّم طلب مساهمة. صلاحية النشر تحتاج موافقة الإدارة.':
+        'بعد إنشاء حسابك وتأكيد بريدك، أكمل بيانات المساهم والشعبة في مساحتك. قبول الطلب بيد الإدارة.':
         'سجّل حساب طالب للاطلاع على المواد وإنشاء بطاقات المراجعة.';
     }
     function openLoginGate(showModal=false){
@@ -980,14 +969,9 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const email=($('#signupEmailInput')?.value||'').trim();
       const password=$('#signupPassInput')?.value||'';
       const fullName=($('#signupNameInput')?.value||'').trim();
-      const contributorInfo=signupIntent==='collaborator'?{
-        organization:($('#signupOrganization')?.value||'').trim(),
-        contribution_type:$('#signupContributionType')?.value||'other',
-        motivation:($('#signupMotivation')?.value||'').trim()
-      }:{};
-      if(signupIntent==='collaborator'&&(contributorInfo.organization.length<2||contributorInfo.motivation.length<15)){
-        showToast('أدخل اسم المؤسسة ووصفاً لمساهمتك قبل إنشاء الحساب','warning');return;
-      }
+      // Contributor profile is completed in the contributor dashboard after signup.
+      // An editable signup intent is never an access-control grant.
+      const contributorInfo={};
       if(fullName.length<2){showToast('اكتب اسمك الكامل لإنشاء الحساب','warning');return;}
       if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8||! /\p{L}/u.test(password)||! /\d/.test(password)){
         showToast('أدخل بريداً صحيحاً وكلمة مرور من 8 أحرف على الأقل تحتوي على حرف ورقم','warning');return;
