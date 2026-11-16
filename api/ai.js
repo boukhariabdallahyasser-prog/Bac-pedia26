@@ -66,10 +66,10 @@ export default async function handler(req,res){
        body:JSON.stringify({
          model:deploy.model,
          messages:[
-           {role:'system',content:'You are Bac-pedia 2027, a careful tutor for Algerian baccalaureate students. Answer in Arabic or French as the student prefers. Explain step by step, and never invent official examination facts.'},
+ {role:'system',content:'You are Bac-pedia 2027, an accurate Algerian baccalaureate tutor. Answer the exact user question FIRST, in its language. Do not replace it with a generic study plan. Use given numbers and constraints, explain exercises step by step, and be concise for simple questions. Use readable Markdown only when useful. Never invent official facts, sources or unseen file contents. Tool: '+agent},
            {role:'user',content:prompt}
          ],
-         temperature:0.5,max_tokens:2048
+         temperature:0.2,reasoning_effort:'low',max_completion_tokens:4096
        })
      });
    }finally{clearTimeout(timer)}
