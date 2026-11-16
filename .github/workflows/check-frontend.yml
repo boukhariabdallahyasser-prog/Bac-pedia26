@@ -92,8 +92,8 @@ jobs:
         continue-on-error: true
         run: |
           SITE="https://bac-pedia26.boukhariabdallahyasser.workers.dev"
-          for PATH_TO_CHECK in "/" "/api/ai"; do
-            HTTP_STATUS=$(curl --silent --show-error --location --max-time 12 -o /tmp/bac-site-check.txt -w "%{http_code}" "$SITE$PATH_TO_CHECK" || true)
+          for PATH_TO_CHECK in "/" "/login/" "/student/" "/contributor/" "/admin/" "/api/ai"; do
+            HTTP_STATUS=$(curl --silent --show-error --location --max-redirs 3 --max-time 12 -o /tmp/bac-site-check.txt -w "%{http_code}" "$SITE$PATH_TO_CHECK" || true)
             echo "Cloudflare route $PATH_TO_CHECK: HTTP ${HTTP_STATUS:-unreachable}"
             if [ "$PATH_TO_CHECK" = "/api/ai" ] && [ -s /tmp/bac-site-check.txt ]; then
               echo "Backend response:"
