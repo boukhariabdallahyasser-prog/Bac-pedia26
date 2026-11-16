@@ -159,7 +159,9 @@ requireText(main,"location.replace('/login/'+location.search+location.hash)",'le
 const authStyle=fs.readFileSync('assets/auth-page.css','utf8');
 for(const marker of ['[data-portal="login"]','.auth-visual','.login-field:focus-within','@media(max-width:760px)'])
   requireText(authStyle,marker,'premium login styling');
-requireText(worker,"'/login/'",'Cloudflare login path');
+requireText(config,'login/index.html','Vite must build independent login page');
+if(wranglerConfig.assets.html_handling!=='auto-trailing-slash')
+  throw Error('Cloudflare must serve login pages via native canonical HTML handling');
 
 for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","resubmit_collaborator_application","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
