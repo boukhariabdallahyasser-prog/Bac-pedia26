@@ -43,4 +43,35 @@ const unknown=await call('/api/undefined');
 assert.equal(unknown.status,404);
 assert.match(unknown.headers.get('content-type'),/application\/json/);
 
+const priorFetch=globalThis.fetch;
+let providerBody=null;
+try{
+  globalThis.fetch=async (url,opts={})=>{
+    const address=String(url);
+    if(address.endsWith('/auth/v1/user'))return new Response(JSON.stringify({
+      id:'mock-student',email_confirmed_at:'2026-11-16T18:00:00+00:00'
+    }),{status:200,headers:{'Content-Type':'application/json'}});
+    if(address.endsWith('/rest/v1/rpc/consume_ai_quota'))return new Response('true',{status:200,headers:{'Content-Type':'application/json'}});
+    if(address.endsWith('/chat/completions')){
+      providerBody=JSON.parse(opts.body);
+      return new Response(JSON.stringify({choices:[{message:{content:'## جواب مباشر\n2 + 2 = 4'}}]}),{status:200,headers:{'Content-Type':'application/json'}});
+    }
+    throw Error('Unexpected mocked fetch URL');
+  };
+  const reply=await call('/api/ai',{
+    method:'POST',
+    headers:{Authorization:'Bearer mock-verified-session','Content-Type':'application/json',Origin:origin},
+    body:JSON.stringify({agent:'smart_tutor',prompt:'سؤال الطالب: ما مجموع 2 + 2؟'})
+  },configured);
+  assert.equal(reply.status,200);
+  assert.ok((await reply.json()).answer.includes('2 + 2 = 4'));
+  assert.equal(providerBody.model,'deepseek-ai/deepseek-v4.1-flash');
+  assert.equal(providerBody.temperature,0.2);
+  assert.equal(providerBody.reasoning_effort,'low');
+  assert.ok(providerBody.max_completion_tokens>=3500);
+  assert.match(providerBody.messages[0].content,/QUESTION EXACTE/);
+  assert.match(providerBody.messages[1].content,/2 \+ 2/);
+  assert.ok(!JSON.stringify(providerBody).includes(configured.DEPLOY_API_KEY));
+}finally{globalThis.fetch=priorFetch;}
+
 console.log('Cloudflare Worker API checks passed: assets, readiness, secret privacy, SSRF guard, authentication and API 404.');

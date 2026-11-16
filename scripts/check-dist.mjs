@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve('dist');
-const required=['index.html','auth-config.js','resources.json','assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/landing.js','assets/community.js'];
+const required=['index.html','auth-config.js','resources.json','assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/ai-format.js','assets/landing.js','assets/community.js'];
 for(const name of required){
   const file=path.join(root,name);
   if(!fs.existsSync(file)||fs.statSync(file).size===0)throw Error('Build output missing: '+name);

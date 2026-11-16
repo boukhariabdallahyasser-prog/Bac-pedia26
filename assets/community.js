@@ -7,7 +7,9 @@ const user=()=>typeof studentAuthUser==='undefined'?null:studentAuthUser;
 const txt=v=>String(v??'').trim();
 const labels={pending:'قيد المراجعة',approved:'منشور / مقبول',rejected:'مرفوض'};
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null;
+const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
+const branchValid=value=>branchChoices.includes(value);
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -34,19 +36,9 @@ function statusPill(status){return el('span','comm-state-tag '+status,statusLabe
 async function loadMyApplication(id){
  const d=db();if(!d)return null;
  const {data,error}=await d.from('collaborator_applications')
-   .select('user_id,display_name,organization,contribution_type,motivation,status,created_at')
+   .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at')
    .eq('user_id',id).maybeSingle();
  if(error)throw error;return data||null;
-}
-async function ensureApplicationFromSignup(current){
- const metadata=current.user_metadata||{};
- if(metadata.signup_intent!=='collaborator')return null;
- const name=txt(metadata.full_name),org=txt(metadata.organization),motivation=txt(metadata.motivation);
- const type=['student','teacher','club','organization','other'].includes(metadata.contribution_type)?metadata.contribution_type:'other';
- if(name.length<2||org.length<2||motivation.length<15)return null;
- const row={user_id:current.id,display_name:name,organization:org,contribution_type:type,motivation};
- const {error}=await db().from('collaborator_applications').insert(row);
- if(error&&error.code!=='23505')console.warn('Contributor signup application could not be inserted',error);
 }
 async function refreshPortalRole(){
  const current=user(),id=current?.id;
@@ -75,11 +67,9 @@ async function refreshPortalRole(){
    }
    if(user()?.id!==id)return ownerRole;
    request=application.data||null;
-   if(!request&&current.user_metadata?.signup_intent==='collaborator'){
-     await ensureApplicationFromSignup(current);
-     request=await loadMyApplication(id);
-   }
-   ownerRole=verifiedOwner?'admin':request?'applicant':'student';
+   // User metadata selects onboarding UI only; no publication permission.
+   const intendsContribution=current.user_metadata?.signup_intent==='collaborator';
+   ownerRole=verifiedOwner?'admin':(request||intendsContribution)?'applicant':'student';
    if(!verifiedOwner&&request?.status==='approved')ownerRole='contributor';
  }catch(error){
    console.warn('Portal access check failed',error);
@@ -101,7 +91,7 @@ async function loadApprovedResources(){
  const id=user().id;
  try{
    const {data,error}=await db().from('collaborator_resources')
-     .select('id,title,subject,description,resource_url,resource_kind,unit_title,status')
+     .select('id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status')
      .eq('status','approved').order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
    if(user()?.id!==id||ownerRole!=='student')return;
@@ -110,7 +100,7 @@ async function loadApprovedResources(){
    for(const item of data){
      const card=el('article','portal-resource');
      card.append(el('span','portal-type',kind[item.resource_kind]||'مورد'),
-       el('h3','',item.title),el('p','',item.subject+(item.unit_title?' · '+item.unit_title:'')),
+       el('h3','',item.title),el('p','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+(item.unit_title?' · '+item.unit_title:'')),
        el('p','',item.description||''));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فتح المصدر الموثق');
@@ -126,7 +116,7 @@ async function loadContributor(){
  try{
    request=await loadMyApplication(id);
    const result=await db().from('collaborator_resources')
-     .select('id,contributor_id,title,subject,description,resource_url,resource_kind,unit_title,status,created_at')
+     .select('id,contributor_id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
      .eq('contributor_id',id).order('created_at',{ascending:false}).limit(200);
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
@@ -142,11 +132,13 @@ function renderContributor(){
  if(!request){
    panel.append(el('p','','قدّم طلباً للمساهمة ليتم مراجعته. لا تمنح استمارة التسجيل أي صلاحية نشر.'));
  }else{
-   panel.append(statusPill(request.status),el('p','',request.display_name+' · '+request.organization));
+   panel.append(statusPill(request.status),el('p','',request.display_name+' · '+request.organization+' · '+(request.academic_branch||'الشعبة غير محددة')));
    panel.append(el('p','',active?'حسابك معتمد. يمكنك إضافة روابط Google Drive وتعديل المقترحات قبل النشر.':
      request.status==='pending'?'طلبك مسجّل، في انتظار مراجعة الإدارة.':'تم إيقاف صلاحية المساهمة. يمكنك التواصل مع الإدارة.'));
  }
- apply.classList.toggle('hidden',!!request);
+ if(request&&['pending','rejected'].includes(request.status))panel.append(button('تعديل بياناتي',()=>editContributorProfile(),'portal-action'));
+ if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
+ apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
  metric('contributorMetrics',[
    resources.length,
@@ -169,6 +161,7 @@ function renderContributor(){
    }
    if(active){
      if(item.status!=='approved')tools.append(button('تعديل',()=>editResource(item)));
+     if(item.status==='rejected')tools.append(button('إعادة إرسال',()=>void resubmitResource(item.id),'portal-action success'));
      tools.append(button('حذف',()=>void removeResource(item),'portal-action danger'));
    }
    card.append(tools);grid.append(card);
@@ -178,6 +171,7 @@ function editResource(item){
  editId=item.id;
  $('collabResourceTitle').value=item.title;
  $('collabResourceSubject').value=item.subject;
+ $('collabResourceBranch').value=item.academic_branch||'جميع الشعب';
  $('collabResourceKind').value=item.resource_kind||'other';
  $('collabResourceUnit').value=item.unit_title||'';
  $('collabResourceUrl').value=item.resource_url;
@@ -199,12 +193,16 @@ async function saveResource(event){
  const data={
    title:txt($('collabResourceTitle').value),
    subject:txt($('collabResourceSubject').value),
+   academic_branch:$('collabResourceBranch').value,
    resource_kind:$('collabResourceKind').value,
    unit_title:txt($('collabResourceUnit').value),
    resource_url:txt($('collabResourceUrl').value),
    description:txt($('collabResourceDescription').value)
  };
- if(data.title.length<4||data.subject.length<2||!validUrl(data.resource_url)){notify('أدخل عنواناً ومادة ورابط Google Drive صحيحاً','warning');return;}
+ if(data.title.length<4||data.subject.length<2||!branchValid(data.academic_branch)||
+    data.unit_title.length<2||data.description.length<12||!validUrl(data.resource_url)){
+   notify('الشعبة، المادة، الوحدة، الوصف المفيد ورابط Google Drive جميعها مطلوبة','warning');return;
+ }
  busy=true;
  try{
    const client=db(),result=editId?
@@ -224,18 +222,74 @@ async function removeResource(item){
    await loadContributor();notify('تم حذف الرابط','success');
  }catch(error){failed(error,'حذف المورد');}finally{busy=false;}
 }
-async function sendApplication(event){
- event.preventDefault();if(busy||!user()||request)return;
- const row={
-   user_id:user().id,display_name:txt($('collabName').value),organization:txt($('collabOrg').value),
-   contribution_type:$('collabType').value,motivation:txt($('collabMotivation').value)
- };
- if(row.display_name.length<2||row.organization.length<2||row.motivation.length<15){notify('أكمل بيانات المساهمة','warning');return;}
+function editContributorProfile(){
+ if(!request||!['pending','rejected'].includes(request.status))return;
+ profileEditing=true;
+ $('collabName').value=request.display_name||'';
+ $('collabOrg').value=request.organization||'';
+ $('collabType').value=request.contribution_type||'student';
+ $('collabBranch').value=request.academic_branch||'جميع الشعب';
+ $('collabMotivation').value=request.motivation||'';
+ $('collabProfileFormTitle').textContent='تعديل بيانات المساهمة';
+ $('collabProfileSave').textContent='حفظ البيانات';
+ $('collabProfileCancel').classList.remove('hidden');
+ $('collaboratorApplyPanel').classList.remove('hidden');
+ $('collaboratorApplyPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resetContributorProfileForm(){
+ profileEditing=false;
+ $('collaboratorApplyForm')?.reset();
+ if($('collabProfileFormTitle'))$('collabProfileFormTitle').textContent='بياناتك كمساهم';
+ if($('collabProfileSave'))$('collabProfileSave').textContent='إرسال الطلب للمراجعة';
+ $('collabProfileCancel')?.classList.add('hidden');
+ if(request)$('collaboratorApplyPanel')?.classList.add('hidden');
+}
+async function resubmitContributorApplication(){
+ if(busy||!user()||request?.status!=='rejected')return;
  busy=true;
  try{
-   const result=await db().from('collaborator_applications').insert(row);
+   const result=await db().rpc('resubmit_collaborator_application');
    if(result.error)throw result.error;
-   request=await loadMyApplication(user().id);await loadContributor();notify('تم إرسال الطلب للإدارة','success');
+   if(result.data!==true)throw new Error('This application is not eligible for resubmission');
+   resetContributorProfileForm();
+   await loadContributor();
+   notify('تمت إعادة إرسال طلبك للمراجعة','success');
+ }catch(error){failed(error,'إعادة تقديم طلب المساهمة');}
+ finally{busy=false;}
+}
+async function resubmitResource(id){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved')return;
+ busy=true;
+ try{
+   const result=await db().rpc('resubmit_contributor_resource',{p_resource_id:id});
+   if(result.error)throw result.error;
+   if(result.data!==true)throw new Error('Resource cannot be resubmitted');
+   await loadContributor();
+   notify('أُعيد إرسال الرابط للمراجعة','success');
+ }catch(error){failed(error,'إعادة إرسال المورد');}
+ finally{busy=false;}
+}
+async function sendApplication(event){
+ event.preventDefault();if(busy||!user()||(request&&!profileEditing))return;
+ const row={
+   user_id:user().id,display_name:txt($('collabName').value),organization:txt($('collabOrg').value),
+   contribution_type:$('collabType').value,motivation:txt($('collabMotivation').value),
+   academic_branch:$('collabBranch').value
+ };
+ if(row.display_name.length<2||row.organization.length<2||row.motivation.length<15||!branchValid(row.academic_branch)){notify('الاسم والمؤسسة والشعبة ووصف المساهمة مطلوبة','warning');return;}
+ busy=true;
+ try{
+   const result=profileEditing&&request?
+     await db().from('collaborator_applications').update({
+       display_name:row.display_name,organization:row.organization,
+       contribution_type:row.contribution_type,motivation:row.motivation,
+       academic_branch:row.academic_branch
+     }).eq('user_id',user().id):
+     await db().from('collaborator_applications').insert(row);
+   if(result.error)throw result.error;
+   profileEditing=false;resetContributorProfileForm();
+   request=await loadMyApplication(user().id);await loadContributor();
+   notify('تم حفظ بياناتك للمراجعة','success');
  }catch(error){failed(error,'تقديم طلب المساهمة');}finally{busy=false;}
 }
 async function loadAdmin(){
@@ -246,9 +300,9 @@ async function loadAdmin(){
    const client=db();
    const [applications,proposals,students,audit]=await Promise.all([
      client.from('collaborator_applications')
-       .select('user_id,display_name,organization,contribution_type,motivation,status,created_at').order('created_at',{ascending:false}).limit(250),
+       .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
-       .select('id,contributor_id,title,subject,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
+       .select('id,contributor_id,title,subject,academic_branch,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
      client.from('student_profiles')
        .select('user_id,full_name,email,branch,created_at,last_activity_at').order('created_at',{ascending:false}).limit(250),
      client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100)
@@ -324,31 +378,129 @@ async function testOwnerAI(){
    result.textContent='فشل الاتصال بالخادم أو قراءة الرد. تحقّق من إعدادات Cloudflare.';
  }
 }
+function adminVisible(rows){
+ const search=txt($('adminSearch')?.value).toLocaleLowerCase();
+ const status=txt($('adminReviewFilter')?.value)||'all';
+ return rows.filter(x=>{
+   if(status!=='all'&&x.status&&x.status!==status)return false;
+   if(!search)return true;
+   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,
+     x.unit_title,x.description,x.motivation,x.email].filter(Boolean).join(' ').toLocaleLowerCase();
+   return joined.includes(search);
+ });
+}
+function openAdminEditor(type,item){
+ if(ownerRole!=='admin')return;
+ const root=$('adminList');if(!root)return;
+ const filters=$('adminFilters');if(filters)filters.hidden=true;
+ const form=el('form','portal-editor');
+ form.append(el('h3','',type==='resource'?'تعديل الملف أو المجلد':'تعديل بيانات المساهم'));
+ form.append(el('p','portal-editor-hint','تحفظ التعديلات مباشرة في قاعدة البيانات، وتسجل في سجل الإدارة.'));
+ const controls={};
+ function field(name,title,value,options={}){
+   const wrapper=el('label','portal-editor-field');
+   wrapper.append(el('span','',title+' *'));
+   const input=options.choices?el('select'):el(options.multiline?'textarea':'input');
+   input.name=name;input.required=true;
+   if(options.max)input.maxLength=options.max;
+   if(options.min)input.minLength=options.min;
+   if(options.url)input.type='url';
+   else if(!options.multiline&&!options.choices)input.type='text';
+   if(options.multiline)input.rows=4;
+   if(options.choices){
+     for(const v of options.choices){
+       const opt=el('option','',typeof v==='string'?v:v.label);
+       opt.value=typeof v==='string'?v:v.value;
+       input.append(opt);
+     }
+   }
+   input.value=value||'';
+   wrapper.append(input);controls[name]=input;form.append(wrapper);
+ }
+ if(type==='resource'){
+   field('title','عنوان المورد',item.title,{min:4,max:180});
+   field('academic_branch','الشعبة',item.academic_branch||'جميع الشعب',{choices:branchChoices});
+   field('subject','المادة',item.subject,{min:2,max:100});
+   field('resource_kind','نوع المورد',item.resource_kind||'other',
+     {choices:Object.entries(kind).map(([value,label])=>({value,label}))});
+   field('unit_title','الوحدة أو الفصل',item.unit_title,{min:2,max:120});
+   field('resource_url','رابط Google Drive',item.resource_url,{url:true,max:2000});
+   field('description','محتويات المجلد أو الملف',item.description,{min:12,max:2000,multiline:true});
+ }else{
+   field('display_name','اسم المساهم',item.display_name,{min:2,max:100});
+   field('organization','المؤسسة أو النادي',item.organization,{min:2,max:150});
+   field('academic_branch','الشعبة',item.academic_branch||'جميع الشعب',{choices:branchChoices});
+   field('contribution_type','الصفة',item.contribution_type||'student',
+     {choices:[{value:'student',label:'طالب'},{value:'teacher',label:'أستاذ'},
+       {value:'club',label:'نادي'},{value:'organization',label:'مؤسسة'},{value:'other',label:'آخر'}]});
+   field('motivation','وصف المساهمة',item.motivation,{min:15,max:2000,multiline:true});
+ }
+ const actions=el('div','portal-editor-actions');
+ const save=el('button','btn primary','حفظ التعديلات');save.type='submit';
+ actions.append(save,button('إلغاء',()=>renderAdmin()));
+ form.append(actions);
+ form.addEventListener('submit',async event=>{
+   event.preventDefault();
+   if(busy||ownerRole!=='admin')return;
+   const data=Object.fromEntries(Object.entries(controls).map(([k,v])=>[k,txt(v.value)]));
+   if(!branchValid(data.academic_branch)){notify('اختر الشعبة المطلوبة','warning');return;}
+   if(type==='resource'&&(data.description.length<12||data.unit_title.length<2||!validUrl(data.resource_url))){
+     notify('أدخل رابط Google Drive ووحدة ووصفاً واضحاً','warning');return;
+   }
+   if(type==='application'&&data.motivation.length<15){notify('وصف المساهمة قصير جداً','warning');return;}
+   busy=true;save.disabled=true;
+   try{
+     const result=type==='resource'?
+       await db().rpc('admin_update_curated_resource',{
+         p_resource_id:item.id,p_title:data.title,p_academic_branch:data.academic_branch,
+         p_subject:data.subject,p_resource_kind:data.resource_kind,
+         p_unit_title:data.unit_title,p_description:data.description,p_resource_url:data.resource_url
+       }):
+       await db().rpc('admin_update_contributor_profile',{
+         p_user_id:item.user_id,p_display_name:data.display_name,
+         p_organization:data.organization,p_contribution_type:data.contribution_type,
+         p_motivation:data.motivation,p_academic_branch:data.academic_branch
+       });
+     if(result.error)throw result.error;
+     if(result.data!==true)throw new Error('No editable record found');
+     notify('تم حفظ التعديلات في قاعدة البيانات','success');
+     await loadAdmin();
+   }catch(error){failed(error,'تحديث المعلومات');}
+   finally{busy=false;save.disabled=false;}
+ });
+ root.replaceChildren(form);
+ root.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
+ const filters=$('adminFilters');if(filters)filters.hidden=!['applications','resources','students'].includes(adminTab);
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
  if(adminTab==='applications'){
-   if(!adminApplications.length){root.append(placeholder('لا توجد طلبات','ستظهر طلبات التسجيل هنا.'));return;}
-   for(const item of adminApplications){
+   const applications=adminVisible(adminApplications);
+   if(!applications.length){root.append(placeholder('لا توجد طلبات مطابقة','جرّب مسح البحث أو تغيير حالة الطلب.'));return;}
+   for(const item of applications){
      const card=el('article','portal-admin-entry');
      const text=el('div','portal-admin-entry-text');
-     text.append(el('strong','',item.display_name),el('span','',item.organization+' · '+(item.contribution_type||'')),
+     text.append(el('strong','',item.display_name),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.organization+' · '+(item.contribution_type||'')),
        el('p','',item.motivation));
      const actions=el('div','portal-admin-actions');
      actions.append(statusPill(item.status));
+     actions.append(button('تعديل البيانات',()=>openAdminEditor('application',item)));
      if(item.status!=='approved')actions.append(button('قبول',()=>void moderate('application',item.user_id,'approved'),'portal-action success'));
      if(item.status!=='rejected')actions.append(button(item.status==='approved'?'سحب صلاحية المساهم':'رفض الطلب',
        ()=>void moderate('application',item.user_id,'rejected'),'portal-action danger'));
      card.append(text,actions);root.append(card);
    }
  }else if(adminTab==='resources'){
-   if(!adminResources.length){root.append(placeholder('لا توجد روابط','ستظهر هنا المقترحات التي يرسلها المساهمون.'));return;}
-   for(const item of adminResources){
+   const proposals=adminVisible(adminResources);
+   if(!proposals.length){root.append(placeholder('لا توجد موارد مطابقة','جرّب كلمة أخرى أو اختر حالة مختلفة.'));return;}
+   for(const item of proposals){
      const card=el('article','portal-admin-entry');
      const main=el('div','portal-admin-entry-text');
-     main.append(el('strong','',item.title),el('span','',item.subject+' · '+(kind[item.resource_kind]||'مورد')+
+     main.append(el('strong','',item.title),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+' · '+(kind[item.resource_kind]||'مورد')+
        (item.unit_title?' · '+item.unit_title:'')),el('p','',item.description||''));
      const actions=el('div','portal-admin-actions');actions.append(statusPill(item.status));
+     actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
      }
@@ -358,8 +510,9 @@ function renderAdmin(){
      card.append(main,actions);root.append(card);
    }
  }else if(adminTab==='students'){
-   if(!profiles.length){root.append(placeholder('لا توجد حسابات ظاهرة','لا توجد ملفات تعريف للطلاب حالياً.'));return;}
-   for(const p of profiles){
+   const students=adminVisible(profiles);
+   if(!students.length){root.append(placeholder('لا توجد حسابات مطابقة','جرّب بحثاً آخر.'));return;}
+   for(const p of students){
      const card=el('article','portal-admin-entry');
      const main=el('div','portal-admin-entry-text');
      main.append(el('strong','',p.full_name||'طالب'),el('span','',p.email||'بريد غير متاح'),
@@ -398,7 +551,7 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];auditEntries=[];ownerRole='student';
- window.BAC_PORTAL_ROLE='student';cancelEdit();
+ window.BAC_PORTAL_ROLE='student';cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
 window.renderCommunity=()=>{if(user()&&['contributor','applicant'].includes(ownerRole))void loadContributor();};
@@ -408,8 +561,11 @@ window.onCommunityAuthChanged=()=>{if(!user()){resetSession();return;}void refre
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);
+$('collabProfileCancel')?.addEventListener('click',resetContributorProfileForm);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());
 $('adminReload')?.addEventListener('click',()=>void loadAdmin());
+$('adminSearch')?.addEventListener('input',()=>renderAdmin());
+$('adminReviewFilter')?.addEventListener('change',()=>renderAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
 if(user())void refreshPortalRole(); // Handles sessions restored before this classic script was loaded.
 })();

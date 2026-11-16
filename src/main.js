@@ -25,6 +25,7 @@ async function start(){
     '/assets/chapter-search.js',
     '/assets/legacy-app.js',
     '/assets/chapters.js',
+    '/assets/ai-format.js',
     '/assets/landing.js',
     '/assets/community.js'
   ])await loadScript(path);
