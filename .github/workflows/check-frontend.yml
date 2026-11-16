@@ -8,6 +8,7 @@ on:
       - "src/**"
       - "assets/**"
       - "api/**"
+      - "cloudflare/**"
       - "scripts/**"
       - "supabase/**"
       - "resources.json"
@@ -16,6 +17,7 @@ on:
       - "package-lock.json"
       - "vite.config.js"
       - "vercel.json"
+      - "wrangler.jsonc"
       - ".github/workflows/check-frontend.yml"
   pull_request:
     paths:
@@ -23,6 +25,7 @@ on:
       - "src/**"
       - "assets/**"
       - "api/**"
+      - "cloudflare/**"
       - "scripts/**"
       - "supabase/**"
       - "resources.json"
@@ -31,6 +34,7 @@ on:
       - "package-lock.json"
       - "vite.config.js"
       - "vercel.json"
+      - "wrangler.jsonc"
       - ".github/workflows/check-frontend.yml"
 
 permissions:
