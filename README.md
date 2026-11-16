@@ -18,15 +18,17 @@ Server-only configuration in **Cloudflare Dashboard → Workers & Pages → bac-
 → Settings → Variables and Secrets** (never put credentials in GitHub,
 `wrangler.jsonc`, `auth-config.js`, or `VITE_*` variables):
 - `DEPLOY_API_KEY`: the owner's **Deploy.com** inference API credential, type **Secret**.
-- `DEPLOY_API_ENDPOINT`: the verified HTTPS model inference endpoint from Deploy's official documentation.
-- `DEPLOY_MODEL_ID`: the verified model identifier for that endpoint.
+- `DEPLOY_API_ENDPOINT`: optional override. The official default is `https://api-cdn.deploy.com/api/v1/chat/completions` (CDN nearest region).
+- `DEPLOY_MODEL_ID`: optional override. The official documented default is `deepseek-ai/deepseek-v4.1-flash`.
 
-The Deploy.com dashboard page alone does **not** establish the inference
-endpoint or protocol. The Worker implements an OpenAI-compatible chat-completion
-format only as an adapter; confirm that Deploy.com supports this format before
-configuring it. `GET /api/ai` returns `provider_unconfigured` if any setting
-is missing. A `configured_unverified` result confirms settings were supplied,
-**not** successful model inference.
+**Official reference:** https://deployai.readme.io/docs/quickstart and
+https://deployai.readme.io/docs/deepseek . Deploy explicitly documents
+OpenAI-compatible chat completions with these values. `GET /api/ai` returns
+`provider_unconfigured` when the **secret key** is missing, and
+`configured_unverified` when credentials are present. A configured status
+does **not** prove that a key is valid or that the owner's Deploy account has
+access to the chosen model. Test a real authenticated student request to verify
+AI generation. Confirm any model usage charges in the Deploy dashboard.
 
 The Worker verifies the Supabase Auth bearer session, requires email
 confirmation, and enforces the existing daily quota through
@@ -57,7 +59,17 @@ The owner dashboard uses owner-only checked RPCs for approval, rejection, revoca
 
 ### Deploy.com AI provider
 
-The previously supplied API token belongs to Deploy.com, not Google Gemini. The server-only Vercel secret is `DEPLOY_API_KEY`. The backend adapter no longer calls Gemini. **The Deploy portal link is a private account dashboard, not a published inference API contract.** To enable verified generation, add the actual supported inference endpoint to `DEPLOY_API_ENDPOINT` and the authorized model ID to `DEPLOY_MODEL_ID` in Vercel, after confirming its OpenAI-compatible request and response format in the user's Deploy account. Do not invent these details. If unset, `GET /api/ai` reports `provider_unconfigured` rather than falsely claiming live AI availability. Environment secrets are never embedded in source or browser bundles.
+AI generation is handled by Deploy.com, not Gemini. The **official Deploy quickstart**
+confirms the OpenAI-compatible chat completions API and the documented default
+model (`deepseek-ai/deepseek-v4.1-flash`) at
+`https://api-cdn.deploy.com/api/v1/chat/completions`. Both Vercel and Cloudflare
+adapters use these as defaults and allow secure server-side overrides.
+
+**Required for Cloudflare:** set `DEPLOY_API_KEY` as a Cloudflare Worker secret.
+Setting it previously on Vercel does not copy it to Cloudflare. A published
+`workers.dev` deployment can serve the site while the AI endpoint remains
+unconfigured. Always test a signed-in student's first AI request and check the
+Deploy service's billing/authorization. Never embed secrets in JavaScript.
 
 ### Migrations and security tests
 
