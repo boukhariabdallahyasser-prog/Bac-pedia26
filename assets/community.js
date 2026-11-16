@@ -40,16 +40,6 @@ async function loadMyApplication(id){
    .eq('user_id',id).maybeSingle();
  if(error)throw error;return data||null;
 }
-async function ensureApplicationFromSignup(current){
- const metadata=current.user_metadata||{};
- if(metadata.signup_intent!=='collaborator')return null;
- const name=txt(metadata.full_name),org=txt(metadata.organization),motivation=txt(metadata.motivation);
- const type=['student','teacher','club','organization','other'].includes(metadata.contribution_type)?metadata.contribution_type:'other';
- if(name.length<2||org.length<2||motivation.length<15)return null;
- const row={user_id:current.id,display_name:name,organization:org,contribution_type:type,motivation};
- const {error}=await db().from('collaborator_applications').insert(row);
- if(error&&error.code!=='23505')console.warn('Contributor signup application could not be inserted',error);
-}
 async function refreshPortalRole(){
  const current=user(),id=current?.id;
  if(!id){
