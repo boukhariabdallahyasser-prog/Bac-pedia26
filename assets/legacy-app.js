@@ -910,13 +910,13 @@
     }
     async function applyStudentSession(session){
       const u=session?.user||null;
-      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
+      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}
       if(!u.email_confirmed_at){
         studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();
         renderAll();renderSession();openLoginGate();
         showAuthNotice('يرجى تأكيد البريد الإلكتروني قبل فتح حسابك.','warning');
         if(studentAuth)void studentAuth.auth.signOut().catch(error=>console.warn('Unconfirmed session sign-out failed:',error));
-        if(document.body.dataset.portal!=='landing')window.location.replace('/');
+        if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');
         return;
       }
       resetStudentData();studentAuthUser=u;state.guest=false;
@@ -934,7 +934,7 @@
       const note=$('#authSetupNotice');
       if(!auth){
         if(note)note.textContent='تعذّر الاتصال بخدمة الحسابات. أعد تحميل الصفحة أو تواصل مع إدارة المنصة.';
-        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;
+        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;
       }
       if(note)note.textContent='';
       let recoveryFlow=/(?:^|[&#?])type=recovery(?:&|$)/i.test(location.hash+location.search);
@@ -945,7 +945,7 @@
           setTimeout(()=>{openLoginGate(true);completePasswordRecovery();},0);
           return;
         }
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}
         if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>{if(session?.user?.id!==studentAuthUser?.id)void applyStudentSession(session);},0);
       });
       const {data,error}=await auth.auth.getSession();
@@ -970,7 +970,7 @@
           await applyStudentSession({...data.session,user:verified.data.user});
         }
       }
-      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');}
+      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');}
     }
 
     function enterAsGuest(){
