@@ -573,7 +573,7 @@ window.refreshPortalRole=refreshPortalRole;
 window.renderCommunity=()=>{if(user()&&['contributor','applicant'].includes(ownerRole))void loadContributor();};
 window.renderApprovedResources=()=>{if(user()&&ownerRole==='student')void loadApprovedResources();};
 window.renderAdmin=()=>{if(user()&&ownerRole==='admin')void loadAdmin();};
-window.onCommunityAuthChanged=()=>{if(!user()){resetSession();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}void refreshPortalRole();};
+window.onCommunityAuthChanged=()=>{if(!user()){resetSession();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}void refreshPortalRole();};
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);
