@@ -3,6 +3,24 @@ const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
+  // Public health check confirms provider reachability, not merely that an API URL exists.
+  // It never discloses the configured secret or consumes a student's daily quota.
+  if(req.method==='GET'){
+    if(!process.env.GEMINI_API_KEY)return res.status(200).json({ready:false,reason:'not_configured'});
+    try{
+      const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),5000);
+      let response;
+      try{
+        response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash',{
+          method:'GET',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY},
+          signal:controller.signal
+        });
+      }finally{clearTimeout(timeout);}
+      return res.status(200).json({ready:response.ok,reason:response.ok?'ok':response.status===400||response.status===401||response.status===403?'provider_auth':'provider_error'});
+    }catch(error){
+      return res.status(200).json({ready:false,reason:'provider_unreachable'});
+    }
+  }
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   const siteOrigin='https://'+req.headers.host;
   if(req.headers.origin&&req.headers.origin!==siteOrigin)return res.status(403).json({error:'Origin not allowed'});
