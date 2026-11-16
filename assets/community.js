@@ -231,6 +231,40 @@ async function removeResource(item){
    await loadContributor();notify('تم حذف الرابط','success');
  }catch(error){failed(error,'حذف المورد');}finally{busy=false;}
 }
+function editContributorProfile(){
+ if(!request||!['pending','rejected'].includes(request.status))return;
+ profileEditing=true;
+ $('collabName').value=request.display_name||'';
+ $('collabOrg').value=request.organization||'';
+ $('collabType').value=request.contribution_type||'student';
+ $('collabBranch').value=request.academic_branch||'جميع الشعب';
+ $('collabMotivation').value=request.motivation||'';
+ $('collabProfileFormTitle').textContent='تعديل بيانات المساهمة';
+ $('collabProfileSave').textContent='حفظ البيانات';
+ $('collabProfileCancel').classList.remove('hidden');
+ $('collaboratorApplyPanel').classList.remove('hidden');
+ $('collaboratorApplyPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resetContributorProfileForm(){
+ profileEditing=false;
+ $('collaboratorApplyForm')?.reset();
+ if($('collabProfileFormTitle'))$('collabProfileFormTitle').textContent='بياناتك كمساهم';
+ if($('collabProfileSave'))$('collabProfileSave').textContent='إرسال الطلب للمراجعة';
+ $('collabProfileCancel')?.classList.add('hidden');
+ if(request)$('collaboratorApplyPanel')?.classList.add('hidden');
+}
+async function resubmitResource(id){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved')return;
+ busy=true;
+ try{
+   const result=await db().rpc('resubmit_contributor_resource',{p_resource_id:id});
+   if(result.error)throw result.error;
+   if(result.data!==true)throw new Error('Resource cannot be resubmitted');
+   await loadContributor();
+   notify('أُعيد إرسال الرابط للمراجعة','success');
+ }catch(error){failed(error,'إعادة إرسال المورد');}
+ finally{busy=false;}
+}
 async function sendApplication(event){
  event.preventDefault();if(busy||!user()||(request&&!profileEditing))return;
  const row={
@@ -414,7 +448,7 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];auditEntries=[];ownerRole='student';
- window.BAC_PORTAL_ROLE='student';cancelEdit();
+ window.BAC_PORTAL_ROLE='student';cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
 window.renderCommunity=()=>{if(user()&&['contributor','applicant'].includes(ownerRole))void loadContributor();};
@@ -424,6 +458,7 @@ window.onCommunityAuthChanged=()=>{if(!user()){resetSession();return;}void refre
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);
+$('collabProfileCancel')?.addEventListener('click',resetContributorProfileForm);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());
 $('adminReload')?.addEventListener('click',()=>void loadAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
