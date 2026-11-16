@@ -1,3 +1,46 @@
+## Cloudflare Workers deployment (new hosting)
+
+Cloudflare currently hosts `https://bac-pedia26.boukhariabdallahyasser.workers.dev`.
+The first deployment successfully uploaded the **frontend assets only**. Cloudflare does
+not automatically execute Vercel's `api/ai.js`. The checked-in `wrangler.jsonc`
+and `cloudflare/worker.js` add a real Worker backend on `/api/ai` and send
+all other requests to the Vite static assets. The settings implement a
+`run_worker_first` API route to avoid SPA fallback returning HTML to API calls.
+
+Cloudflare GitHub project settings:
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- Worker name: `bac-pedia26`
+- Output folder: `dist`
+- Production branch: `main` (keep automatic branch previews optional)
+
+Server-only configuration in **Cloudflare Dashboard → Workers & Pages → bac-pedia26
+→ Settings → Variables and Secrets** (never put credentials in GitHub,
+`wrangler.jsonc`, `auth-config.js`, or `VITE_*` variables):
+- `DEPLOY_API_KEY`: the owner's **Deploy.com** inference API credential, type **Secret**.
+- `DEPLOY_API_ENDPOINT`: the verified HTTPS model inference endpoint from Deploy's official documentation.
+- `DEPLOY_MODEL_ID`: the verified model identifier for that endpoint.
+
+The Deploy.com dashboard page alone does **not** establish the inference
+endpoint or protocol. The Worker implements an OpenAI-compatible chat-completion
+format only as an adapter; confirm that Deploy.com supports this format before
+configuring it. `GET /api/ai` returns `provider_unconfigured` if any setting
+is missing. A `configured_unverified` result confirms settings were supplied,
+**not** successful model inference.
+
+The Worker verifies the Supabase Auth bearer session, requires email
+confirmation, and enforces the existing daily quota through
+`consume_ai_quota`. The worker never serves the API credential to the browser.
+
+For signup confirmation and password recovery on Cloudflare, add the exact
+`workers.dev` origin to **Supabase Authentication → URL Configuration → Redirect URLs**.
+Keep Vercel in the redirect list during the transition. Change the default
+`Site URL` only after testing signup and recovery end to end on Cloudflare.
+Do not delete the older Vercel deployment until then.
+
+Test locally with `npm test` and `npm run build`. Use `npm run cf:preview`
+for Worker testing, and `npm run cf:deploy` to publish only after validation.
+
 ## 2026-11-16: role-separated dashboards and moderation
 
 The platform now has three database-backed experiences. **Student** users see only learning tools plus approved resources; **contributor applicants/approved contributors** see their personal resource-management workspace instead of student pages; and **the one verified owner** sees a moderation dashboard.
