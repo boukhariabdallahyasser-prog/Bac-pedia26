@@ -13,7 +13,7 @@
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
       ['files','fa-solid fa-folder-open','الملفات','مواد وروابط Drive حسب الشعبة'],
        ['chapters','fa-solid fa-layer-group','الدروس والوحدات','بحث ذكي في المواد والملفات والوحدات'],
-      ['flashcards','fa-solid fa-clone','Flashcards','بطاقات مراجعة محفوظة في حسابك'],
+      
       ['collaborate','fa-solid fa-users','المساهمون','شارك الموارد واطلب الانضمام'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
@@ -95,7 +95,7 @@
     const agents = {
       smart_tutor:{icon:'fa-solid fa-comments',title:'شرح',group:'فهم',desc:'شرح السؤال خطوة بخطوة مع مثال.'},
       summarizer:{icon:'fa-solid fa-align-left',title:'تلخيص',group:'فهم',desc:'ملخص واضح مع كلمات مفتاحية.'},
-      flashcards:{icon:'fa-solid fa-clone',title:'بطاقات',group:'فهم',desc:'بطاقات سؤال وجواب للحفظ.'},
+
       quiz:{icon:'fa-solid fa-circle-question',title:'اختبار',group:'تدريب',desc:'اختبار قصير مع التصحيح.'},
       qcm:{icon:'fa-solid fa-list-ol',title:'اختيارات',group:'تدريب',desc:'أسئلة اختيار من متعدد.'},
       mock_exam:{icon:'fa-solid fa-file-pen',title:'محاكاة',group:'تدريب',desc:'تدريب امتحان بتوقيت وتصحيح.'},
@@ -221,7 +221,7 @@
       if(id==='resources')renderResources();
        if(id==='chapters' && typeof window.renderChapters==='function')window.renderChapters();
       if(id==='ai'){renderAiSelectors();renderAgents();}
-      if(id==='flashcards')window.renderFlashcards?.();
+      
       if(id==='collaborate')window.renderCommunity?.();
     }
     function openFilesAll(){
@@ -245,7 +245,7 @@
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`;
       $('#sideNav').innerHTML=pages.map(make).join('');
-      const bottom=pages.filter(p=>['home','chapters','flashcards','files'].includes(p[0]));
+      const bottom=pages.filter(p=>['home','chapters','files','ai'].includes(p[0]));
       $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+`<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
     }
     function isMobileSidebar(){return window.matchMedia('(max-width:980px)').matches;}
