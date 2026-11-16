@@ -43,6 +43,18 @@ Configure Supabase Auth:
 3. Set the production Site URL to the Vercel domain.
 4. Add the exact production and preview callback URLs to the allowed redirect URLs.
 
+## Chapters Studio and smart search
+
+The `الدروس والوحدات` page is a resource-discovery interface backed by `resources.json`, not an independent syllabus or a generated lesson library. It indexes the verified subject roots, resource categories, Drive folders, and listed files for the **currently selected branch and specialization**. Resources unavailable for that specialization must not appear as verified.
+
+- Find materials with Arabic, French, or English names (e.g. `الدوال` / `fonctions`), typo tolerance, normalized Arabic spelling, and optional suggestions.
+- Filter by subject, resource type, favorites, and sort order. Use **Ctrl+K / Cmd+K** to focus the chapter search.
+- Favorites for individual chapters/files are cached in localStorage under the authenticated student's user-specific key. They are not yet cloud-synced and will not follow the student to another device.
+- Manifest loading uses the existing validated in-repository Drive inventory and the limited existing canonical folder fallback. Missing records must not be fabricated.
+- Drive folder presence does not guarantee a student can open the resource; verify Drive permissions separately.
+
+Run the related tests with `node scripts/check-chapter-search.mjs`. The standard frontend CI command also validates this script, the new JavaScript bundles, and resource manifest.
+
 ## Educational resources and access
 
 The connected Drive root supplied for the project is the Mathematics-stream library. Programme mapping is intentionally branch-aware:
