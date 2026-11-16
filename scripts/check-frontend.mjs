@@ -30,6 +30,16 @@ if(wranglerConfig.workers_dev!==true)throw Error('Public Cloudflare workers.dev 
 if(wranglerConfig.keep_vars!==true)throw Error('Cloudflare deploy must preserve dashboard secrets');
 
 if(wranglerConfig.assets?.binding!=='ASSETS'||!wranglerConfig.assets?.run_worker_first?.includes('/api/*'))throw Error('Cloudflare API routing must run Worker first');
+if(wranglerConfig.assets?.html_handling!=='auto-trailing-slash')
+  throw Error('Cloudflare must use native HTML directory routing');
+if(wranglerConfig.assets?.not_found_handling==='single-page-application')
+  throw Error('SPA fallback must not replace distinct role pages');
+if(wranglerConfig.assets?.run_worker_first?.some(path=>path!=='/api/*'))
+  throw Error('Role HTML must be served by Cloudflare assets directly, not Worker rewrite routes');
+const workerSource=fs.readFileSync('cloudflare/worker.js','utf8');
+if(workerSource.includes("pathname+'index.html'")||workerSource.includes("pathname+'/'"))
+  throw Error('Worker must not redirect or rewrite role URLs to index.html');
+
 
 const rolesSql=fs.readFileSync('supabase/role_portals_admin_2026.sql','utf8');
 const auditSql=fs.readFileSync('supabase/admin_moderation_audit_2026.sql','utf8');
