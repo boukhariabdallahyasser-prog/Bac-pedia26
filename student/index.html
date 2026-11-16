@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a1a" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Bac-pedia 2027: موارد البكالوريا، الدروس والوحدات، مراجعة ذكية ومخطط دراسي حسب الشعبة." />
+  <title>مساحة الطالب | Bac-pedia 2027</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/chapters.css" />
+  <link rel="stylesheet" href="/assets/landing.css" />
+  <link rel="stylesheet" href="/assets/community.css" />
+  <link rel="stylesheet" href="/assets/portals.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+</head>
+<body class="public-mode portal-loading" data-portal="student">
+  <div id="portalLoading" class="portal-auth-loading" role="status" aria-live="polite"><i class="fa-solid fa-shield-halved"></i> جار التحقق من الحساب... <a href="/">العودة إلى الرئيسية</a></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><div class="brand-title">BAC<span>PEDIA</span></div><div class="brand-sub">منصتك للبكالوريا 2027</div></div>
+      </div>
+
+      <div class="session-card" id="sessionCard">
+        <div class="session-avatar"><i class="fa-solid fa-user"></i></div>
+        <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div><span id="sidebarRoleLabel">طالب بكالوريا</span></div>
+        <button class="round-btn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user-gear"></i></button>
+      </div>
+      <div>
+        <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
+        <nav class="side-nav" id="sideNav" aria-label="قائمة المساحة الشخصية"></nav>
+      </div>
+      <div id="sidebarBranches">
+        <div class="nav-group-title" id="sidebarBranchTitle"><i class="fa-solid fa-layer-group"></i> الشعبة</div>
+        <div class="branch-grid" id="branchGrid"></div>
+        <div class="sub-branches" id="subBranchRow"></div>
+        <div class="sub-branch-note" id="subBranchAvailabilityNote" hidden></div>
+      </div>
+      <div id="sidebarStudyStats">
+        <div class="nav-group-title"><i class="fa-solid fa-chart-simple"></i> إحصائيات سريعة</div>
+        <div class="sidebar-stats">
+          <div class="mini-stat"><strong id="statTotal">0</strong><span>مواد</span></div>
+          <div class="mini-stat"><strong id="statAvailable">0</strong><span>متاحة</span></div>
+          <div class="mini-stat"><strong id="statFavs">0</strong><span>مفضلة</span></div>
+          <div class="mini-stat"><strong id="statProgress">0%</strong><span>تقدم</span></div>
+        </div>
+      </div>
+      <button id="sidebarAIBtn" class="btn primary full" onclick="showPage('ai'); setTimeout(()=>document.getElementById('aiPrompt').focus(),250)"><i class="fa-solid fa-robot"></i> افتح المساعد</button>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="top-title"><h2 id="pageTitle">مساحة الطالب</h2><p id="pageSubtitle">منصة مراجعة بسيطة ومنظمة</p></div>
+        <div class="top-actions">
+          <button class="ctrl-btn mobile-menu-btn sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" title="القائمة الجانبية" aria-label="القائمة الجانبية"><i class="fa-solid fa-bars-staggered"></i></button>
+          <button class="ctrl-btn" id="themeToggleBtn" onclick="toggleTheme()" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+          <button class="ctrl-btn" onclick="showPage('ai')" title="المساعد"><i class="fa-solid fa-robot"></i></button>
+          <button class="ctrl-btn" id="userTopBtn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user"></i></button>
+        </div>
+      </div>
+      <section class="page active" id="page-home">
+        <div class="home-welcome-note"><i class="fa-solid fa-sparkles"></i><span>رحلتك نحو بكالوريا 2027 تبدأ بخطوة اليوم — ركّز على التقدّم، لا الكمال.</span></div>
+        <div class="hero">
+          <div class="hero-content">
+            <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="homeBranchKicker">شعبة رياضيات</span></div>
+            <h1>مساحتك للنجاح.<br>كل شيء في مكان واحد.</h1>
+            <p>دروس وملفات منظّمة، خطة يومية، متابعة التقدم وأدوات مراجعة ذكية — صُمّمت خصيصاً لتلميذ البكالوريا الجزائرية.</p>
+            <div class="countdown">
+              <div class="time-box"><strong id="cdDays">000</strong><span>يوم</span></div>
+              <div class="time-box"><strong id="cdHours">00</strong><span>ساعة</span></div>
+              <div class="time-box"><strong id="cdMins">00</strong><span>دقيقة</span></div>
+              <div class="time-box"><strong id="cdSecs">00</strong><span>ثانية</span></div>
+            </div>
+            <div class="year-progress"><span id="yearProgress"></span></div>
+            <div class="hero-actions">
+              <button class="btn primary" onclick="showPage('chapters')"><i class="fa-solid fa-layer-group"></i> الدروس والوحدات</button><button class="btn" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> الملفات</button>
+              <button class="btn success" onclick="showPage('ai'); runAgent('daily_plan')"><i class="fa-solid fa-wand-magic-sparkles"></i> خطة اليوم</button>
+              <button class="btn" onclick="showPage('planner')"><i class="fa-solid fa-stopwatch"></i> جلسة تركيز</button>
+            </div>
+          </div>
+        </div>
+        <div class="signature-strip" aria-label="ابدأ مراجعتك">
+          <div class="signature-tile" role="button" tabindex="0" onclick="openFilesAll()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openFilesAll()}"><i class="fa-solid fa-book-open-reader"></i><div><strong>مكتبة المراجعة</strong><small>الدروس والملفات مرتّبة حسب شعبتك</small></div></div>
+          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('planner')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('planner')}"><i class="fa-solid fa-calendar-check"></i><div><strong>نظّم يومك</strong><small>مهام واضحة وجلسات تركيز فعّالة</small></div></div>
+          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('ai')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('ai')}"><i class="fa-solid fa-wand-magic-sparkles"></i><div><strong>مساعد المراجعة</strong><small>أدوات ذكية وخطط دراسة شخصية</small></div></div>
+        </div>
+        <div class="new-home-panel">
+          <div class="card">
+            <div class="home-eyebrow"><i class="fa-solid fa-chart-line"></i> تقدّمك الدراسي</div>
+            <div class="home-stat-value" id="homeProgressValue">0%</div>
+            <p class="muted">متوسط إنجاز مواد شعبتك الحالية</p>
+            <div class="home-progress-track"><div class="home-progress-fill" id="homeProgressFill" style="width:0%"></div></div>
+            <button class="home-panel-link" onclick="showPage('progress')">تابع تقدمك <i class="fa-solid fa-arrow-left"></i></button>
+          </div>
+          <div class="card">
+            <div class="home-eyebrow"><i class="fa-solid fa-list-check"></i> خطتك لهذا اليوم</div>
+            <div class="home-stat-value" id="homeTasksValue">0</div>
+            <p class="muted" id="homeTasksSubtitle">مهام تنتظر الإنجاز</p>
+            <button class="home-panel-link" onclick="showPage('planner')">افتح مخطط المراجعة <i class="fa-solid fa-arrow-left"></i></button>
+          </div>
+        </div>
+        <div class="section-head"><div><h2>اختصارات مفيدة</h2><p>اختر مسارك بسرعة، واترك التفاصيل داخل الصفحات.</p></div></div>
+        <div class="grid-3">
+          <div class="card quick-card" onclick="openSidebar(true)"><div class="quick-icon"><i class="fa-solid fa-layer-group"></i></div><div><h3>اختر الشعبة</h3><p class="muted">غير شعبتك من القائمة الجانبية.</p></div></div>
+          <div class="card quick-card" onclick="openFilesAll()"><div class="quick-icon"><i class="fa-solid fa-book-open"></i></div><div><h3>افتح الملفات</h3><p class="muted">روابط Google Drive جاهزة وتُحدّث تلقائياً بدون تشتيت.</p></div></div>
+          <div class="card quick-card" onclick="showPage('ai')"><div class="quick-icon"><i class="fa-solid fa-robot"></i></div><div><h3>المساعد</h3><p class="muted">شرح، تلخيص، اختبارات وخطط باستعمال بياناتك.</p></div></div>
+        </div>
+      </section>
+      <section class="page" id="page-chapters">
+  <div class="chapters-hero"><div>
+    <div class="chapters-eyebrow"><i class="fa-solid fa-layer-group"></i> BAC-PEDIA · CHAPTERS STUDIO</div>
+    <h1>كل دروسك ووحداتك.<br>بحث واحد، نتائج أوضح.</h1>
+    <p>تصفّح موارد شعبتك في مكان واحد. ابحث بالعربية أو الفرنسية أو الإنجليزية، حتى عند وجود خطأ بسيط في الكتابة.</p>
+    <button class="chapter-quicklink" onclick="document.getElementById('chapterQuery').focus()"><i class="fa-solid fa-magnifying-glass"></i> ابدأ البحث</button>
+  </div><div class="chapter-visual" aria-hidden="true">
+    <div><i class="fa-solid fa-book-open-reader"></i><strong>الدروس</strong></div>
+    <div><i class="fa-solid fa-folder-tree"></i><strong>الوحدات</strong></div>
+    <div><i class="fa-solid fa-file-pdf"></i><strong>الملفات</strong></div>
+    <div><i class="fa-solid fa-magnifying-glass-chart"></i><strong>بحث ذكي</strong></div>
+  </div></div>
+  <nav class="chapter-breadcrumbs" id="chapterBreadcrumbs" aria-label="مسار التصفح"></nav>
+  <div class="chapter-context" id="chapterContext" hidden></div>
+  <div class="chapters-tools">
+    <div class="chapters-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="chapterQuery" type="search" placeholder="مثلاً: الدوال، fonctions، متتاليات، bac..." aria-label="ابحث عن وحدة أو درس أو ملف" autocomplete="off"></div>
+    <select id="chapterSubject" aria-label="تصفية حسب المادة"><option value="">كل المواد</option></select>
+    <select id="chapterSort" aria-label="ترتيب النتائج"><option value="relevant">الأكثر صلة</option><option value="az">بالاسم</option><option value="subject">حسب المادة</option></select>
+  </div>
+  <div class="chapter-filter-line" role="group" aria-label="نوع المورد">
+    <button type="button" data-chapter-type="all" aria-pressed="true">الكل</button>
+    <button type="button" data-chapter-type="subject" aria-pressed="false">المواد</button>
+    <button type="button" data-chapter-type="folder" aria-pressed="false">الوحدات والمجلدات</button>
+    <button type="button" data-chapter-type="file" aria-pressed="false">الملفات</button>
+    <button type="button" id="chapterFavFilter" aria-pressed="false"><i class="fa-regular fa-heart"></i> مفضلتي</button>
+    <button type="button" id="chapterClear"><i class="fa-solid fa-rotate-left"></i> مسح الفلاتر</button>
+  </div>
+  <div class="chapter-results-title"><h2 id="chapterSectionTitle">اختر مادة للبدء</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
+  <div class="chapter-results" id="chapterResults" aria-live="polite"></div>
+  <p class="chapter-source-note"><i class="fa-solid fa-circle-info"></i> النتائج مبنية على فهرس الموارد المتاحة لشعبتك. الروابط تفتح في Google Drive؛ قد تتطلب بعض الملفات صلاحية وصول.</p>
+</section>
+<section class="page" id="page-files">
+        <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div class="card">
+          <div class="grid-2">
+            <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
+            <select id="sortSelect" class="select" onchange="state.sort=this.value;saveState();renderSubjects()"><option value="default">ترتيب عادي</option><option value="available">المتاحة أولاً</option><option value="progress">الأقل تقدماً أولاً</option><option value="az">أبجدي</option></select>
+          </div>
+          <div class="pill-row" id="fileFilters" style="margin-top:12px"></div>
+        </div>
+        <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
+        <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
+        <section id="approvedResourcesSection" class="approved-resources">
+          <div class="portal-heading"><div><span class="portal-eyebrow">CURATED MATERIALS</span><h2>موارد تعليمية إضافية</h2><p>ملفات راجعتها إدارة الموقع قبل نشرها، مرتبة حسب المادة والوحدة.</p></div></div>
+          <div id="approvedResourceGrid" class="comm-deck-grid"></div>
+        </section>
+      </section>
+      <section class="page" id="page-ai">
+        <div class="section-head ai-head">
+          <div>
+            <h2>المساعد الدراسي</h2>
+            <p>منظم في ثلاث خطوات: اختر الأداة، اكتب طلبك، ثم اقرأ النتيجة.</p>
+          </div>
+          <button class="btn primary" onclick="runAgent(activeAgent)"><i class="fa-solid fa-play"></i> تشغيل الأداة</button>
+        </div>
+        <div class="ai-connection-banner">
+          <div><strong><span class="ai-mode-dot" id="aiModeDot"></span><span id="aiModeTitle">أدوات المراجعة المحلية</span></strong><p id="aiModeDescription">الأدوات المحلية تعمل دون إنترنت؛ الإجابات التوليدية تتطلب ربط خدمة AI.</p></div>
+          <button class="btn" type="button" onclick="void checkAIAvailability()"><i class="fa-solid fa-rotate"></i> إعادة فحص AI</button>
+          <button class="btn" onclick="document.getElementById('aiSetup').open=true;document.getElementById('aiSetup').scrollIntoView({behavior:'smooth',block:'center'})"><i class="fa-solid fa-sliders"></i> إعداد الذكاء الاصطناعي</button>
+        </div>
+        <details class="ai-setup" id="aiSetup">
+          <summary>حالة خدمة الذكاء الاصطناعي</summary>
+          <p class="muted">تُرسل طلبات الذكاء الاصطناعي إلى خادم Bac-pedia الآمن. لا تُدخل أي مفتاح API هنا. تتم حماية مفتاح Deploy.com داخل Cloudflare Worker فقط. إذا كانت الخدمة غير متاحة، تحقّق من حالة المساعد أو اطلب من الإدارة مراجعة الإعدادات.</p>
+        </details>
+        <div class="context-strip">
+          <div class="context-pill"><span>الشعبة</span><strong id="aiCtxBranch">-</strong></div>
+          <div class="context-pill"><span>المادة</span><strong id="aiCtxSubject">-</strong></div>
+          <div class="context-pill"><span>المتبقي</span><strong id="aiCtxDays">-</strong></div>
+          <div class="context-pill"><span>المعدل</span><strong id="aiCtxAverage">-</strong></div>
+        </div>
+        <div class="ai-workspace">
+          <div class="card ai-tools-card">
+            <div class="step-title"><span>1</span><div><h3>اختر الأداة</h3><p class="muted">الأدوات مرتبة لتقليل التشتيت: فهم، تدريب، تنظيم.</p></div></div>
+            <div id="agentGrid"></div>
+          </div>
+          <div class="ai-main-stack">
+            <div class="card ai-input-card">
+              <div class="step-title"><span>2</span><div><h3>اكتب طلبك</h3><p class="muted">اختر المادة والمستوى، أو اترك الخانة فارغة ليقترح المساعد حسب بياناتك.</p></div></div>
+              <textarea id="aiPrompt" class="textarea" placeholder="مثال: اشرح الاشتقاق خطوة بخطوة، حضّر اختباراً، لخّص فقرة، حلل خطئي..."></textarea>
+              <div class="grid-2" style="margin-top:10px">
+                <select id="aiSubject" class="select"></select>
+                <select id="aiLevel" class="select"><option value="متوسط">مستوى متوسط</option><option value="مبتدئ">مبتدئ</option><option value="متقدم">متقدم</option><option value="أيام أخيرة">الأيام الأخيرة</option></select>
+              </div>
+              <div class="grid-2" style="margin-top:10px">
+                <select id="aiDuration" class="select"><option value="1">اليوم</option><option value="7">7 أيام</option><option value="14">14 يوم</option><option value="30">30 يوم</option><option value="60">60 يوم</option></select>
+                <select id="aiTone" class="select"><option value="مختصر وواضح">مختصر وواضح</option><option value="مفصل جداً">مفصل جداً</option><option value="تحفيزي">تحفيزي</option><option value="صارم ومنظم">صارم ومنظم</option></select>
+              </div>
+              <div class="hint-row">
+                <button class="hint" onclick="fillPrompt('اشرح لي هذا الدرس خطوة بخطوة مع أمثلة وتمارين')">شرح درس</button>
+                <button class="hint" onclick="fillPrompt('حضّر لي اختبار قصير مع التصحيح')">اختبار</button>
+                <button class="hint" onclick="fillPrompt('حلل هذا الخطأ واقترح علاجاً')">تحليل خطأ</button>
+                <button class="hint" onclick="fillPrompt('أعطني خطة إنقاذ للأيام القادمة')">خطة إنقاذ</button>
+              </div>
+              <div class="actions">
+                <button class="btn primary" onclick="runAgent(activeAgent)"><i class="fa-solid fa-robot"></i> تشغيل</button>
+                <button class="btn" onclick="clearAIOutput()"><i class="fa-solid fa-eraser"></i> مسح</button>
+                <button class="btn" onclick="copyText(document.getElementById('aiOutput').dataset.rawAnswer || document.getElementById('aiOutput').textContent,'تم نسخ النتيجة')"><i class="fa-solid fa-copy"></i> نسخ</button>
+              </div>
+              <div class="ai-status-line" id="aiStatusLine"><i class="fa-solid fa-signal"></i><span>جاهز. اكتب طلبك وسيحلله المساعد باستعمال بياناتك.</span></div>
+            </div>
+            <div class="card ai-result-card">
+              <div class="step-title"><span>3</span><div><h3>النتيجة</h3><p class="muted">جواب واضح لسؤالك، مع خطوات الحل أو الشرح عند الحاجة.</p></div></div>
+              <div class="ai-reading-bar"><span><i class="fa-solid fa-file-lines"></i> الجواب</span><button type="button" class="btn" onclick="copyText(document.getElementById('aiOutput').dataset.rawAnswer || document.getElementById('aiOutput').textContent,'تم نسخ النتيجة')"><i class="fa-solid fa-copy"></i> نسخ الجواب</button></div>
+              <div class="result-box ai-answer" id="aiOutput" role="region" aria-label="نتيجة المساعد" aria-live="polite">اختر أداة أو اكتب سؤالاً ثم اضغط تشغيل.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="page" id="page-planner">
+        <div class="section-head"><div><h2>المخطط والتركيز</h2><p>خطة يومية + مهام + Pomodoro.</p></div><button class="btn success" onclick="generateDailyTasks()"><i class="fa-solid fa-wand-magic-sparkles"></i> توليد مهام اليوم</button></div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>جلسة تركيز</h3>
+            <div class="focus-big" id="focusLabel" role="timer" aria-live="off">25:00</div>
+            <div class="focus-bar"><span id="focusBar"></span></div>
+            <div class="actions"><button class="btn primary" onclick="startFocus(25)">25 دقيقة</button><button class="btn" onclick="startFocus(50)">50 دقيقة</button><button class="btn warning" onclick="stopFocus(false)">إيقاف</button></div>
+            <p class="muted">أنجزت اليوم: <strong id="focusDoneLabel">0</strong> جلسة.</p>
+          </div>
+          <div class="card">
+            <h3>مهام اليوم</h3>
+            <div class="grid-2"><input id="newTaskText" class="input" placeholder="مهمة جديدة"><button class="btn primary" onclick="addTask()"><i class="fa-solid fa-plus"></i> إضافة</button></div>
+            <div id="taskList" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </section>
+      <section class="page" id="page-grades">
+        <div class="section-head"><div><h2>حاسبة المعدل</h2><p>احسب معدلك التقريبي واعرف العلامة اللازمة لهدفك.</p></div><button class="btn" onclick="resetGrades()"><i class="fa-solid fa-rotate-left"></i> معاملات الشعبة</button></div>
+        <div class="grid-2">
+          <div class="card"><h3>علاماتك</h3><div id="gradeRows"></div><div class="actions"><button class="btn primary" onclick="calcGrade()">احسب المعدل</button><button class="btn" onclick="addGradeRow('مادة جديدة',1,10)">إضافة مادة</button></div><div class="result-box" id="gradeResult" style="min-height:110px">أدخل العلامات ثم اضغط احسب.</div></div>
+          <div class="card"><h3>كم أحتاج؟</h3><div class="grid-2"><input id="targetAverage" type="number" class="input" min="0" max="20" step="0.25" value="12" placeholder="الهدف"><select id="targetSubject" class="select"></select></div><div class="actions"><button class="btn success" onclick="neededMark()">احسب العلامة المطلوبة</button><button class="btn" onclick="showPage('ai');setTimeout(()=>runAgent('grade_advisor'),120)">نصيحة للمعدل</button></div><div class="result-box" id="targetResult" style="min-height:160px">اختر المادة والهدف.</div></div>
+        </div>
+      </section>
+      <section class="page" id="page-progress">
+        <div class="section-head"><div><h2>تتبع التقدم والأخطاء</h2><p>كلما عرفت خطأك، صار إصلاحه أسهل.</p></div><button class="btn primary" onclick="showPage('ai');setTimeout(()=>runAgent('mistake_analyzer'),120)"><i class="fa-solid fa-magnifying-glass-chart"></i> حلل أخطائي</button></div>
+        <div class="grid-2">
+          <div class="card"><h3>تقدم المواد</h3><div id="progressRows"></div></div>
+          <div class="card"><h3>دفتر الأخطاء</h3><textarea id="mistakeInput" class="textarea" placeholder="مثال: نسيت تحويل الوحدة في تمرين فيزياء..."></textarea><div class="actions"><button class="btn primary" onclick="addMistake()">أضف الخطأ</button><button class="btn" onclick="clearMistakes()">مسح الكل</button></div><div id="mistakeList"></div></div>
+        </div>
+      </section>
+      <section class="page" id="page-resources">
+        <div class="section-head"><div><h2>إضافات مساعدة</h2><p>كتب، منهجيات، وفيديوهات منظمة دون ازدحام.</p></div><button class="btn" onclick="loadVideos()"><i class="fa-solid fa-video"></i> تحميل فيديوهات</button></div>
+        <div class="grid-auto" id="resourcesGrid"></div>
+      </section>
+      <section class="page" id="page-help">
+        <div class="section-head"><div><h2>المساعدة والتواصل</h2><p>طريقة استعمال الموقع وروابط الدعم.</p></div></div>
+        <div class="grid-2">
+          <div class="card"><h3>كيف تستعمل الموقع؟</h3><div class="resource-item"><i class="fa-solid fa-1"></i> اختر الشعبة من القائمة.</div><div class="resource-item"><i class="fa-solid fa-2"></i> افتح صفحة الملفات واختر المادة.</div><div class="resource-item"><i class="fa-solid fa-3"></i> أضف المواد المهمة للمفضلة.</div><div class="resource-item"><i class="fa-solid fa-4"></i> استعمل المساعد للشرح والخطط والاختبارات.</div></div>
+          <div class="card"><h3>تواصل</h3><a class="resource-item" target="_blank" href="https://www.instagram.com/abdallah.yasser.01/"><i class="fa-brands fa-instagram"></i> Instagram</a><a class="resource-item" target="_blank" href="https://www.facebook.com/share/1BsK1JzqK7/?mibextid=wwXIfr"><i class="fa-brands fa-facebook"></i> Facebook</a><a class="resource-item" href="mailto:boukhariabdallahyasser@gmail.com"><i class="fa-solid fa-envelope"></i> Email</a></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <nav class="bottom-nav" id="bottomNav"></nav>
+  <div class="modal" id="subjectModal">
+    <div class="modal-head" id="modalHead"><button class="round-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button><div style="font-size:2rem" id="modalIcon"><i class="fa-solid fa-book"></i></div><div class="modal-title" id="modalTitle">المادة</div><p id="modalDesc" style="opacity:.85;margin-top:4px"></p></div>
+    <div class="modal-body"><div id="subjectSubfolders" style="max-height:35vh;overflow:auto;margin-bottom:12px"></div><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
+  </div>
+  <div class="toast-area" id="toastArea"></div>
+  
+  
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
