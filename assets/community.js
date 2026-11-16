@@ -7,7 +7,7 @@ const user=()=>typeof studentAuthUser==='undefined'?null:studentAuthUser;
 const txt=v=>String(v??'').trim();
 const labels={pending:'قيد المراجعة',approved:'منشور / مقبول',rejected:'مرفوض'};
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],editId=null,adminTab='applications',busy=false,identity=null;
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -235,19 +235,21 @@ async function loadAdmin(){
  const id=user().id;
  try{
    const client=db();
-   const [applications,proposals,students]=await Promise.all([
+   const [applications,proposals,students,audit]=await Promise.all([
      client.from('collaborator_applications')
        .select('user_id,display_name,organization,contribution_type,motivation,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
        .select('id,contributor_id,title,subject,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
      client.from('student_profiles')
-       .select('user_id,full_name,email,branch,created_at,last_activity_at').order('created_at',{ascending:false}).limit(250)
+       .select('user_id,full_name,email,branch,created_at,last_activity_at').order('created_at',{ascending:false}).limit(250),
+     client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100)
    ]);
-   for(const q of [applications,proposals,students])if(q.error)throw q.error;
+   for(const q of [applications,proposals,students,audit])if(q.error)throw q.error;
    if(user()?.id!==id||ownerRole!=='admin')return;
    adminApplications=applications.data||[];
    adminResources=proposals.data||[];
    profiles=students.data||[];
+   auditEntries=audit.data||[];
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
      adminApplications.filter(x=>x.status==='approved').length,
@@ -293,13 +295,23 @@ function renderAdmin(){
      actions.append(button('حذف نهائي',()=>void moderate('delete_resource',item.id,'deleted'),'portal-action danger'));
      card.append(main,actions);root.append(card);
    }
- }else{
+ }else if(adminTab==='students'){
    if(!profiles.length){root.append(placeholder('لا توجد حسابات ظاهرة','لا توجد ملفات تعريف للطلاب حالياً.'));return;}
    for(const p of profiles){
      const card=el('article','portal-admin-entry');
      const main=el('div','portal-admin-entry-text');
      main.append(el('strong','',p.full_name||'طالب'),el('span','',p.email||'بريد غير متاح'),
        el('p','','الشعبة: '+(p.branch||'غير محددة')+' · التسجيل: '+date(p.created_at)));
+     card.append(main);root.append(card);
+   }
+ }else{
+   if(!auditEntries.length){root.append(placeholder('لا توجد إجراءات','ستظهر قرارات الموافقة والرفض والحذف هنا.'));return;}
+   for(const entry of auditEntries){
+     const card=el('article','portal-admin-entry');
+     const main=el('div','portal-admin-entry-text');
+     main.append(el('strong','',entry.action==='application'?'قرار حول مساهم':entry.action==='resource'?'قرار حول مورد':'حذف مورد'),
+       el('span','',statusLabel(entry.decision)+' · '+date(entry.created_at)),
+       el('p','',entry.target_id));
      card.append(main);root.append(card);
    }
  }
@@ -321,7 +333,7 @@ async function moderate(type,id,decision){
  }catch(error){failed(error,'مراجعة العنصر');}finally{busy=false;}
 }
 function resetSession(){
- identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];ownerRole='student';
+ identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];auditEntries=[];ownerRole='student';
  window.BAC_PORTAL_ROLE='student';cancelEdit();
 }
 window.refreshPortalRole=refreshPortalRole;
