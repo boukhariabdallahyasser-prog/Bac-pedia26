@@ -6,18 +6,10 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "not_found_handling": "single-page-application",
     "run_worker_first": [
-      "/api/*",
-      "/login",
-      "/login/*",
-      "/student",
-      "/student/*",
-      "/contributor",
-      "/contributor/*",
-      "/admin",
-      "/admin/*"
-    ]
+      "/api/*"
+    ],
+    "html_handling": "auto-trailing-slash"
   },
   "observability": {
     "enabled": true
