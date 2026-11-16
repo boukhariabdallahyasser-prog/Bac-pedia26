@@ -228,6 +228,7 @@
       
       if(id==='collaborate')window.renderCommunity?.();
       if(id==='admin')window.renderAdmin?.();
+      if(id==='files')window.renderApprovedResources?.();
     }
     function openFilesAll(){
       state.filter='all';
