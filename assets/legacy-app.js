@@ -757,6 +757,10 @@
       note.textContent=message;note.dataset.status=type;
     }
     function switchLoginTab(tab){
+      document.body.dataset.authTab=tab==='signup'?'signup':'login';
+      const heading=$('#loginHeading'),subtitle=$('#authSubtitle');
+      if(heading)heading.textContent=tab==='signup'?'أنشئ حسابك.':'أهلاً بعودتك.';
+      if(subtitle)subtitle.textContent=tab==='signup'?'ابدأ رحلتك الدراسية بحساب شخصي مجاني.':'تابع مراجعتك من حيث توقفت، بخطوة واحدة.';
       showAuthNotice('');
       $('#passwordRecoveryPanel')?.classList.add('hidden');
       $$('.login-tab').forEach(button=>button.classList.remove('hidden'));
@@ -784,6 +788,8 @@
         'سجّل حساب طالب للاطلاع على المواد وإنشاء بطاقات المراجعة.';
     }
     function openLoginGate(showModal=false){
+      // Standalone /login/ is the actual authentication page, not a popup.
+      if(document.body.dataset.portal==='login')showModal=true;
       const gate=$('#loginGate');
       if(!gate)return;
       document.body.classList.remove('authenticated');
@@ -795,13 +801,19 @@
         requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
     }
     function openAuthModal(tab='login',intent='student'){
-      if(studentAuthUser){showPage(intent==='collaborator'?'collaborate':'home');return;}
+      if(document.body.dataset.portal!=='login'){
+        const query=new URLSearchParams({tab:tab==='signup'?'signup':'login',role:intent==='collaborator'?'collaborator':'student'});
+        location.assign('/login/?'+query.toString());
+        return;
+      }
+      if(studentAuthUser){window.refreshPortalRole?.();return;}
       setSignupIntent(intent);
       switchLoginTab(tab==='signup'?'signup':'login');
       openLoginGate(true);
       requestAnimationFrame(()=>$('#'+(tab==='signup'?'signupNameInput':'loginEmailInput'))?.focus({preventScroll:true}));
     }
     function closeAuthModal(){
+      if(document.body.dataset.portal==='login'){location.assign('/');return;}
       if(studentAuthUser)return;
       $('#loginGate')?.classList.add('hidden');
       document.body.classList.remove('auth-modal-open');
@@ -1110,6 +1122,11 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
     function init(){
       initAuthKeyboard();
       const portal=document.body.dataset.portal||'landing';
+      if(portal==='login'){
+        const search=new URLSearchParams(location.search);
+        setSignupIntent(search.get('role')==='collaborator'?'collaborator':'student');
+        switchLoginTab(search.get('tab')==='signup'?'signup':'login');
+      }
       if(portal==='student'){
         applyBackupUrls();
         initCanvas();
