@@ -8,7 +8,7 @@
   const uid=()=>typeof studentAuthUser==='undefined'?null:studentAuthUser?.id||null;
   const normalize=value=>String(value||'').trim();
   let activeUser=null,decks=[],cardStats=[],selectedDeck=null,cards=[],studied=new Set(),currentCardId=null,flipped=false;
-  let applicant=null,submissions=[],flashBusy=false,collabBusy=false,loadedOnce=false;
+  let applicant=null,submissions=[],flashBusy=false,collabBusy=false,loadedOnce=false,pendingDeleteDeck=null;
 
   function element(tag,cls,text){
     const item=document.createElement(tag);
@@ -74,9 +74,27 @@
       const footer=element('div','comm-deck-footer');
       footer.append(element('small','',cardStats.filter(c=>c.deck_id===deck.id).length+' بطاقة'));
       footer.append(button('ابدأ المراجعة',()=>void openDeck(deck.id)));
+      footer.append(button(pendingDeleteDeck===deck.id?'تأكيد الحذف':'حذف',()=>void deleteDeck(deck.id),'comm-delete-btn'));
       card.append(footer);fragment.append(card);
     }
     grid.append(fragment);
+  }
+  async function deleteDeck(id){
+    if(flashBusy||!uid())return;
+    if(pendingDeleteDeck!==id){
+      pendingDeleteDeck=id;renderDecks();
+      status('اضغط تأكيد الحذف مرة أخرى لحذف المجموعة وبطاقاتها','warning');
+      return;
+    }
+    flashBusy=true;
+    try{
+      const result=await client().from('flashcard_decks').delete().eq('id',id).eq('owner_id',uid());
+      if(result.error)throw result.error;
+      pendingDeleteDeck=null;
+      if(selectedDeck?.id===id)closeDeck();
+      await loadDecks();status('تم حذف المجموعة وبطاقاتها','success');
+    }catch(error){safeError(error,'حذف المجموعة');}
+    finally{flashBusy=false;}
   }
   async function createDeck(event){
     event.preventDefault();
@@ -176,6 +194,32 @@
     }catch(error){safeError(error,'حذف البطاقة');}
     finally{flashBusy=false;}
   }
+  function editCard(card,row){
+    const form=element('form','comm-inline-edit');
+    const question=document.createElement('textarea'),answer=document.createElement('textarea');
+    question.value=card.front;question.required=true;question.minLength=2;question.maxLength=2000;
+    answer.value=card.back;answer.required=true;answer.minLength=1;answer.maxLength=4000;
+    question.setAttribute('aria-label','السؤال');answer.setAttribute('aria-label','الإجابة');
+    const actions=element('div','comm-inline-actions');
+    const cancel=button('إلغاء',()=>renderCardList());
+    const save=element('button','comm-save-btn','حفظ التعديل');save.type='submit';
+    actions.append(save,cancel);form.append(question,answer,actions);
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();if(flashBusy||!selectedDeck)return;
+      const front=normalize(question.value),back=normalize(answer.value);
+      if(front.length<2||!back)return;
+      flashBusy=true;save.disabled=true;
+      try{
+        const result=await client().from('flashcard_cards')
+          .update({front,back,updated_at:new Date().toISOString()})
+          .eq('id',card.id).eq('deck_id',selectedDeck.id);
+        if(result.error)throw result.error;
+        card.front=front;card.back=back;renderStudy();status('تم تحديث البطاقة','success');
+      }catch(error){safeError(error,'تعديل البطاقة');}
+      finally{flashBusy=false;save.disabled=false;}
+    });
+    row.replaceChildren(form);question.focus();
+  }
   function renderCardList(){
     const root=$('flashCardList');if(!root)return;
     root.replaceChildren();
@@ -183,7 +227,7 @@
       const row=element('div','comm-card-row');
       const body=element('div');
       body.append(element('strong','',card.front),element('span','',card.back));
-      row.append(body,button('حذف',()=>void deleteCard(card.id)));
+      row.append(body,button('تعديل',()=>editCard(card,row)),button('حذف',()=>void deleteCard(card.id),'comm-delete-btn'));
       root.append(row);
     }
   }
