@@ -419,7 +419,7 @@
     function renderAgents(){const groups=['فهم','تدريب','تنظيم'];const el=$('#agentGrid');if(!el)return;el.innerHTML=groups.map(g=>{const items=Object.entries(agents).filter(([id,a])=>a.group===g);if(!items.length)return '';return `<div class="agent-section"><div class="agent-section-title"><i class="fa-solid fa-layer-group"></i>${g}</div><div class="agent-grid">${items.map(([id,a])=>`<div class="card agent-card ${activeAgent===id?'active':''}" onclick="selectAgent('${id}')" role="button" tabindex="0"><div><div class="agent-icon"><i class="${a.icon}"></i></div><div><h3 style="margin-top:12px">${a.title}</h3><p class="muted">${a.desc}</p></div></div><button class="btn ${activeAgent===id?'primary':''}" onclick="event.stopPropagation();runAgent('${id}')" ${!hasLiveAI()&&!['daily_plan','mistake_analyzer','grade_advisor'].includes(id)?'disabled title="يتطلب AI متصلاً"':''}>تشغيل</button></div>`).join('')}</div></div>`;}).join('');}
     function selectAgent(id){activeAgent=id;renderAgents();showToast('تم اختيار: '+agents[id].title,'info');}
     function fillPrompt(text){$('#aiPrompt').value=text;$('#aiPrompt').focus();}
-    function clearAIOutput(){$('#aiOutput').textContent='تم المسح. اكتب طلباً جديداً أو اختر أداة.';setAIStatus('جاهز. اكتب طلبك وسيحلله المساعد باستعمال بياناتك.','info');}
+    function clearAIOutput(){const target=$('#aiOutput');target.textContent='تم المسح. اكتب طلباً جديداً أو اختر أداة.';delete target.dataset.rawAnswer;setAIStatus('جاهز. اكتب طلبك وسيحلله المساعد باستعمال بياناتك.','info');}
     function getBacCountdownData(){const diff=Math.max(0,CONFIG.bacStart.getTime()-Date.now());return{days:Math.floor(diff/86400000),hours:Math.floor(diff/3600000)%24,minutes:Math.floor(diff/60000)%60};}
     function aiContext(){
       const s=currentSubject();
@@ -546,7 +546,7 @@
       return data.answer||data.text||data.message||readResponseText(data)||null;
     }
     async function callLiveAI(agentId,ctx){
-      if(!CONFIG.aiProxyEndpoint)throw new Error('خادم الذكاء الاصطناعي غير متاح على هذا النطاق. افتح نسخة Vercel الرسمية.');
+      if(!CONFIG.aiProxyEndpoint)throw new Error('خادم الذكاء الاصطناعي غير متاح على هذا النطاق. افتح رابط Cloudflare الرسمي.');
       const answer=await callProxyAI(agentId,ctx);
       if(!answer)throw new Error('وصل رد فارغ من خادم الذكاء الاصطناعي.');
       return answer;
@@ -611,7 +611,8 @@
       if(!hasLiveAI()){
         if(localSupported.includes(id)){
           const ans=localAgent(id,ctx);
-          out.textContent='[أداة محلية — ليست إجابة مولّدة بالذكاء الاصطناعي]\\n\\n'+ans;
+          if(window.renderAIAnswer)window.renderAIAnswer(out,'[أداة محلية — ليست إجابة مولّدة بالذكاء الاصطناعي]\n\n'+ans);
+          else out.textContent='[أداة محلية — ليست إجابة مولّدة بالذكاء الاصطناعي]\n\n'+ans;
           setAIStatus('تم تشغيل الأداة محلياً دون اتصال بنموذج AI.','success');
           showToast('تم إنشاء النتيجة المحلية','success');
         }else{
@@ -622,13 +623,16 @@
         return;
       }
       aiBusy=true;
-      out.innerHTML='<span class="typing"><span></span><span></span><span></span></span> يتم توليد الإجابة...';
+      delete out.dataset.rawAnswer;
+      out.innerHTML='<span class="typing"><span></span><span></span><span></span></span> يتم إعداد جواب مطابق لسؤالك...';
       setAIStatus('جار الاتصال بنموذج الذكاء الاصطناعي...','info');
       try{
         const live=await callLiveAI(id,ctx);
         if(!live||!String(live).trim())throw new Error('وصل رد فارغ من المساعد.');
         const ans=cleanRepeatedAnswer(String(live).trim(),ctx,id);
-        out.textContent=ans;rememberAI(id,ctx,ans,true);
+        if(window.renderAIAnswer)window.renderAIAnswer(out,ans);
+        else out.textContent=ans;
+        rememberAI(id,ctx,ans,true);
         setAIStatus('تم استلام إجابة مولّدة من النموذج.','success');
         showToast('تم تجهيز الإجابة','success');
       }catch(e){
