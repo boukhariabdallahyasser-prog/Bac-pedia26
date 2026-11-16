@@ -10,8 +10,7 @@ try{
  assert.equal(missing.body.ready,false);
  assert.equal(missing.body.reason,'provider_unconfigured');
  process.env.DEPLOY_API_KEY='test-secret-no-network';
- process.env.DEPLOY_API_ENDPOINT='https://inference.deploy.com/v1/chat/completions';
- process.env.DEPLOY_MODEL_ID='test-model';
+ // Documented defaults provide the inference endpoint and model without secrets.
  const configured=response();await handler({method:'GET',headers:{}},configured);
  assert.equal(configured.body.ready,true);
  assert.equal(configured.body.verified,false,'Configuration does not prove live provider availability');
