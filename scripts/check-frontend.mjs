@@ -11,10 +11,17 @@ const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
 const wranglerConfig=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
 if(wranglerConfig.main!=='cloudflare/worker.js')throw Error('Cloudflare must deploy API Worker entrypoint');
+if(wranglerConfig.workers_dev!==true)throw Error('Public Cloudflare workers.dev route must be enabled');
+if(wranglerConfig.keep_vars!==true)throw Error('Cloudflare deploy must preserve dashboard secrets');
+
 if(wranglerConfig.assets?.binding!=='ASSETS'||!wranglerConfig.assets?.run_worker_first?.includes('/api/*'))throw Error('Cloudflare API routing must run Worker first');
 
 const rolesSql=fs.readFileSync('supabase/role_portals_admin_2026.sql','utf8');
 const auditSql=fs.readFileSync('supabase/admin_moderation_audit_2026.sql','utf8');
+const claimSql=fs.readFileSync('supabase/verified_owner_activation_2026.sql','utf8');
+for(const part of ['email_confirmed_at IS NOT NULL','bac_private.owner_activation','public.platform_roles','CREATE OR REPLACE FUNCTION public.claim_owner_access','SECURITY INVOKER'])requireText(claimSql,part,'secure owner claim');
+if(claimSql.includes('abdallahadmin.admin@admin.co'))throw Error('Do not commit owner identity to publicly accessible source');
+
 for(const marker of ['platform_single_admin','REVOKE ALL ON public.platform_roles','review_collaborator_application','review_collaborator_resource'])requireText(rolesSql,marker,'single-owner RLS');
 for(const marker of ['CREATE TABLE IF NOT EXISTS public.moderation_audit','status=\'rejected\'','admin_delete_contributor_resource'])requireText(auditSql,marker,'audited moderation');
 
@@ -81,8 +88,9 @@ if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
-requireText(app,"options:{data:{full_name:fullName,signup_intent:signupIntent,...contributorInfo}}",'signup metadata is onboarding only');
-for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
+requireText(app,'signup_intent:signupIntent,...contributorInfo','signup metadata is onboarding only');
+requireText(app,'emailRedirectTo:location.origin+location.pathname','confirmation links must return to current origin');
+for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 

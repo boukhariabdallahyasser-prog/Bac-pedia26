@@ -1,3 +1,13 @@
+## 2026-11-16: public Worker URL and reserved admin activation
+
+**Cloudflare URL:** `wrangler.jsonc` sets `workers_dev: true` so the Worker is publicly reachable on its account subdomain, and `keep_vars: true` so deploys do not overwrite secrets/variables managed in Cloudflare Dashboard. The GitHub Actions pipeline makes a non-blocking live check of `/` and `/api/ai` and reports the HTTP status. In Cloudflare, the production GitHub branch must be `main` and the deploy command must be `npx wrangler deploy`. A successful Vite build on its own does not imply public DNS routing is enabled.
+
+**Admin:** The requested owner's email is reserved in **private Supabase database configuration** and is intentionally absent from this repository. No admin password or publicly editable metadata can grant the role. The one-time, database-validated `claim_owner_access` RPC activates the role only after the reserved email registers a genuine Supabase account and email confirmation is complete. Other users receive `false`. The application invokes this RPC after a verified login; the admin dashboard is then revealed by the database-backed role. Use a new, strong password never previously shared in a chat. There is currently no registered owner account until signup and email confirmation occur.
+
+**Email links:** New signup confirmation links now specify `emailRedirectTo: location.origin + location.pathname`, and password recovery already uses the current origin. Ensure both the Cloudflare `workers.dev` host and Vercel backup host are on Supabase Dashboard → Authentication → URL Configuration → Redirect URLs. Cloudflare Dashboard → Workers & Pages → `bac-pedia26` → Settings → Domains & Routes must also have its public `workers.dev` route enabled, and public Cloudflare Access restrictions must not block visitors.
+
+**Deploy.com:** Cloudflare Worker `DEPLOY_API_KEY` must be a **Secret**, not a checked-in Wrangler `vars` value. Rotate any key shared outside the secrets manager, set the replacement secret in the Cloudflare dashboard, and verify a signed-in AI request. Static `GET /api/ai` readiness does not verify the provider key.
+
 ## Cloudflare Workers deployment (new hosting)
 
 Cloudflare currently hosts `https://bac-pedia26.boukhariabdallahyasser.workers.dev`.

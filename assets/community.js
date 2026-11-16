@@ -64,14 +64,23 @@ async function refreshPortalRole(){
    if(role.error)throw role.error;
    if(application.error)throw application.error;
    if(user()?.id!==id)return ownerRole;
+   let verifiedOwner=role.data?.role==='admin';
+   // The private database checks the exact reserved email, verified status,
+   // and single-owner constraint. No client-provided email or signup metadata
+   // is trusted for authorization.
+   if(!verifiedOwner&&current.email_confirmed_at){
+     const claim=await client.rpc('claim_owner_access');
+     if(claim.error)console.warn('Owner activation unavailable',claim.error);
+     else verifiedOwner=claim.data===true;
+   }
+   if(user()?.id!==id)return ownerRole;
    request=application.data||null;
    if(!request&&current.user_metadata?.signup_intent==='collaborator'){
      await ensureApplicationFromSignup(current);
      request=await loadMyApplication(id);
    }
-   ownerRole=role.data?.role==='admin'?'admin':request?'applicant':'student';
-   if(request?.status==='approved')ownerRole='contributor';
-   if(role.data?.role==='admin')ownerRole='admin';
+   ownerRole=verifiedOwner?'admin':request?'applicant':'student';
+   if(!verifiedOwner&&request?.status==='approved')ownerRole='contributor';
  }catch(error){
    console.warn('Portal access check failed',error);
    ownerRole='student';request=null;

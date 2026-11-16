@@ -994,7 +994,13 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       }
       setAuthBusy(true);showAuthNotice('جارٍ إنشاء الحساب...');
       try{
-        const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:fullName,signup_intent:signupIntent,...contributorInfo}}});
+        const {data,error}=await auth.auth.signUp({
+          email,password,
+          options:{
+            emailRedirectTo:location.origin+location.pathname,
+            data:{full_name:fullName,signup_intent:signupIntent,...contributorInfo}
+          }
+        });
         if(error)throw error;
         if(!data.session){
           if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');
