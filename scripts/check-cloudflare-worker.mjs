@@ -18,10 +18,9 @@ assert.deepEqual(await aiWithoutKey.json(),{
 
 const configured={
   ...base,
-  DEPLOY_API_KEY:'private-test-credential-never-returned',
-  DEPLOY_API_ENDPOINT:'https://api.example.com/v1/chat/completions',
-  DEPLOY_MODEL_ID:'example-test-model'
+  DEPLOY_API_KEY:'private-test-credential-never-returned'
 };
+// Provider URL and model have documented, non-secret defaults; only the API key is required.
 const health=await call('/api/ai',{},configured);
 const healthBody=await health.json();
 assert.equal(healthBody.ready,true);
