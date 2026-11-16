@@ -40,7 +40,7 @@
     }
     function endList(){list=null;}
     function endCode(){if(codeBlock){root.appendChild(codeBlock);codeBlock=null;}}
-    function endTable(){if(table){root.appendChild(table);table=null;}}
+    function endTable(){table=null;}
     for(const line of lines){
       const trim=line.trim();
       if(/^\x60{3}/.test(trim)){
