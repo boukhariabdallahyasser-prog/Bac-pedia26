@@ -2,9 +2,36 @@
 
 Arabic-first, RTL study platform for Algerian baccalaureate students preparing for the examination on **15 June 2027**.
 
+## Modern web stack (2026)
+
+| Layer | Technology |
+| --- | --- |
+| Frontend build | **Vite 8.3.8** (bundled entry, CSS, fast local development) |
+| Browser API | Vanilla JavaScript with a progressive migration away from classic scripts |
+| Authentication, database, RLS | **Supabase** with pinned `@supabase/supabase-js@2.119.0` |
+| Serverless backend | **Vercel Functions** (`api/ai.js`) |
+| AI service | Server-side Gemini proxy; usage quota checked in Supabase |
+| Study materials | `resources.json` and verified Google Drive URLs |
+| CI | GitHub Actions: syntax/security checks, manifest checks, Vite build, output verification |
+
+The old giant `index.html` has been split into page markup, `assets/app.css` (legacy styles), `assets/legacy-app.js` (classic global event handlers) and `src/main.js` (bundled startup). **This is an incremental modernization, not a React or Next.js rewrite**. Existing logins and the AI API keep their original contracts. The Vite build copies the trusted static inventory and authentication publishable config into `dist/`, while the Vercel serverless function remains under `api/`.
+
+```bash
+npm install
+npm run dev
+npm test
+npm run build
+node scripts/check-dist.mjs
+```
+
+Node.js 22.12+ is required. To deploy on Vercel, use Framework Preset **Vite**, Build Command `npm run build`, Output Directory `dist`, and keep the root `api/` function. The `GEMINI_API_KEY` must remain server-only. Never add `VITE_GEMINI_API_KEY` or service-role credentials to client bundles. A green Vite build does **not** verify live Supabase Auth/SMTP or Google Drive sharing.
+
 ## Application architecture
 
-- `index.html`: responsive student application and authentication interface.
+- `index.html`: Arabic RTL page markup, loaded by Vite.
+- `src/main.js`: bundled entry and pinned Supabase SDK adapter.
+- `assets/app.css` and `assets/legacy-app.js`: extracted styles and legacy application behavior.
+- `vite.config.js`: reproducible frontend output and static asset copy rules.
 - `auth-config.js`: public Supabase project URL and publishable key only. Never put a Supabase secret/service-role key or Gemini key here.
 - `api/ai.js`: Vercel serverless AI endpoint. It verifies the Supabase bearer token, requires a confirmed email, validates the request, enforces the database-backed daily quota, and calls Gemini 3.8 Flash using `GEMINI_API_KEY` from the server environment.
 - `resources.json`: checked-in index of Google Drive educational resources. Do not invent Drive IDs or URLs.
@@ -12,7 +39,7 @@ Arabic-first, RTL study platform for Algerian baccalaureate students preparing f
 
 ## Hosting
 
-**Use Vercel for the production application.** Vercel supports the `/api/ai` serverless endpoint. Configure the Vercel project to deploy this repository's `main` branch.
+**Use Vercel for the production application.** Vercel supports the `/api/ai` serverless endpoint. Configure the Vercel project to build with Vite and deploy this repository's `main` branch.
 
 GitHub Pages can serve the static HTML application, but it cannot execute `api/ai.js`; the AI proxy is intentionally disabled on `.github.io` hosts. A static GitHub Pages deployment is not the complete production backend.
 

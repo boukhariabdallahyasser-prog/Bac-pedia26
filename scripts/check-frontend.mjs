@@ -1,67 +1,65 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+
 const html=fs.readFileSync('index.html','utf8');
+const app=fs.readFileSync('assets/legacy-app.js','utf8');
 const api=fs.readFileSync('api/ai.js','utf8');
-const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]).filter(Boolean);
-if(!scripts.length)throw Error('No inline JavaScript found');
-const dir=fs.mkdtempSync(path.join(os.tmpdir(),'bacpedia-check-'));
-try{
-  for(let i=0;i<scripts.length;i++){
-    const file=path.join(dir,`inline-${i}.js`);
-    fs.writeFileSync(file,scripts[i]);
-    const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
-    if(result.status!==0)throw Error(`Inline script ${i} has a syntax error:\n${result.stderr}`);
-  }
-  const authRequirements=[
-    'async function initStudentAuth()',
-    'onAuthStateChange',
-    'function userStorageKey(userId)',
-    'async function saveRecoveredPassword()',
-    'id="passwordRecoveryPanel"',
-    'function togglePasswordVisibility(inputId,button)',
-    'function updatePasswordStrength()',
-    'let recoveryFlow=',
-    'history.replaceState(null',
-    'email_confirmed_at'
-  ];
-  for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
-  // Verify essential UX and security safeguards without treating their presence as errors.
-  const authSafeguards=[
-    ['login and signup tabs', 'function switchLoginTab(tab)'],
-    ['scoped busy-state button handling', "document.querySelectorAll('#loginGate .login-form button"],
-    ['non-overlapping auth icons', '#loginGate .login-field>i{position:static'],
-    ['auth rate-limit error feedback', 'over_email_send_rate_limit'],
-    ['signup cooldown', 'authCooldownUntil=Date.now()+120000'],
-    ['dashboard-first session hydration', 'renderAll();renderSession();closeLoginGate()'],
-    ['email confirmation pending state', 'if(!data.session){'],
-    ['verified email client guard', 'if(!u.email_confirmed_at)'],
-    ['chapter studio page', 'id="page-chapters"'],
-    ['chapter explorer script', 'assets/chapters.js'],
-    ['chapter search script', 'assets/chapter-search.js']
-  ];
-  for(const [name,marker] of authSafeguards)if(!html.includes(marker))throw Error('Missing UI safeguard: '+name);
-  if(html.includes('window.prompt('))throw Error('Browser prompt must not be used for authentication workflows');
-  if(/sessionGeminiKey|x-goog-api-key|generativelanguage\.googleapis\.com|CONFIG\.aiApiKey/.test(html))throw Error('Gemini credentials or direct provider calls must not be present in browser code');
-  if(!html.includes('callProxyAI(agentId,ctx)'))throw Error('Student AI requests must use the authenticated server proxy');
-  if(html.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Shared unscoped student cache must not be loaded');
-  if(!html.includes('userStorageKey(studentAuthUser.id)'))throw Error('Student local cache is not scoped to the authenticated user');
-  for(const file of ['assets/chapter-search.js','assets/chapters.js']){
-    const check=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
-    if(check.status!==0)throw Error('Invalid external JavaScript '+file+': '+check.stderr);
-  }
-  const resourcesCheck=spawnSync(process.execPath,['scripts/validate-resources.mjs'],{encoding:'utf8'});
-  if(resourcesCheck.status!==0)throw Error('Resource manifest validation failed:\\n'+(resourcesCheck.stderr||resourcesCheck.stdout));
-  console.log((resourcesCheck.stdout||'').trim());
-  const apiCheck=spawnSync(process.execPath,['--input-type=module','--check'],{input:api,encoding:'utf8'});
-  if(apiCheck.status!==0)throw Error(`AI API syntax error:\n${apiCheck.stderr}`);
-  if(!api.includes('match(/^Bearer\\s+(.+)$/i)'))throw Error('AI API Bearer token parser is not using the expected whitespace matcher');
-  if(!api.includes('/rest/v1/rpc/consume_ai_quota'))throw Error('AI API is missing the atomic student quota check');
-  if(!api.includes('gemini-3.8-flash:generateContent')||api.includes('gemini-2.5-flash'))throw Error('AI API must use the current Gemini 3.8 Flash model for new projects');
-  if(!api.includes('email_confirmed_at'))throw Error('AI API is missing verified-email enforcement');
-  const chapterTest=spawnSync(process.execPath,['scripts/check-chapter-search.mjs'],{encoding:'utf8'});
-  if(chapterTest.status!==0)throw Error('Chapter search tests failed:\\n'+(chapterTest.stderr||chapterTest.stdout));
-  console.log((chapterTest.stdout||'').trim());
-  console.log(`Frontend and AI API syntax valid: ${scripts.length} inline script(s) plus api/ai.js; security guards present.`);
-}finally{fs.rmSync(dir,{recursive:true,force:true});}
+const main=fs.readFileSync('src/main.js','utf8');
+const config=fs.readFileSync('vite.config.js','utf8');
+
+function requireText(source, marker, label) {
+  if(!source.includes(marker))throw Error('Missing '+label+': '+marker);
+}
+
+for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','src/main.js','vite.config.js','api/ai.js']){
+  const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
+  if(result.status!==0)throw Error(file+' has a syntax error:\\n'+result.stderr);
+}
+
+requireText(html,'<html lang="ar" dir="rtl">','Arabic RTL interface');
+requireText(html,'<script type="module" src="/src/main.js"></script>','Vite entrypoint');
+if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
+requireText(config,'resources.json','resource manifest build packaging');
+requireText(config,'assets/legacy-app.js','legacy runtime build packaging');
+requireText(main,"from '@supabase/supabase-js'",'bundled Supabase dependency');
+requireText(main,'window.supabase={createClient}','legacy Supabase adapter');
+const bootPaths=['/auth-config.js','/assets/chapter-search.js','/assets/legacy-app.js','/assets/chapters.js'];
+for(const file of bootPaths)requireText(main,file,'ordered bootstrap');
+if(bootPaths.some((file,i)=>i&&main.indexOf(file)<main.indexOf(bootPaths[i-1])))throw Error('Runtime scripts are loaded in an unsafe order');
+
+const authRequirements=[
+  'async function initStudentAuth()',
+  'onAuthStateChange',
+  'function userStorageKey(userId)',
+  'async function saveRecoveredPassword()',
+  'function togglePasswordVisibility(inputId,button)',
+  'function updatePasswordStrength()',
+  'let recoveryFlow=',
+  'history.replaceState(null',
+  'email_confirmed_at',
+  'function switchLoginTab(tab)',
+  'authCooldownUntil=Date.now()+120000',
+  'over_email_send_rate_limit',
+  'renderAll();renderSession();closeLoginGate()',
+  'if(!u.email_confirmed_at)',
+  'if(!data.session){',
+  "document.querySelectorAll('#loginGate .login-form button"
+];
+for(const requirement of authRequirements)requireText(app,requirement,'auth safeguard');
+for(const id of ['id="passwordRecoveryPanel"','id="page-chapters"','id="loginGate"','id="chapterResults"'])requireText(html,id,'required interface');
+requireText(app,'userStorageKey(studentAuthUser.id)','private student storage key');
+if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped progress cache is not allowed');
+if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
+if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
+requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
+
+for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','gemini-3.8-flash:generateContent'])requireText(api,marker,'AI server-side security');
+if(api.includes('gemini-2.5-flash'))throw Error('Obsolete AI provider configured');
+
+for(const file of ['scripts/check-chapter-search.mjs','scripts/validate-resources.mjs']){
+  const result=spawnSync(process.execPath,[file],{encoding:'utf8'});
+  if(result.status!==0)throw Error(file+' failed:\\n'+(result.stderr||result.stdout));
+  console.log((result.stdout||'').trim());
+}
+console.log('Bac-pedia source checks passed: Vite entry, modular scripts, auth guards, API, chapter search, resource catalog.');

@@ -1,20 +1,36 @@
-name: Check Bac-pedia frontend
+name: Validate Bac-pedia full stack
 
 on:
   push:
     branches: [main]
     paths:
       - "index.html"
-      - "api/ai.js"
-      - "supabase/schema.sql"
-      - "scripts/check-frontend.mjs"
+      - "src/**"
+      - "assets/**"
+      - "api/**"
+      - "scripts/**"
+      - "supabase/**"
+      - "resources.json"
+      - "auth-config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
+      - "vercel.json"
       - ".github/workflows/check-frontend.yml"
   pull_request:
     paths:
       - "index.html"
-      - "api/ai.js"
-      - "supabase/schema.sql"
-      - "scripts/check-frontend.mjs"
+      - "src/**"
+      - "assets/**"
+      - "api/**"
+      - "scripts/**"
+      - "supabase/**"
+      - "resources.json"
+      - "auth-config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
+      - "vercel.json"
       - ".github/workflows/check-frontend.yml"
 
 permissions:
@@ -23,9 +39,17 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/check-frontend.mjs
+      - name: Install pinned dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate source, authentication and search
+        run: npm test
+      - name: Build production website
+        run: npm run build
+      - name: Verify production bundle and manifest
+        run: node scripts/check-dist.mjs
