@@ -9,6 +9,10 @@ const main=fs.readFileSync('src/main.js','utf8');
 const config=fs.readFileSync('vite.config.js','utf8');
 const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
+const wranglerConfig=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));
+if(wranglerConfig.main!=='cloudflare/worker.js')throw Error('Cloudflare must deploy API Worker entrypoint');
+if(wranglerConfig.assets?.binding!=='ASSETS'||!wranglerConfig.assets?.run_worker_first?.includes('/api/*'))throw Error('Cloudflare API routing must run Worker first');
+
 const rolesSql=fs.readFileSync('supabase/role_portals_admin_2026.sql','utf8');
 const auditSql=fs.readFileSync('supabase/admin_moderation_audit_2026.sql','utf8');
 for(const marker of ['platform_single_admin','REVOKE ALL ON public.platform_roles','review_collaborator_application','review_collaborator_resource'])requireText(rolesSql,marker,'single-owner RLS');
@@ -19,7 +23,7 @@ function requireText(source, marker, label) {
   if(!source.includes(marker))throw Error('Missing '+label+': '+marker);
 }
 
-for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/landing.js','assets/community.js','src/main.js','vite.config.js','api/ai.js']){
+for(const file of ['assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/landing.js','assets/community.js','src/main.js','vite.config.js','api/ai.js','cloudflare/worker.js']){
   const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' has a syntax error:\\n'+result.stderr);
 }
@@ -85,7 +89,7 @@ if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+t
 for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','DEPLOY_API_KEY','DEPLOY_API_ENDPOINT','DEPLOY_MODEL_ID'])requireText(api,marker,'Deploy server-side security');
 if(/GEMINI_API_KEY|generativelanguage\\.googleapis\\.com|gemini-3\\./.test(api))throw Error('Unexpected obsolete Gemini integration');
 
-for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/validate-resources.mjs']){
+for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/check-cloudflare-worker.mjs','scripts/validate-resources.mjs']){
   const result=spawnSync(process.execPath,[file],{encoding:'utf8'});
   if(result.status!==0)throw Error(file+' failed:\\n'+(result.stderr||result.stdout));
   console.log((result.stdout||'').trim());
