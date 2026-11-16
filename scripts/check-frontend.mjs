@@ -9,6 +9,11 @@ const main=fs.readFileSync('src/main.js','utf8');
 const config=fs.readFileSync('vite.config.js','utf8');
 const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
+const rolesSql=fs.readFileSync('supabase/role_portals_admin_2026.sql','utf8');
+const auditSql=fs.readFileSync('supabase/admin_moderation_audit_2026.sql','utf8');
+for(const marker of ['platform_single_admin','REVOKE ALL ON public.platform_roles','review_collaborator_application','review_collaborator_resource'])requireText(rolesSql,marker,'single-owner RLS');
+for(const marker of ['CREATE TABLE IF NOT EXISTS public.moderation_audit','status=\'rejected\'','admin_delete_contributor_resource'])requireText(auditSql,marker,'audited moderation');
+
 
 function requireText(source, marker, label) {
   if(!source.includes(marker))throw Error('Missing '+label+': '+marker);
@@ -25,6 +30,10 @@ requireText(html,'href="/assets/app.css"','CSS independently loaded');
 requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
 requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
 requireText(html,'id="chapterContext"','Lesson detail area');
+for(const id of ['page-admin','adminList','adminMetrics','collaboratorStatusPanel','contributorMetrics','signupCollabExtras','approvedResourceGrid'])requireText(html,'id="'+id+'"','role-separated interface');
+requireText(html,'href="/assets/portals.css"','portal stylesheet');
+for(const marker of ['window.BAC_PORTAL_ROLE','sidebarBranches','sidebarStudyStats',"if(id==='admin')window.renderAdmin"])requireText(app,marker,'role-aware app navigation');
+
 if(html.includes('id="page-flashcards"')||html.includes('id="lpDemoFlashcard"')||html.includes('id="flashcards-preview"'))throw Error('Removed flashcard UI was reintroduced');
 const landingCSS=fs.readFileSync('assets/landing.css','utf8');
 requireText(landingCSS,'body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important','Public landing must remain vertically scrollable');
@@ -68,13 +77,13 @@ if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
-requireText(app,"options:{data:{full_name:fullName,signup_intent:signupIntent}}",'signup role is explicitly only an intent');
-for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=",'status===\'approved\''])requireText(community,marker,'database-backed learning/community flows');
+requireText(app,"options:{data:{full_name:fullName,signup_intent:signupIntent,...contributorInfo}}",'signup metadata is onboarding only');
+for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 
-for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','gemini-3.8-flash:generateContent'])requireText(api,marker,'AI server-side security');
-if(api.includes('gemini-2.5-flash'))throw Error('Obsolete AI provider configured');
+for(const marker of ['match(/^Bearer\\s+(.+)$/i)','/rest/v1/rpc/consume_ai_quota','email_confirmed_at','DEPLOY_API_KEY','DEPLOY_API_ENDPOINT','DEPLOY_MODEL_ID'])requireText(api,marker,'Deploy server-side security');
+if(/GEMINI_API_KEY|generativelanguage\\.googleapis\\.com|gemini-3\\./.test(api))throw Error('Unexpected obsolete Gemini integration');
 
 for(const file of ['scripts/check-chapter-search.mjs','scripts/check-chapter-navigation.mjs','scripts/check-ai-health.mjs','scripts/validate-resources.mjs']){
   const result=spawnSync(process.execPath,[file],{encoding:'utf8'});
