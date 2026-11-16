@@ -53,3 +53,22 @@ jobs:
         run: npm run build
       - name: Verify production bundle and manifest
         run: node scripts/check-dist.mjs
+      - name: Screenshot public landing (browser smoke test)
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 >/tmp/bacpedia-preview.log 2>&1 &
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sf http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/ | grep -q 'publicLanding'
+          if command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=5000 --screenshot=landing-desktop.png http://127.0.0.1:4173/
+            test -s landing-desktop.png
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bac-pedia-landing-preview
+          path: landing-desktop.png
+          if-no-files-found: ignore
+
