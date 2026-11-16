@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
-import {createRequire} from 'node:module';
-const require = createRequire(import.meta.url);
-const {normalize,score,search,suggest} = require('../assets/chapter-search.js');
+import fs from 'node:fs';
+import vm from 'node:vm';
+// Search is intentionally a classic browser UMD asset. Evaluate it in a
+// CommonJS-compatible VM context instead of require(), since Vite uses ESM.
+const sandbox={module:{exports:{}},window:{}};
+vm.runInNewContext(fs.readFileSync('assets/chapter-search.js','utf8'),sandbox,{filename:'chapter-search.js'});
+const {normalize,score,search,suggest}=sandbox.module.exports;
 
 assert.equal(normalize('الإحتمالات'), 'الاحتمالات');
 assert.equal(normalize('Français'), 'francais');
