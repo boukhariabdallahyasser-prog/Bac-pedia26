@@ -6,16 +6,34 @@
   const valid = url => typeof isDriveResourceUrl === 'function' && isDriveResourceUrl(url);
   const pref = {query:'',subject:'',type:'all',sort:'relevant',favoritesOnly:false};
   const favorites = new Set();
-  const labels = {subject:'مادة',folder:'وحدة أو مجلد',file:'ملف'};
+  const labels = {subject:'مادة أو مجموعة',folder:'وحدة أو مجلد',file:'ملف'};
   const icons = {subject:'fa-book',folder:'fa-folder-open',file:'fa-file-pdf'};
   const key = item => [item.subjectId,item.type,item.id].join(':');
-  let records = [], lastBranch = null;
+  let records = [], lastBranch = null, lastUser = null;
+  function syncFavorites() {
+    const userId=studentAuthUser?.id||null;
+    if(lastUser===userId)return;
+    lastUser=userId;favorites.clear();
+    if(!userId)return;
+    try {
+      const saved=JSON.parse(localStorage.getItem(userStorageKey(userId)+':chapterFavorites')||'[]');
+      if(Array.isArray(saved))saved.filter(v=>typeof v==='string'&&v.length<220).slice(0,1000).forEach(v=>favorites.add(v));
+    } catch(error) {console.warn('Chapter bookmarks could not be restored:',error);}
+  }
+  function persistFavorites() {
+    const userId=studentAuthUser?.id;
+    if(!userId)return;
+    try{localStorage.setItem(userStorageKey(userId)+':chapterFavorites',JSON.stringify([...favorites].slice(0,1000)));}
+    catch(error){console.warn('Chapter bookmarks could not be saved:',error);}
+  }
 
   function buildIndex() {
     const list = [];
     for (const subject of getSubjects()) {
-      if (subject.special) continue;
-      const source = resourceManifest?.subjects?.[subject.id];
+      const backup=canonicalDriveFolders[subject.id];
+      const source = resourceManifest?.subjects?.[subject.id] || (backup?{
+        categories:backup[1].map(([title,id])=>({title,id,type:'folder',url:'https://drive.google.com/drive/folders/'+id}))
+      }:null);
       list.push({
         id:subject.id,subjectId:subject.id,subjectName:subject.name,
         title:subject.name, categoryName:'', keywords:subject.desc,
@@ -58,11 +76,12 @@
   function render() {
     const page = $c('page-chapters');
     if (!page) return;
+    syncFavorites();
     if (lastBranch !== state.branch + ':' + state.subBranch || !records.length) {
       buildIndex(); lastBranch=state.branch + ':' + state.subBranch;
-      if (!getNormalSubjects().some(s=>s.id===pref.subject)) pref.subject='';
+      if (!getSubjects().some(s=>s.id===pref.subject)) pref.subject='';
     }
-    selectControl('chapterSubject',getNormalSubjects().map(s=>[s.id,s.name]),pref.subject,'كل المواد');
+    selectControl('chapterSubject',getSubjects().map(s=>[s.id,s.name]),pref.subject,'كل المواد والمجموعات');
     const q = $c('chapterQuery');
     if (q && q.value !== pref.query && document.activeElement !== q) q.value=pref.query;
     const sort=$c('chapterSort');if(sort)sort.value=pref.sort;
@@ -110,6 +129,7 @@
       });
       article.querySelector('.chapter-favorite').addEventListener('click',()=>{
         const id=key(item);if(favorites.has(id))favorites.delete(id);else favorites.add(id);
+        persistFavorites();
         render();
       });
       fragment.appendChild(article);
