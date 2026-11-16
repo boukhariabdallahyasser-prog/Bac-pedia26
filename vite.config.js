@@ -10,7 +10,9 @@ const classicAssets = [
   'resources.json',
   'assets/legacy-app.js',
   'assets/chapter-search.js',
-  'assets/chapters.js'
+  'assets/chapters.js',
+  'assets/landing.js',
+  'assets/community.js'
 ];
 function copyClassicAssets() {
   return {
