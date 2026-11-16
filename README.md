@@ -1,3 +1,11 @@
+## 2026-11-16: landing page and AI configuration follow-up
+
+- Public landing now scrolls vertically on desktop and mobile. The global logged-out overflow lock is overridden only while a login modal is **not** open. Navigation anchors scroll to their target sections.
+- The public Flashcards preview and the student Flashcards interface have been retired at the owner's request. Its previous database tables and saved student decks remain untouched to avoid destructive data loss. They are no longer shown in the app.
+- Collaborator applications and reviewed resource submissions remain operational.
+- The project's AI credential is stored server-side in Vercel's **sensitive** `GEMINI_API_KEY` variable for production and preview. Never commit its value to the repository or expose it in a client-side build. The backend readiness endpoint determines whether Google accepts the supplied credential; setting it alone does not establish validity.
+- Updating Vercel environment variables requires a fresh deployment to affect serverless functions. Check `GET /api/ai` after deployment, and test an authenticated prompt with a verified account.
+
 # Bac-pedia 2027
 
 Arabic-first, RTL study platform for Algerian baccalaureate students preparing for the examination on **15 June 2027**.
