@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a1a" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Bac-pedia 2027: موارد البكالوريا، الدروس والوحدات، مراجعة ذكية ومخطط دراسي حسب الشعبة." />
+  <title>لوحة الإدارة | Bac-pedia 2027</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/chapters.css" />
+  <link rel="stylesheet" href="/assets/landing.css" />
+  <link rel="stylesheet" href="/assets/community.css" />
+  <link rel="stylesheet" href="/assets/portals.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+</head>
+<body class="public-mode portal-loading" data-portal="admin">
+  <div id="portalLoading" class="portal-auth-loading" role="status" aria-live="polite"><i class="fa-solid fa-shield-halved"></i> جار التحقق من الحساب... <a href="/">العودة إلى الرئيسية</a></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><div class="brand-title">BAC<span>PEDIA</span></div><div class="brand-sub">منصتك للبكالوريا 2027</div></div>
+      </div>
+
+      <div class="session-card" id="sessionCard">
+        <div class="session-avatar"><i class="fa-solid fa-user"></i></div>
+        <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div><span id="sidebarRoleLabel">طالب بكالوريا</span></div>
+        <button class="round-btn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user-gear"></i></button>
+      </div>
+      <div>
+        <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
+        <nav class="side-nav" id="sideNav" aria-label="قائمة المساحة الشخصية"></nav>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="top-title"><h2 id="pageTitle">لوحة الإدارة</h2><p id="pageSubtitle">منصة مراجعة بسيطة ومنظمة</p></div>
+        <div class="top-actions">
+          <button class="ctrl-btn mobile-menu-btn sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" title="القائمة الجانبية" aria-label="القائمة الجانبية"><i class="fa-solid fa-bars-staggered"></i></button>
+          <button class="ctrl-btn" id="themeToggleBtn" onclick="toggleTheme()" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+          
+          <button class="ctrl-btn" id="userTopBtn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user"></i></button>
+        </div>
+      </div>
+      <section class="page active" id="page-admin">
+        <div class="portal-heading"><div><span class="portal-eyebrow"><i class="fa-solid fa-shield-halved"></i> OWNER CONTROL CENTER</span><h2>لوحة إدارة Bac-pedia</h2><p>مساحة خاصة بالمالك: راجع طلبات المساهمة والملفات وحالة المجتمع.</p></div><button id="adminReload" type="button" class="btn"><i class="fa-solid fa-rotate"></i> تحديث البيانات</button></div>
+        <div id="adminStatusNote" class="portal-notice" role="status" aria-live="polite"></div>
+        <div id="adminMetrics" class="portal-metrics"><div><strong>—</strong><span>الطلاب</span></div><div><strong>—</strong><span>طلبات المساهمة</span></div><div><strong>—</strong><span>المساهمون المقبولون</span></div><div><strong>—</strong><span>موارد قيد المراجعة</span></div></div>
+        <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة"><button type="button" data-admin-tab="applications" class="active">طلبات المساهمين</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button><button type="button" data-admin-tab="ai"><i class="fa-solid fa-robot"></i> فحص الذكاء الاصطناعي</button></div>
+        <div class="portal-panel">
+          <div class="portal-filters" id="adminFilters">
+            <label><i class="fa-solid fa-magnifying-glass"></i><input id="adminSearch" type="search" placeholder="ابحث عن مساهم أو رابط أو مادة..." autocomplete="off" aria-label="ابحث في الإدارة"></label>
+            <select id="adminReviewFilter" aria-label="فلتر حالة المراجعة"><option value="all">كل الحالات</option><option value="pending">قيد المراجعة</option><option value="approved">مقبول</option><option value="rejected">مرفوض</option></select>
+          </div>
+          <div id="adminList" class="portal-list" aria-live="polite"></div>
+        </div>
+      </section>
+          </main>
+  </div>
+  <nav class="bottom-nav" id="bottomNav"></nav>
+  <div class="modal" id="subjectModal">
+    <div class="modal-head" id="modalHead"><button class="round-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button><div style="font-size:2rem" id="modalIcon"><i class="fa-solid fa-book"></i></div><div class="modal-title" id="modalTitle">المادة</div><p id="modalDesc" style="opacity:.85;margin-top:4px"></p></div>
+    <div class="modal-body"><div id="subjectSubfolders" style="max-height:35vh;overflow:auto;margin-bottom:12px"></div><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
+  </div>
+  <div class="toast-area" id="toastArea"></div>
+  
+  
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
