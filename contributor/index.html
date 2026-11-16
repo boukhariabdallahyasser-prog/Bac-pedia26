@@ -31,7 +31,7 @@
       <div class="session-card" id="sessionCard">
         <div class="session-avatar"><i class="fa-solid fa-user"></i></div>
         <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div><span id="sidebarRoleLabel">طالب بكالوريا</span></div>
-        <button class="round-btn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user-gear"></i></button>
+        <span class="session-verification" title="حالة الحساب محمية"><i class="fa-solid fa-shield-halved"></i></span>
       </div>
       <div>
         <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
@@ -45,7 +45,7 @@
           <button class="ctrl-btn mobile-menu-btn sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" title="القائمة الجانبية" aria-label="القائمة الجانبية"><i class="fa-solid fa-bars-staggered"></i></button>
           <button class="ctrl-btn" id="themeToggleBtn" onclick="toggleTheme()" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
           
-          <button class="ctrl-btn" id="userTopBtn" onclick="openLoginGate()" title="الحساب"><i class="fa-solid fa-user"></i></button>
+          <button class="ctrl-btn" id="userTopBtn" onclick="openSidebar();document.getElementById('sessionCard')?.scrollIntoView({behavior:'smooth',block:'nearest'})" title="معلومات الحساب"><i class="fa-solid fa-user"></i></button>
         </div>
       </div>
       <section class="page active" id="page-collaborate">
