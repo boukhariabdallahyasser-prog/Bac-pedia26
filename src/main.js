@@ -18,6 +18,13 @@ function loadScript(path){
 }
 
 async function start(){
+  // Handle confirmation/recovery links from legacy public root URLs without
+  // letting auth tokens be consumed on a page which has no recovery form.
+  if(document.body.dataset.portal==='landing'&&
+     /(?:^|[&#?])type=recovery(?:&|$)/i.test(location.hash+location.search)){
+    location.replace('/login/'+location.search+location.hash);
+    return;
+  }
   // Order matters: auth config and search helpers must exist before
   // legacy application initialization, then Chapter Studio is mounted.
   for(const path of [
