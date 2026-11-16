@@ -11,7 +11,9 @@ function reply(value,status=200){
   });
 }
 function providerConfig(env){
-  const key=env.DEPLOY_API_KEY,endpoint=env.DEPLOY_API_ENDPOINT,model=env.DEPLOY_MODEL_ID;
+  const key=env.DEPLOY_API_KEY;
+  const endpoint=env.DEPLOY_API_ENDPOINT||'https://api-cdn.deploy.com/api/v1/chat/completions';
+  const model=env.DEPLOY_MODEL_ID||'deepseek-ai/deepseek-v4.1-flash';
   if(typeof key!=='string'||!key||typeof endpoint!=='string'||!endpoint||typeof model!=='string'||!model)return null;
   try{
     const url=new URL(endpoint);
