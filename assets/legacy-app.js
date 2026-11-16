@@ -578,7 +578,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         const info=await response.json();
         aiBackendState=response.ok&&info.ready===true?'ready':'offline';
         const messages={
-          provider_unconfigured:'مفتاح Deploy محفوظ، لكن يجب ضبط رابط واجهة النموذج ومعرّفه وفق توثيق Deploy.',
+          provider_unconfigured:'خدمة Deploy تحتاج مفتاح API سرياً صالحاً في إعدادات Cloudflare Worker.',
           configured_unverified:'إعداد Deploy مكتمل مبدئياً، لكن لم يُختبر توليد الإجابات بعد.',
           provider_error:'تعذر اتصال Deploy. أدوات المراجعة المحلية متاحة.',
           provider_unreachable:'تعذر الوصول إلى Deploy. الأدوات المحلية متاحة.'
@@ -591,8 +591,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updateAIModeIndicator(){
       const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
       if(dot)dot.classList.toggle('live',live);
-      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من إعدادات Deploy...':live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
-      if(desc)desc.textContent=live?'إعداد Deploy موجود، لكن نجاح أول طلب يُحدد دعم النموذج وصيغة الواجهة.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
+      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من إعدادات Deploy...':live?'مساعد Deploy — الإعداد جاهز للتجربة':'أدوات المراجعة المحلية — دون اتصال';
+      if(desc)desc.textContent=live?'الإعداد موجود في الخادم. يتأكد عمل النموذج عند إرسال أول طلب بنجاح، وقد تحتاج مفتاحاً صالحاً.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
     }
     function renderHomeSummary(){
       const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
