@@ -24,7 +24,9 @@ async function start(){
     '/auth-config.js',
     '/assets/chapter-search.js',
     '/assets/legacy-app.js',
-    '/assets/chapters.js'
+    '/assets/chapters.js',
+    '/assets/landing.js',
+    '/assets/community.js'
   ])await loadScript(path);
 }
 start().catch(error=>{
