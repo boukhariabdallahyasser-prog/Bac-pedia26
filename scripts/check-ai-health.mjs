@@ -21,7 +21,10 @@ try{
   assert.equal(up.body.reason,'ok');
   assert.ok(!JSON.stringify(up.body).includes('unit-test-placeholder'),'Never disclose Gemini API key');
   globalThis.fetch=async()=>({ok:false,status:403});
-  const forbidden=response();await handler(request,forbidden);
+  // A fresh serverless instance runs a fresh health probe. A warm one
+  // intentionally caches the previous ready result for up to 60 seconds.
+  const {default:freshHandler}=await import('../api/ai.js?rejected-provider-test');
+  const forbidden=response();await freshHandler(request,forbidden);
   assert.equal(forbidden.body.ready,false);
   assert.equal(forbidden.body.reason,'provider_auth');
   const unauth=response();await handler({method:'POST',headers:{host:'bac-pedia26.vercel.app'}},unauth);
