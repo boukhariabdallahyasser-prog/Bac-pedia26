@@ -335,7 +335,7 @@
               <div class="actions">
                 <button class="btn primary" onclick="runAgent(activeAgent)"><i class="fa-solid fa-robot"></i> تشغيل</button>
                 <button class="btn" onclick="clearAIOutput()"><i class="fa-solid fa-eraser"></i> مسح</button>
-                <button class="btn" onclick="copyText(document.getElementById('aiOutput').textContent,'تم نسخ النتيجة')"><i class="fa-solid fa-copy"></i> نسخ</button>
+                <button class="btn" onclick="copyText(document.getElementById('aiOutput').dataset.rawAnswer || document.getElementById('aiOutput').textContent,'تم نسخ النتيجة')"><i class="fa-solid fa-copy"></i> نسخ</button>
               </div>
               <div class="ai-status-line" id="aiStatusLine"><i class="fa-solid fa-signal"></i><span>جاهز. اكتب طلبك وسيحلله المساعد باستعمال بياناتك.</span></div>
             </div>
