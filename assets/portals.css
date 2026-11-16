@@ -126,3 +126,5 @@ body[data-portal].portal-authorized .portal-auth-loading{display:none!important}
 body[data-portal="admin"] #sidebarAIBtn,
 body[data-portal="contributor"] #sidebarAIBtn{display:none!important}
 @media(prefers-reduced-motion:reduce){.portal-auth-loading{transition:none}}
+
+.session-verification{display:inline-flex;align-items:center;justify-content:center;flex:none;width:34px;height:34px;border-radius:11px;background:rgba(59,196,141,.12);color:#70d9b0;font-size:1.05rem;border:1px solid rgba(85,222,165,.18)}
