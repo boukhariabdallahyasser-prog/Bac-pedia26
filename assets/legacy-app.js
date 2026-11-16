@@ -577,10 +577,10 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         const info=await response.json();
         aiBackendState=response.ok&&info.ready===true?'ready':'offline';
         const messages={
-          not_configured:'خدمة AI غير مفعّلة بعد. يجب ضبط GEMINI_API_KEY داخل إعدادات Vercel.',
-          provider_auth:'مفتاح Gemini الحالي مرفوض. يجب إصلاحه في Vercel.',
-          provider_error:'تعذر الاتصال بنموذج Gemini. الأدوات المحلية متاحة.',
-          provider_unreachable:'خادم Gemini لا يستجيب الآن؛ يمكنك استعمال أدوات المراجعة المحلية.'
+          provider_unconfigured:'مفتاح Deploy محفوظ، لكن يجب ضبط رابط واجهة النموذج ومعرّفه وفق توثيق Deploy.',
+          configured_unverified:'إعداد Deploy مكتمل مبدئياً، لكن لم يُختبر توليد الإجابات بعد.',
+          provider_error:'تعذر اتصال Deploy. أدوات المراجعة المحلية متاحة.',
+          provider_unreachable:'تعذر الوصول إلى Deploy. الأدوات المحلية متاحة.'
         };
         aiBackendReason=aiBackendState==='ready'?'':messages[info.reason]||'تعذر التحقق من خدمة AI.';
       }catch(error){aiBackendState='offline';aiBackendReason='تعذر التحقق من خادم المساعد. الأدوات المحلية تبقى متاحة.';}
@@ -590,8 +590,8 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function updateAIModeIndicator(){
       const live=hasLiveAI(),dot=$('#aiModeDot'),title=$('#aiModeTitle'),desc=$('#aiModeDescription');
       if(dot)dot.classList.toggle('live',live);
-      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من خدمة Gemini...':live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
-      if(desc)desc.textContent=live?'تم التحقق من اتصال Gemini عبر خادم Bac-pedia. الطلبات محمية بحسابك وحد استخدام يومي.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
+      if(title)title.textContent=aiBackendState==='checking'?'جار التحقق من إعدادات Deploy...':live?'المساعد المتصل — إجابات مولّدة':'أدوات المراجعة المحلية — دون اتصال';
+      if(desc)desc.textContent=live?'إعداد Deploy موجود، لكن نجاح أول طلب يُحدد دعم النموذج وصيغة الواجهة.':aiBackendState==='checking'?'نتحقق من إعدادات الخادم قبل عرض الأدوات التوليدية.':aiBackendReason;
     }
     function renderHomeSummary(){
       const subjects=getNormalSubjects(),avg=subjects.length?Math.round(subjects.reduce((a,x)=>a+Math.min(100,Math.max(0,Number(state.progress[x.id])||0)),0)/subjects.length):0;
