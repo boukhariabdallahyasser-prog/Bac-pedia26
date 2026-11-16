@@ -10,6 +10,10 @@ const config=fs.readFileSync('vite.config.js','utf8');
 const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
 const curatorSql=fs.readFileSync('supabase/contributor_curator_fields_2026.sql','utf8');
+const reapplySql=fs.readFileSync('supabase/reapply_contributor_2026.sql','utf8');
+for(const token of ['bac_private.resubmit_collaborator_application','user_id=caller',"status='rejected'",'SECURITY INVOKER'])
+  requireText(reapplySql,token,'safe contributor reapplication');
+
 for(const token of ['collaborator_academic_branch_valid','resource_academic_branch_valid',
   'resource_explained','resource_unit_required','admin_update_curated_resource',
   'admin_update_contributor_profile','resubmit_contributor_resource','SECURITY INVOKER'])
@@ -106,7 +110,7 @@ for(const part of ['QUESTION EXACTE',"reasoning_effort:'low'",'max_completion_to
 
 requireText(app,'signup_intent:signupIntent,...contributorInfo','signup metadata is onboarding only');
 requireText(app,'emailRedirectTo:location.origin+location.pathname','confirmation links must return to current origin');
-for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
+for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","resubmit_collaborator_application","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
 if(/grant\s+update[^;]*\s+on\s+public\.collaborator_(applications|resources)\s+to\s+authenticated/i.test(collaborationSchema))throw Error('Collaborators must not be able to self-approve their status');
 
