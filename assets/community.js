@@ -374,31 +374,129 @@ async function testOwnerAI(){
    result.textContent='فشل الاتصال بالخادم أو قراءة الرد. تحقّق من إعدادات Cloudflare.';
  }
 }
+function adminVisible(rows){
+ const search=txt($('adminSearch')?.value).toLocaleLowerCase();
+ const status=txt($('adminReviewFilter')?.value)||'all';
+ return rows.filter(x=>{
+   if(status!=='all'&&x.status&&x.status!==status)return false;
+   if(!search)return true;
+   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,
+     x.unit_title,x.description,x.motivation,x.email].filter(Boolean).join(' ').toLocaleLowerCase();
+   return joined.includes(search);
+ });
+}
+function openAdminEditor(type,item){
+ if(ownerRole!=='admin')return;
+ const root=$('adminList');if(!root)return;
+ const filters=$('adminFilters');if(filters)filters.hidden=true;
+ const form=el('form','portal-editor');
+ form.append(el('h3','',type==='resource'?'تعديل الملف أو المجلد':'تعديل بيانات المساهم'));
+ form.append(el('p','portal-editor-hint','تحفظ التعديلات مباشرة في قاعدة البيانات، وتسجل في سجل الإدارة.'));
+ const controls={};
+ function field(name,title,value,options={}){
+   const wrapper=el('label','portal-editor-field');
+   wrapper.append(el('span','',title+' *'));
+   const input=options.choices?el('select'):el(options.multiline?'textarea':'input');
+   input.name=name;input.required=true;
+   if(options.max)input.maxLength=options.max;
+   if(options.min)input.minLength=options.min;
+   if(options.url)input.type='url';
+   else if(!options.multiline&&!options.choices)input.type='text';
+   if(options.multiline)input.rows=4;
+   if(options.choices){
+     for(const v of options.choices){
+       const opt=el('option','',typeof v==='string'?v:v.label);
+       opt.value=typeof v==='string'?v:v.value;
+       input.append(opt);
+     }
+   }
+   input.value=value||'';
+   wrapper.append(input);controls[name]=input;form.append(wrapper);
+ }
+ if(type==='resource'){
+   field('title','عنوان المورد',item.title,{min:4,max:180});
+   field('academic_branch','الشعبة',item.academic_branch||'جميع الشعب',{choices:branchChoices});
+   field('subject','المادة',item.subject,{min:2,max:100});
+   field('resource_kind','نوع المورد',item.resource_kind||'other',
+     {choices:Object.entries(kind).map(([value,label])=>({value,label}))});
+   field('unit_title','الوحدة أو الفصل',item.unit_title,{min:2,max:120});
+   field('resource_url','رابط Google Drive',item.resource_url,{url:true,max:2000});
+   field('description','محتويات المجلد أو الملف',item.description,{min:12,max:2000,multiline:true});
+ }else{
+   field('display_name','اسم المساهم',item.display_name,{min:2,max:100});
+   field('organization','المؤسسة أو النادي',item.organization,{min:2,max:150});
+   field('academic_branch','الشعبة',item.academic_branch||'جميع الشعب',{choices:branchChoices});
+   field('contribution_type','الصفة',item.contribution_type||'student',
+     {choices:[{value:'student',label:'طالب'},{value:'teacher',label:'أستاذ'},
+       {value:'club',label:'نادي'},{value:'organization',label:'مؤسسة'},{value:'other',label:'آخر'}]});
+   field('motivation','وصف المساهمة',item.motivation,{min:15,max:2000,multiline:true});
+ }
+ const actions=el('div','portal-editor-actions');
+ const save=el('button','btn primary','حفظ التعديلات');save.type='submit';
+ actions.append(save,button('إلغاء',()=>renderAdmin()));
+ form.append(actions);
+ form.addEventListener('submit',async event=>{
+   event.preventDefault();
+   if(busy||ownerRole!=='admin')return;
+   const data=Object.fromEntries(Object.entries(controls).map(([k,v])=>[k,txt(v.value)]));
+   if(!branchValid(data.academic_branch)){notify('اختر الشعبة المطلوبة','warning');return;}
+   if(type==='resource'&&(data.description.length<12||data.unit_title.length<2||!validUrl(data.resource_url))){
+     notify('أدخل رابط Google Drive ووحدة ووصفاً واضحاً','warning');return;
+   }
+   if(type==='application'&&data.motivation.length<15){notify('وصف المساهمة قصير جداً','warning');return;}
+   busy=true;save.disabled=true;
+   try{
+     const result=type==='resource'?
+       await db().rpc('admin_update_curated_resource',{
+         p_resource_id:item.id,p_title:data.title,p_academic_branch:data.academic_branch,
+         p_subject:data.subject,p_resource_kind:data.resource_kind,
+         p_unit_title:data.unit_title,p_description:data.description,p_resource_url:data.resource_url
+       }):
+       await db().rpc('admin_update_contributor_profile',{
+         p_user_id:item.user_id,p_display_name:data.display_name,
+         p_organization:data.organization,p_contribution_type:data.contribution_type,
+         p_motivation:data.motivation,p_academic_branch:data.academic_branch
+       });
+     if(result.error)throw result.error;
+     if(result.data!==true)throw new Error('No editable record found');
+     notify('تم حفظ التعديلات في قاعدة البيانات','success');
+     await loadAdmin();
+   }catch(error){failed(error,'تحديث المعلومات');}
+   finally{busy=false;save.disabled=false;}
+ });
+ root.replaceChildren(form);
+ root.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
+ const filters=$('adminFilters');if(filters)filters.hidden=!['applications','resources','students'].includes(adminTab);
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
  if(adminTab==='applications'){
-   if(!adminApplications.length){root.append(placeholder('لا توجد طلبات','ستظهر طلبات التسجيل هنا.'));return;}
-   for(const item of adminApplications){
+   const applications=adminVisible(adminApplications);
+   if(!applications.length){root.append(placeholder('لا توجد طلبات مطابقة','جرّب مسح البحث أو تغيير حالة الطلب.'));return;}
+   for(const item of applications){
      const card=el('article','portal-admin-entry');
      const text=el('div','portal-admin-entry-text');
-     text.append(el('strong','',item.display_name),el('span','',item.organization+' · '+(item.contribution_type||'')),
+     text.append(el('strong','',item.display_name),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.organization+' · '+(item.contribution_type||'')),
        el('p','',item.motivation));
      const actions=el('div','portal-admin-actions');
      actions.append(statusPill(item.status));
+     actions.append(button('تعديل البيانات',()=>openAdminEditor('application',item)));
      if(item.status!=='approved')actions.append(button('قبول',()=>void moderate('application',item.user_id,'approved'),'portal-action success'));
      if(item.status!=='rejected')actions.append(button(item.status==='approved'?'سحب صلاحية المساهم':'رفض الطلب',
        ()=>void moderate('application',item.user_id,'rejected'),'portal-action danger'));
      card.append(text,actions);root.append(card);
    }
  }else if(adminTab==='resources'){
-   if(!adminResources.length){root.append(placeholder('لا توجد روابط','ستظهر هنا المقترحات التي يرسلها المساهمون.'));return;}
-   for(const item of adminResources){
+   const proposals=adminVisible(adminResources);
+   if(!proposals.length){root.append(placeholder('لا توجد موارد مطابقة','جرّب كلمة أخرى أو اختر حالة مختلفة.'));return;}
+   for(const item of proposals){
      const card=el('article','portal-admin-entry');
      const main=el('div','portal-admin-entry-text');
-     main.append(el('strong','',item.title),el('span','',item.subject+' · '+(kind[item.resource_kind]||'مورد')+
+     main.append(el('strong','',item.title),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+' · '+(kind[item.resource_kind]||'مورد')+
        (item.unit_title?' · '+item.unit_title:'')),el('p','',item.description||''));
      const actions=el('div','portal-admin-actions');actions.append(statusPill(item.status));
+     actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
      }
@@ -408,8 +506,9 @@ function renderAdmin(){
      card.append(main,actions);root.append(card);
    }
  }else if(adminTab==='students'){
-   if(!profiles.length){root.append(placeholder('لا توجد حسابات ظاهرة','لا توجد ملفات تعريف للطلاب حالياً.'));return;}
-   for(const p of profiles){
+   const students=adminVisible(profiles);
+   if(!students.length){root.append(placeholder('لا توجد حسابات مطابقة','جرّب بحثاً آخر.'));return;}
+   for(const p of students){
      const card=el('article','portal-admin-entry');
      const main=el('div','portal-admin-entry-text');
      main.append(el('strong','',p.full_name||'طالب'),el('span','',p.email||'بريد غير متاح'),
@@ -461,6 +560,8 @@ $('collabCancelEdit')?.addEventListener('click',cancelEdit);
 $('collabProfileCancel')?.addEventListener('click',resetContributorProfileForm);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());
 $('adminReload')?.addEventListener('click',()=>void loadAdmin());
+$('adminSearch')?.addEventListener('input',()=>renderAdmin());
+$('adminReviewFilter')?.addEventListener('change',()=>renderAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
 if(user())void refreshPortalRole(); // Handles sessions restored before this classic script was loaded.
 })();
