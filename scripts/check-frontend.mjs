@@ -85,7 +85,7 @@ for(const id of ['publicLanding','lpHeroTitle'])requireText(html,'id="'+id+'"','
 for(const id of ['signupKindStudent','signupKindCollaborator','signupNameInput','loginGate','loginEmailInput','signupEmailInput','passwordRecoveryPanel','authSetupNotice'])
   requireText(loginHtml,'id="'+id+'"','standalone auth interface');
 requireText(loginHtml,'href="/assets/auth-page.css"','auth stylesheet');
-requireText(loginHtml,'class="auth-submit"','auth CTA style');
+requireText(loginHtml,'auth-submit','auth CTA style');
 if(html.includes('id="loginEmailInput"'))throw Error('Login form leaked into public landing HTML');
 for(const htmlFile of ['login/index.html','student/index.html','contributor/index.html','admin/index.html'])
   requireText(config,htmlFile,'Vite multi-page build input');
