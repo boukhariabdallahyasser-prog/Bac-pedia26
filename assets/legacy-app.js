@@ -763,6 +763,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       document.body.classList.add('public-mode');
       document.querySelector('.app-shell')?.setAttribute('inert','');
       gate.classList.toggle('hidden',!showModal);
+      document.body.classList.toggle('auth-modal-open',showModal);
       if(showModal&&!document.activeElement?.closest?.('#loginGate'))
         requestAnimationFrame(()=>$('#loginEmailInput')?.focus({preventScroll:true}));
     }
@@ -776,6 +777,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     function closeAuthModal(){
       if(studentAuthUser)return;
       $('#loginGate')?.classList.add('hidden');
+      document.body.classList.remove('auth-modal-open');
       document.body.classList.add('public-mode');
       const recovery=$('#passwordRecoveryPanel');
       if(recovery&&!recovery.classList.contains('hidden'))switchLoginTab('login');
@@ -786,7 +788,7 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const gate=$('#loginGate');
       if(gate)gate.classList.add('hidden');
       document.body.classList.add('authenticated');
-      document.body.classList.remove('public-mode');
+      document.body.classList.remove('public-mode','auth-modal-open');
       document.querySelector('.app-shell')?.removeAttribute('inert');
     }
     let studentAuth=null,studentAuthUser=null,authLoading=false,authCooldownUntil=0;
@@ -918,7 +920,16 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         }
         return;
       }
-      if(data?.session){if(data.session.user?.id!==studentAuthUser?.id)await applyStudentSession(data.session);}
+      if(data?.session){
+        // Revalidate a stored session with Supabase Auth before revealing private data.
+        const verified=await auth.auth.getUser();
+        if(verified.error||!verified.data?.user?.id){
+          console.warn('Saved session is no longer valid:',verified.error?.message);
+          await auth.auth.signOut();openLoginGate();
+        }else if(verified.data.user.id!==studentAuthUser?.id){
+          await applyStudentSession({...data.session,user:verified.data.user});
+        }
+      }
       else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
     }
 
@@ -1059,6 +1070,6 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
         $('#'+id)?.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.tagName==='INPUT'&&!authLoading){event.preventDefault();window[handler]?.();}});
       });
     }
-    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
+    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();if(!studentAuthUser&&!$('#loginGate')?.classList.contains('hidden'))closeAuthModal();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
     init();
   
