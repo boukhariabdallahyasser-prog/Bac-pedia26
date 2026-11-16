@@ -107,6 +107,9 @@
     return {subject:pieces.shift()||'',path:pieces.slice(0,12)};
   }
   function setRoute(subject='',path=[]){
+    // Opening a search result must actually enter its detail page.
+    prefs.query='';prefs.subject='';prefs.type='all';prefs.favoritesOnly=false;
+    const search=el('chapterQuery');if(search)search.value='';
     const pieces=[subject,...path].filter(Boolean).map(encodeURIComponent);
     const next='#/chapters'+(pieces.length?'/'+pieces.join('/'): '');
     if(location.hash!==next)location.hash=next;
