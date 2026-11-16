@@ -595,6 +595,9 @@
     .sub-branch-status.is-available{color:#34d399}
     .sub-branch-status.is-unavailable{color:#f59e0b}
     #subBranchRow .chip{display:flex;flex-direction:column;align-items:center;gap:3px}
+    #loginGate .password-strength{font-size:.76rem;line-height:1.65;color:#b9c7e5;padding:0 3px}
+    #loginGate .password-strength-meter{height:5px;background:#29384e;overflow:hidden;border-radius:99px;margin-top:6px}
+    #loginGate .password-strength-meter>span{display:block;height:100%;width:0;background:#a78bfa;border-radius:99px;transition:width .2s}
   </style>
 </head>
 <body>
@@ -632,8 +635,9 @@
       </div>
       <div class="login-form hidden" id="signupMainForm" role="tabpanel">
         <div class="login-field"><i class="fa-solid fa-envelope"></i><input id="signupEmailInput" type="email" autocomplete="email" inputmode="email" required aria-label="البريد الإلكتروني" placeholder="البريد الإلكتروني"></div>
-        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
-        <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
+        <div class="login-field"><i class="fa-solid fa-lock"></i><input id="signupPassInput" type="password" autocomplete="new-password" minlength="8" oninput="updatePasswordStrength()" required aria-label="كلمة المرور" placeholder="كلمة المرور (8 أحرف على الأقل)"><button class="password-toggle" type="button" onclick="togglePasswordVisibility('signupPassInput',this)" aria-label="إظهار كلمة المرور"><i class="fa-solid fa-eye"></i></button></div>
+        <div class="password-strength" id="passwordStrengthStatus" role="status" aria-live="polite">استعمل 8 أحرف على الأقل، مع حرف ورقم.<div class="password-strength-meter"><span id="passwordStrengthBar"></span></div></div>
+         <button class="btn success full" onclick="signupWithForm()"><i class="fa-solid fa-user-plus"></i> إنشاء الحساب</button>
         <p class="login-note">أنشئ حسابك باستخدام البريد الإلكتروني وكلمة المرور فقط.</p>
       </div>
 <div class="login-form hidden" id="passwordRecoveryPanel">
@@ -1647,18 +1651,17 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       const code=String(e?.code||e?.name||'');
       const detail=(m+' '+code).toLowerCase();
       if(/535|5\\.7\\.8|smtp.*authentication failed|authentication failed.*smtp/.test(detail)){
-        return 'فشل إرسال رسالة التأكيد: Brevo رفض بيانات SMTP (535). لتسجيل الدخول بالبريد وكلمة المرور فقط، عطّل Confirm email في إعدادات Supabase. لا تكرر إنشاء الحساب قبل تعديل الإعداد.';
+        return 'فشل إرسال رسالة التأكيد بسبب إعدادات خادم البريد (SMTP). تواصل مع إدارة المنصة لإصلاح الإرسال؛ لا تعطل تأكيد البريد.';
       }
-      if(/email confirmation is still enabled|email not confirmed|unexpected_failure|error sending confirmation email/.test(detail)){
-        return 'Supabase ما زال يطلب تأكيد البريد. افتح Auth > Providers > Email في Supabase وأوقف Confirm email ثم احفظ الإعداد.';
-      }
+      if(/email not confirmed/.test(detail))return 'تحقق من رسالة تأكيد الحساب في بريدك الإلكتروني قبل تسجيل الدخول.';
+      if(/unexpected_failure|error sending confirmation email/.test(detail))return 'تعذر إرسال رسالة التأكيد. تواصل مع إدارة المنصة للتحقق من إعدادات البريد الإلكتروني.';
       if(/invalid login credentials/.test(detail)){
         return 'هذا البريد أو كلمة المرور غير صحيحين. إذا كان الحساب موجوداً، استخدم استعادة كلمة المرور بدلاً من إنشاء حساب جديد.';
       }
       if(/already registered|user_already_exists/.test(detail)){
         return 'هذا البريد مسجل مسبقاً. انتقل إلى تسجيل الدخول أو استعادة كلمة المرور.';
       }
-      if(/rate limit|too many requests|429/.test(detail)){
+      if(/rate limit|over_email_send_rate_limit|too many requests|429/.test(detail)){
         return 'تم بلوغ حد المحاولات. انتظر قليلاً ثم حاول مجدداً.';
       }
       if(/network|failed to fetch|fetch failed|load failed/.test(detail)){
@@ -1667,6 +1670,16 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
       if(/password/.test(detail))return 'تحقق من كلمة المرور؛ يجب أن تتكون من 8 أحرف على الأقل.';
       console.error('[Bac-pedia Auth]',{message:m,code,status:e?.status});
       return 'فشل طلب المصادقة. افتح الموقع المنشور بعد تحديثه، وإذا استمرت المشكلة أرسل تفاصيل الخطأ من وحدة التحكم.';
+    }
+    function updatePasswordStrength(){
+      const password=$('#signupPassInput')?.value||'';
+      const indicator=$('#passwordStrengthStatus'),bar=$('#passwordStrengthBar');
+      if(!indicator||!bar)return;
+      const length=password.length>=8,letter=/\p{L}/u.test(password),digit=/\d/.test(password),long=password.length>=12,symbol=/[^\p{L}\d]/u.test(password);
+      const score=[length,letter,digit,long,symbol].filter(Boolean).length;
+      bar.style.width=(password?Math.max(12,score*20):0)+'%';
+      bar.style.background=length&&letter&&digit?(long&&symbol?'#10b981':'#a78bfa'):'#f59e0b';
+      indicator.firstChild.textContent=!password?'استعمل 8 أحرف على الأقل، مع حرف ورقم.':length&&letter&&digit?'كلمة المرور تستوفي الشروط الأساسية.':'أضف '+(!length?'8 أحرف على الأقل':'حرفاً ورقماً')+' لإكمال الشروط.';
     }
     function togglePasswordVisibility(inputId,button){
       const input=$('#'+inputId);if(!input)return;
@@ -1702,6 +1715,13 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
     async function applyStudentSession(session){
       const u=session?.user||null;
       if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+      if(!u.email_confirmed_at){
+        studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();
+        renderAll();renderSession();openLoginGate();
+        showAuthNotice('يرجى تأكيد البريد الإلكتروني قبل فتح حسابك.','warning');
+        if(studentAuth)void studentAuth.auth.signOut().catch(error=>console.warn('Unconfirmed session sign-out failed:',error));
+        return;
+      }
       resetStudentData();studentAuthUser=u;state.guest=false;
       state.user={name:u.user_metadata?.full_name||u.email?.split('@')[0]||'طالب',email:u.email,mode:'supabase'};
       renderAll();renderSession();closeLoginGate();
@@ -1782,11 +1802,17 @@ ${ctx.prompt||'لا يوجد طلب محدد؛ استعمل المادة الم�
         if(error)throw error;
         if(!data.session){
           if(data.user&&Array.isArray(data.user.identities)&&data.user.identities.length===0)throw new Error('already registered');
-          throw new Error('email confirmation is still enabled');
+          authCooldownUntil=Date.now()+120000;
+          $('#signupPassInput').value='';updatePasswordStrength();
+          switchLoginTab('login');
+          $('#loginEmailInput').value=email;
+          showAuthNotice('تم إنشاء طلب الحساب. افتح رسالة التأكيد في بريدك الإلكتروني ثم سجّل الدخول.','success');
+          showToast('أرسلنا رسالة تأكيد إن كان البريد متاحاً. تحقق من البريد غير الهام أيضاً.','info');
+          return;
         }
         authCooldownUntil=Date.now()+5000;
         await applyStudentSession(data.session);
-        $('#signupPassInput').value='';
+        $('#signupPassInput').value='';updatePasswordStrength();
         $('#loginEmailInput').value=email;
         $('#loginPassInput').value='';
         showAuthNotice('');
