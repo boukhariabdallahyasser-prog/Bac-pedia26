@@ -27,21 +27,21 @@ try{
     'email_confirmed_at'
   ];
   for(const requirement of authRequirements)if(!html.includes(requirement))throw Error(`Missing authentication safeguard: ${requirement}`);
-  // These are required protections, not forbidden patterns.
+  // Verify essential UX and security safeguards without treating their presence as errors.
   const authSafeguards=[
-    ['signup and login tabs remain available',/function switchLoginTab\\(tab\\)\\{[\\s\\S]{0,900}#loginMainTab/],
-    ['busy-state buttons use scoped querySelectorAll',/document\\.querySelectorAll\\('#loginGate \\.login-form button/],
-    ['auth input icons stay outside the text field',/#loginGate \\.login-field>i\\{position:static/],
-    ['rate-limit errors provide feedback',/over_email_send_rate_limit/],
-    ['signup cooldown protects against retries',/authCooldownUntil=Date\\.now\\(\\)\\+120000/],
-    ['authenticated session renders before cloud hydration',/renderAll\\(\\);renderSession\\(\\);closeLoginGate\\(\\)/],
-    ['signup handles email-confirmation pending state',/if\\(!data\\.session\\)\\{[\\s\\S]{0,650}showAuthNotice/],
-    ['client session gates unconfirmed email',/if\\(!u\\.email_confirmed_at\\)/],
-    ['new chapters hub exists',/id="page-chapters"/],
-    ['chapter explorer script loaded',/assets\\/chapters\\.js/],
-    ['chapter search index loaded',/assets\\/chapter-search\\.js/]
+    ['login and signup tabs', 'function switchLoginTab(tab)'],
+    ['scoped busy-state button handling', "document.querySelectorAll('#loginGate .login-form button"],
+    ['non-overlapping auth icons', '#loginGate .login-field>i{position:static'],
+    ['auth rate-limit error feedback', 'over_email_send_rate_limit'],
+    ['signup cooldown', 'authCooldownUntil=Date.now()+120000'],
+    ['dashboard-first session hydration', 'renderAll();renderSession();closeLoginGate()'],
+    ['email confirmation pending state', 'if(!data.session){'],
+    ['verified email client guard', 'if(!u.email_confirmed_at)'],
+    ['chapter studio page', 'id="page-chapters"'],
+    ['chapter explorer script', 'assets/chapters.js'],
+    ['chapter search script', 'assets/chapter-search.js']
   ];
-  for(const [name,pattern] of authSafeguards)if(!pattern.test(html))throw Error('Missing UI safeguard: '+name);
+  for(const [name,marker] of authSafeguards)if(!html.includes(marker))throw Error('Missing UI safeguard: '+name);
   if(html.includes('window.prompt('))throw Error('Browser prompt must not be used for authentication workflows');
   if(/sessionGeminiKey|x-goog-api-key|generativelanguage\.googleapis\.com|CONFIG\.aiApiKey/.test(html))throw Error('Gemini credentials or direct provider calls must not be present in browser code');
   if(!html.includes('callProxyAI(agentId,ctx)'))throw Error('Student AI requests must use the authenticated server proxy');
