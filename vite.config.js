@@ -11,6 +11,7 @@ const classicAssets = [
   'assets/legacy-app.js',
   'assets/chapter-search.js',
   'assets/chapters.js',
+  'assets/ai-format.js',
   'assets/landing.js',
   'assets/community.js'
 ];
