@@ -195,6 +195,13 @@
     function showPage(id){
       if(!studentAuthUser){openLoginGate();return;}
       const role=window.BAC_PORTAL_ROLE||'student';
+      const expected=role==='admin'?'admin':(role==='contributor'||role==='applicant')?'contributor':'student';
+      // Navigation is a real route, not an attempt to reveal another role's
+      // section in the wrong document.
+      if(document.body.dataset.portal!==expected){
+        window.location.replace('/'+expected+'/');
+        return;
+      }
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
         ['home','files','chapters','ai','planner','grades','progress','resources','help'];
       if(!allowed.includes(id))id=allowed[0];
@@ -734,7 +741,16 @@
     function updateCountdown(){const diff=Math.max(0,CONFIG.bacStart.getTime()-Date.now());const d=Math.floor(diff/86400000),h=Math.floor(diff/3600000)%24,m=Math.floor(diff/60000)%60,s=Math.floor(diff/1000)%60;$('#cdDays').textContent=String(d).padStart(3,'0');$('#cdHours').textContent=String(h).padStart(2,'0');$('#cdMins').textContent=String(m).padStart(2,'0');$('#cdSecs').textContent=String(s).padStart(2,'0');const start=new Date('2025-09-01T00:00:00+01:00').getTime();const pct=Math.max(0,Math.min(100,(Date.now()-start)/(CONFIG.bacStart.getTime()-start)*100));$('#yearProgress').style.width=pct+'%';}
     function showToast(message,type='info'){const div=document.createElement('div');div.className='toast';const icon=type==='success'?'fa-circle-check':type==='warning'?'fa-triangle-exclamation':type==='danger'?'fa-circle-xmark':'fa-circle-info';div.innerHTML=`<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;$('#toastArea').appendChild(div);setTimeout(()=>div.remove(),3200);}
     function initCanvas(){const c=$('#bgCanvas');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width: 760px)').matches)return;const ctx=c.getContext('2d');if(!ctx)return;let pts=[];function resize(){c.width=innerWidth;c.height=innerHeight;pts=Array.from({length:Math.min(80,Math.floor(innerWidth/18))},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+.5,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26}));}function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(129,140,248,.55)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();});requestAnimationFrame(draw)}resize();addEventListener('resize',resize);draw();}
-    function renderAll(){cleanSpecialProgress();if(typeof window.renderChapters==='function')window.renderChapters();renderNavs();renderBranches();renderFilters();renderSubjects();renderAgents();renderTasks();renderGrades();renderProgress();renderResources();applyTheme();renderHomeSummary();updateAIModeIndicator();}
+    function renderAll(){
+      // Landing, contributor and admin have their own HTML entry points and
+      // deliberately do not contain (or initialize) student-only DOM controls.
+      if(document.body.dataset.portal!=='student'){applyTheme();return;}
+      cleanSpecialProgress();
+      if(typeof window.renderChapters==='function')window.renderChapters();
+      renderNavs();renderBranches();renderFilters();renderSubjects();
+      renderAgents();renderTasks();renderGrades();renderProgress();renderResources();
+      applyTheme();renderHomeSummary();updateAIModeIndicator();
+    }
 
     function showAuthNotice(message,type='info'){
       const note=$('#authSetupNotice');if(!note)return;
@@ -882,7 +898,7 @@
     }
     async function applyStudentSession(session){
       const u=session?.user||null;
-      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();return;}
+      if(!u){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
       if(!u.email_confirmed_at){
         studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();
         renderAll();renderSession();openLoginGate();
@@ -916,7 +932,7 @@
           setTimeout(()=>{openLoginGate(true);completePasswordRecovery();},0);
           return;
         }
-        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();return;}
+        if(event==='SIGNED_OUT'){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();window.onCommunityAuthChanged?.();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}
         if((event==='SIGNED_IN'||event==='USER_UPDATED')&&!recoveryFlow)setTimeout(()=>{if(session?.user?.id!==studentAuthUser?.id)void applyStudentSession(session);},0);
       });
       const {data,error}=await auth.auth.getSession();
@@ -941,7 +957,7 @@
           await applyStudentSession({...data.session,user:verified.data.user});
         }
       }
-      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();}
+      else if(!studentAuthUser){studentAuthUser=null;state.user=null;state.guest=false;resetStudentData();renderAll();renderSession();openLoginGate();if(document.body.dataset.portal!=='landing')window.location.replace('/');}
     }
 
     function enterAsGuest(){
@@ -1090,6 +1106,41 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
         $('#'+id)?.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.tagName==='INPUT'&&!authLoading){event.preventDefault();window[handler]?.();}});
       });
     }
-    function init(){initAuthKeyboard();applyBackupUrls();initCanvas();renderAll();if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');updateSidebarButton();showPage('home');initSession();void checkAIAvailability();updateCountdown();setInterval(updateCountdown,1000);loadResourceManifest();window.addEventListener('resize',()=>{if(!isMobileSidebar()){document.body.classList.remove('sidebar-open');$('#sidebarOverlay')?.classList.remove('show');$('#sidebar')?.classList.remove('show');}updateSidebarButton();});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSidebar();if(!studentAuthUser&&!$('#loginGate')?.classList.contains('hidden'))closeAuthModal();}if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('agent-card')){e.preventDefault();e.target.click();}});}
+    function init(){
+      initAuthKeyboard();
+      const portal=document.body.dataset.portal||'landing';
+      if(portal==='student'){
+        applyBackupUrls();
+        initCanvas();
+        renderAll();
+        if(!isMobileSidebar())document.body.classList.remove('sidebar-collapsed');
+        updateSidebarButton();
+        updateCountdown();
+        setInterval(updateCountdown,1000);
+        loadResourceManifest();
+        void checkAIAvailability();
+      }else{
+        // Non-student entry points never touch student-only page elements.
+        applyTheme();
+      }
+      initSession();
+      window.addEventListener('resize',()=>{
+        if(!isMobileSidebar()){
+          document.body.classList.remove('sidebar-open');
+          $('#sidebarOverlay')?.classList.remove('show');
+          $('#sidebar')?.classList.remove('show');
+        }
+        updateSidebarButton();
+      });
+      document.addEventListener('keydown',event=>{
+        if(event.key==='Escape'){
+          closeModal();closeSidebar();
+          if(!studentAuthUser&&!$('#loginGate')?.classList.contains('hidden'))closeAuthModal();
+        }
+        if(portal==='student'&&(event.key==='Enter'||event.key===' ')&&event.target.classList?.contains('agent-card')){
+          event.preventDefault();event.target.click();
+        }
+      });
+    }
     init();
   
