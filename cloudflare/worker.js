@@ -131,6 +131,12 @@ async function handleAI(request,env){
 export default {
   async fetch(request,env){
     const pathname=new URL(request.url).pathname;
+    // Canonicalize static multi-page routes so Cloudflare serves each
+    // dedicated /role/index.html instead of falling back to landing.
+    if(['/student','/contributor','/admin'].includes(pathname)){
+      const next=new URL(request.url);next.pathname=pathname+'/';
+      return Response.redirect(next.toString(),308);
+    }
     if(pathname==='/api/ai')return handleAI(request,env);
     if(pathname.startsWith('/api/'))return reply({error:'Unknown API endpoint'},404);
     return env.ASSETS.fetch(request);
