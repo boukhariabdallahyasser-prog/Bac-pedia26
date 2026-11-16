@@ -133,13 +133,13 @@ export default {
     const pathname=new URL(request.url).pathname;
     // Canonicalize static multi-page routes so Cloudflare serves each
     // dedicated /role/index.html instead of falling back to landing.
-    if(['/student','/contributor','/admin'].includes(pathname)){
+    if(['/student','/contributor','/admin','/login'].includes(pathname)){
       const next=new URL(request.url);next.pathname=pathname+'/';
       return Response.redirect(next.toString(),308);
     }
     // A direct static lookup avoids the SPA fallback ever substituting the
     // public landing document for a protected role's HTML entrypoint.
-    if(['/student/','/contributor/','/admin/'].includes(pathname)){
+    if(['/student/','/contributor/','/admin/','/login/'].includes(pathname)){
       const next=new URL(request.url);next.pathname=pathname+'index.html';
       return env.ASSETS.fetch(new Request(next.toString(),request));
     }
