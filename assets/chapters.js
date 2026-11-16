@@ -275,6 +275,13 @@
       event.preventDefault();resetSearch();setRoute();el('chapterQuery')?.focus();
     }
   });
+  if(window.__BAC_TEST__===true)window.__bacChapterTest={
+    rebuild,
+    subjects:()=>subjects,
+    flat:()=>flat,
+    route,
+    resolveCurrent
+  };
   window.renderChapters=()=>{branchStamp='';render()};
   window.openChaptersSubject=id=>{resetSearch();setRoute(id,[])};
   render();
