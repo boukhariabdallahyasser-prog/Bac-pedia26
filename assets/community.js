@@ -72,13 +72,29 @@ async function refreshPortalRole(){
    ownerRole=verifiedOwner?'admin':(request||intendsContribution)?'applicant':'student';
    if(!verifiedOwner&&request?.status==='approved')ownerRole='contributor';
  }catch(error){
+   // Never guess a student's role if the database could not verify access.
+   // Remain on the access-check screen rather than showing the wrong portal.
    console.warn('Portal access check failed',error);
-   ownerRole='student';request=null;
+   const status=$('portalLoading');
+   if(status)status.textContent='تعذّر التحقق من صلاحيات الحساب. أعد تحميل الصفحة.';
+   else notify('تعذّر التحقق من صلاحيات الحساب. أعد المحاولة.','warning');
+   return 'unverified';
  }
  if(user()?.id!==id)return ownerRole;
  window.BAC_PORTAL_ROLE=ownerRole;
+ const expected=ownerRole==='admin'?'admin':
+   ['contributor','applicant'].includes(ownerRole)?'contributor':'student';
+ const currentPortal=document.body.dataset.portal||'landing';
+ // HTML and primary routes are physically separate, and the server-side
+ // Supabase RLS checks above are the authority for each user's role.
+ if(currentPortal!==expected){
+   window.location.replace('/'+expected+'/');
+   return ownerRole;
+ }
+ document.body.classList.add('portal-authorized');
+ $('portalLoading')?.remove();
  if(typeof renderNavs==='function')renderNavs();
- const desired=ownerRole==='admin'?'admin':ownerRole==='contributor'||ownerRole==='applicant'?'collaborate':'home';
+ const desired=expected==='admin'?'admin':expected==='contributor'?'collaborate':'home';
  if(typeof showPage==='function')showPage(desired);
  if(ownerRole==='admin')void loadAdmin();
  if(ownerRole==='student')void loadApprovedResources();
@@ -551,13 +567,13 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];auditEntries=[];ownerRole='student';
- window.BAC_PORTAL_ROLE='student';cancelEdit();resetContributorProfileForm();
+ window.BAC_PORTAL_ROLE='student';document.body.classList.remove('portal-authorized');cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
 window.renderCommunity=()=>{if(user()&&['contributor','applicant'].includes(ownerRole))void loadContributor();};
 window.renderApprovedResources=()=>{if(user()&&ownerRole==='student')void loadApprovedResources();};
 window.renderAdmin=()=>{if(user()&&ownerRole==='admin')void loadAdmin();};
-window.onCommunityAuthChanged=()=>{if(!user()){resetSession();return;}void refreshPortalRole();};
+window.onCommunityAuthChanged=()=>{if(!user()){resetSession();if(document.body.dataset.portal!=='landing')window.location.replace('/');return;}void refreshPortalRole();};
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);

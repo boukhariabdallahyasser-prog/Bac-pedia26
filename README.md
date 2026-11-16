@@ -1,3 +1,33 @@
+## November 2026: genuinely separate role-based pages
+
+Bac-pedia is a **Vite multi-page application**, no longer one enormous HTML file
+containing every student's, contributor's and administrator's panels.
+
+| Public URL | Source file | Purpose |
+| --- | --- | --- |
+| `/` | `index.html` | Scrollable public landing, signup, login and password recovery |
+| `/student/` | `student/index.html` | Student lessons, chapters, Drive files, AI, study tasks, grades and progress |
+| `/contributor/` | `contributor/index.html` | Contributor application, profile, resources and approval status |
+| `/admin/` | `admin/index.html` | Verified single-owner moderation, account review and AI diagnostics |
+
+The documents share styling and authentication utilities, but their **role-specific
+page markup is no longer present in one shared HTML file**.
+`vite.config.js` registers four explicit HTML build inputs.
+The Cloudflare Worker serves the exact `<role>/index.html` for the
+corresponding route, avoiding the single-page-app fallback.
+
+After Supabase verifies the user's email, the role resolver queries database
+roles and contributor applications, verifies the one-owner claim and redirects
+to the correct HTML route. Student signup intent is **never** a security role.
+The destination shell is hidden until the current user's role has been
+confirmed; the backend's RLS and owner-only RPCs remain the actual security
+barrier. A signed-out direct visit to `/admin/`, `/contributor/` or
+`/student/` returns the user to the public login page.
+
+Tests validate four separate source files, four compiled HTML files, strict
+absence of other roles' page sections and the Cloudflare static routing.
+No real authentication cross-role penetration test has yet been executed.
+
 ## Contributor onboarding, owner curation and focused AI answers (November 2026)
 
 The **sole owner email** is configured in a private Supabase record and must be associated with a verified Supabase Auth account. The identity is intentionally never committed to source. The previous reservation has been updated at the owner's request. User-supplied signup metadata cannot confer owner or publication rights.

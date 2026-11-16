@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a1a" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Bac-pedia 2027: موارد البكالوريا، الدروس والوحدات، مراجعة ذكية ومخطط دراسي حسب الشعبة." />
+  <title>مساحة المساهم | Bac-pedia 2027</title>
+  <link rel="stylesheet" href="/assets/app.css" />
+  <link rel="stylesheet" href="/assets/chapters.css" />
+  <link rel="stylesheet" href="/assets/landing.css" />
+  <link rel="stylesheet" href="/assets/community.css" />
+  <link rel="stylesheet" href="/assets/portals.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+</head>
+<body class="public-mode portal-loading" data-portal="contributor">
+  <div id="portalLoading" class="portal-auth-loading" role="status" aria-live="polite"><i class="fa-solid fa-shield-halved"></i> جار التحقق من الحساب... <a href="/">العودة إلى الرئيسية</a></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div><div class="brand-title">BAC<span>PEDIA</span></div><div class="brand-sub">منصتك للبكالوريا 2027</div></div>
+      </div>
+
+      <div class="session-card" id="sessionCard">
+        <div class="session-avatar"><i class="fa-solid fa-user"></i></div>
+        <div style="min-width:0;flex:1"><div class="session-name" id="sessionName">زائر</div><div class="session-mail" id="sessionMail">وضع الزائر</div><span id="sidebarRoleLabel">طالب بكالوريا</span></div>
+        <span class="session-verification" title="حالة الحساب محمية"><i class="fa-solid fa-shield-halved"></i></span>
+      </div>
+      <div>
+        <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
+        <nav class="side-nav" id="sideNav" aria-label="قائمة المساحة الشخصية"></nav>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="top-title"><h2 id="pageTitle">مساحة المساهم</h2><p id="pageSubtitle">منصة مراجعة بسيطة ومنظمة</p></div>
+        <div class="top-actions">
+          <button class="ctrl-btn mobile-menu-btn sidebar-toggle" onclick="toggleSidebar()" aria-expanded="false" title="القائمة الجانبية" aria-label="القائمة الجانبية"><i class="fa-solid fa-bars-staggered"></i></button>
+          <button class="ctrl-btn" id="themeToggleBtn" onclick="toggleTheme()" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+          
+          <button class="ctrl-btn" id="userTopBtn" onclick="openSidebar();document.getElementById('sessionCard')?.scrollIntoView({behavior:'smooth',block:'nearest'})" title="معلومات الحساب"><i class="fa-solid fa-user"></i></button>
+        </div>
+      </div>
+      <section class="page active" id="page-collaborate">
+        <div class="comm-page-heading"><div><span class="comm-eyebrow">CONTRIBUTOR STUDIO</span><h2>لوحة المساهم</h2><p>تابع حالة حسابك، وأضف المصادر، وعدّل المقترحات الخاصة بك.</p></div><button type="button" class="btn" id="collabRefresh"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div id="contributorMetrics" class="portal-metrics"><div><strong>0</strong><span>كل الموارد</span></div><div><strong>0</strong><span>قيد المراجعة</span></div><div><strong>0</strong><span>منشورة</span></div><div><strong>0</strong><span>مرفوضة</span></div></div>
+        <div class="comm-collab-layout"><div class="comm-panel" id="collaboratorStatusPanel"><h3>حالة طلبك</h3><p>جار التحقق من حالة حساب المساهم...</p></div><div class="comm-panel" id="collaboratorApplyPanel"><h3 id="collabProfileFormTitle">بياناتك كمساهم</h3><p class="muted">سجّل تخصصك ومعلوماتك حتى يتمكن المسؤول من مراجعة طلبك. الحقول المطلوبة محددة بوضوح.</p><form id="collaboratorApplyForm" class="comm-form"><label>اسمك الكامل<input id="collabName" required minlength="2" maxlength="100" autocomplete="name" placeholder="الاسم واللقب"></label><label>المؤسسة أو الفريق<input id="collabOrg" required minlength="2" maxlength="150" placeholder="اسم النادي أو المؤسسة، أو مستقل"></label><label>صفة المساهم<select id="collabType"><option value="student">طالب / متخرج</option><option value="teacher">أستاذ</option><option value="club">نادي علمي</option><option value="organization">مؤسسة</option><option value="other">أخرى</option></select></label>
+          <label>الشعبة المختصة <span class="portal-required">إجباري</span>
+            <select id="collabBranch" required><option value="" selected disabled>اختر الشعبة</option><option value="جميع الشعب">جميع الشعب</option><option value="رياضيات">رياضيات</option><option value="علوم تجريبية">علوم تجريبية</option><option value="تقني رياضي">تقني رياضي</option><option value="تسيير واقتصاد">تسيير واقتصاد</option><option value="آداب وفلسفة">آداب وفلسفة</option><option value="لغات أجنبية">لغات أجنبية</option></select>
+          </label><label>كيف يمكن أن تساهم؟<textarea id="collabMotivation" required minlength="15" maxlength="2000" rows="4" placeholder="أخبرنا عن نوع الموارد أو الخبرة التي تريد مشاركتها"></textarea></label><button id="collabProfileSave" type="submit" class="btn primary">إرسال الطلب للمراجعة</button><button id="collabProfileCancel" type="button" class="btn hidden">إلغاء التعديل</button></form></div></div>
+        <div class="comm-panel hidden" id="collabSubmitPanel"><h3 id="collabEditorTitle">أضف مورداً تعليمياً</h3><p class="muted">كل مصدر يظهر في لوحة الإدارة أولاً للمراجعة. اكتب عنواناً واضحاً ووصفاً مفيداً.</p><form id="collabResourceForm" class="comm-form"><label>عنوان المورد<input id="collabResourceTitle" required minlength="4" maxlength="180" placeholder="مثلاً: ملخص وحدة الدوال"></label><label>الشعبة <span class="portal-required">إجباري</span><select id="collabResourceBranch" required><option value="" selected disabled>اختر الشعبة</option><option value="جميع الشعب">جميع الشعب</option><option value="رياضيات">رياضيات</option><option value="علوم تجريبية">علوم تجريبية</option><option value="تقني رياضي">تقني رياضي</option><option value="تسيير واقتصاد">تسيير واقتصاد</option><option value="آداب وفلسفة">آداب وفلسفة</option><option value="لغات أجنبية">لغات أجنبية</option></select></label><label>المادة <span class="portal-required">إجباري</span><input id="collabResourceSubject" required minlength="2" maxlength="100" placeholder="مثلاً: رياضيات"></label>
+          <label>ما نوع الملف؟<select id="collabResourceKind"><option value="lesson">درس</option><option value="summary">ملخص</option><option value="exercise">تمارين</option><option value="exam">موضوع بكالوريا</option><option value="video">فيديو</option><option value="other">آخر</option></select></label>
+          <label>الوحدة أو الفصل <span class="portal-required">إجباري</span><input id="collabResourceUnit" required minlength="2" maxlength="120" placeholder="مثلاً: الوحدة 01، الدوال"></label><label>رابط Google Drive<input id="collabResourceUrl" required type="url" placeholder="https://drive.google.com/file/d/..."></label><label>ماذا يحتوي المجلد أو الملف؟ <span class="portal-required">إجباري</span><textarea id="collabResourceDescription" required minlength="12" rows="4" maxlength="2000" placeholder="مثلاً: ملخص دروس الاشتقاق مع 15 تمريناً محلولاً للباكالوريا"></textarea></label><button type="submit" id="collabSaveResource" class="btn primary">إرسال للمراجعة</button><button type="button" id="collabCancelEdit" class="btn hidden">إلغاء التعديل</button></form></div>
+        <div class="comm-section-title"><h3>مواردي المرسلة</h3><span>إدارة الروابط وحالات المراجعة</span></div><div id="collabResourcesGrid" class="comm-deck-grid"></div>
+      </section>
+          </main>
+  </div>
+  <nav class="bottom-nav" id="bottomNav"></nav>
+  <div class="modal" id="subjectModal">
+    <div class="modal-head" id="modalHead"><button class="round-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button><div style="font-size:2rem" id="modalIcon"><i class="fa-solid fa-book"></i></div><div class="modal-title" id="modalTitle">المادة</div><p id="modalDesc" style="opacity:.85;margin-top:4px"></p></div>
+    <div class="modal-body"><div id="subjectSubfolders" style="max-height:35vh;overflow:auto;margin-bottom:12px"></div><div class="resource-item"><i class="fa-solid fa-folder"></i> ملفات PDF ومراجعات وتمارين</div><div class="resource-item"><i class="fa-brands fa-google-drive"></i> تفتح مباشرة في Google Drive</div><div class="actions"><button class="btn primary" onclick="openCurrentDrive()"><i class="fa-solid fa-external-link"></i> فتح الملفات</button><button class="btn" onclick="shareCurrentSubject()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div></div>
+  </div>
+  <div class="toast-area" id="toastArea"></div>
+  
+  
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

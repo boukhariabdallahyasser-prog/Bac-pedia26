@@ -9,6 +9,15 @@ const call=async(path,opts={},env=base)=>worker.fetch(new Request(origin+path,op
 const home=await call('/');
 assert.equal(home.status,200);
 assert.equal(await home.text(),'STATIC:/');
+for(const role of ['student','contributor','admin']){
+  const withSlash=await call('/'+role+'/');
+  assert.equal(withSlash.status,200);
+  assert.equal(await withSlash.text(),'STATIC:/'+role+'/index.html');
+  const canonical=await call('/'+role);
+  assert.equal(canonical.status,308);
+  assert.equal(canonical.headers.get('location'),origin+'/'+role+'/');
+}
+
 
 const aiWithoutKey=await call('/api/ai');
 assert.equal(aiWithoutKey.status,200);

@@ -33,5 +33,16 @@ function copyClassicAssets() {
 export default defineConfig({
   base: '/',
   plugins:[copyClassicAssets()],
-  build:{outDir:'dist',emptyOutDir:true,sourcemap:false,target:'es2022'}
+  build:{
+    outDir:'dist',emptyOutDir:true,sourcemap:false,target:'es2022',
+    rollupOptions:{
+      // A genuine multi-page app: each role has an independent HTML build.
+      input:{
+        landing:resolve('index.html'),
+        student:resolve('student/index.html'),
+        contributor:resolve('contributor/index.html'),
+        admin:resolve('admin/index.html')
+      }
+    }
+  }
 });

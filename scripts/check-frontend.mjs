@@ -3,6 +3,9 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 const html=fs.readFileSync('index.html','utf8');
+const studentHtml=fs.readFileSync('student/index.html','utf8');
+const contributorHtml=fs.readFileSync('contributor/index.html','utf8');
+const adminHtml=fs.readFileSync('admin/index.html','utf8');
 const app=fs.readFileSync('assets/legacy-app.js','utf8');
 const api=fs.readFileSync('api/ai.js','utf8');
 const main=fs.readFileSync('src/main.js','utf8');
@@ -50,18 +53,35 @@ requireText(html,'<html lang="ar" dir="rtl">','Arabic RTL interface');
 requireText(html,'<script type="module" src="/src/main.js"></script>','Vite entrypoint');
 requireText(html,'href="/assets/app.css"','CSS independently loaded');
 requireText(html,'href="/assets/chapters.css"','Chapter CSS independently loaded');
-requireText(html,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
-requireText(html,'id="chapterContext"','Lesson detail area');
-for(const id of ['page-admin','adminList','adminMetrics','adminSearch','adminReviewFilter','collabBranch','collabResourceBranch','aiOutput','collaboratorStatusPanel','contributorMetrics','signupCollabExtras','approvedResourceGrid'])requireText(html,'id="'+id+'"','role-separated interface');
+requireText(studentHtml,'id="chapterBreadcrumbs"','Nested navigation breadcrumb');
+requireText(studentHtml,'id="chapterContext"','Lesson detail area');
+for(const id of ['page-home','page-ai','page-files','page-chapters','approvedResourceGrid','aiOutput'])
+  requireText(studentHtml,'id="'+id+'"','student-only interface');
+for(const id of ['page-collaborate','collaboratorApplyForm','collaboratorStatusPanel','collabBranch','collabResourceBranch','contributorMetrics'])
+  requireText(contributorHtml,'id="'+id+'"','contributor-only interface');
+for(const id of ['page-admin','adminList','adminMetrics','adminSearch','adminReviewFilter'])
+  requireText(adminHtml,'id="'+id+'"','admin-only interface');
+for(const [doc,role] of [[html,'landing'],[studentHtml,'student'],[contributorHtml,'contributor'],[adminHtml,'admin']]){
+  requireText(doc,'data-portal="'+role+'"','separate role document');
+  requireText(doc,'<script type="module" src="/src/main.js"></script>','shared bootstrap script');
+}
+for(const [role,doc,prohibited] of [
+  ['landing',html,['id="page-home"','id="page-admin"','id="page-collaborate"']],
+  ['student',studentHtml,['id="page-admin"','id="page-collaborate"']],
+  ['contributor',contributorHtml,['id="page-admin"','id="page-home"','id="page-ai"']],
+  ['admin',adminHtml,['id="page-home"','id="page-collaborate"','id="page-ai"']]
+])for(const marker of prohibited)if(doc.includes(marker))throw Error('Mixed page code in '+role+': '+marker);
 requireText(html,'href="/assets/portals.css"','portal stylesheet');
-requireText(html,'data-admin-tab="ai"','admin diagnostic tab');
+requireText(adminHtml,'data-admin-tab="ai"','admin diagnostic tab');
 for(const value of ['async function inspectOwnerAI()','async function testOwnerAI()','agent:\'smart_tutor\'','Authorization:\'Bearer \'+token'])requireText(community,value,'admin-only AI test flow');
 for(const marker of ['window.BAC_PORTAL_ROLE','sidebarBranches','sidebarStudyStats',"if(id==='admin')window.renderAdmin"])requireText(app,marker,'role-aware app navigation');
 
-if(html.includes('id="page-flashcards"')||html.includes('id="lpDemoFlashcard"')||html.includes('id="flashcards-preview"'))throw Error('Removed flashcard UI was reintroduced');
+if([html,studentHtml,contributorHtml,adminHtml].some(doc=>/id="(?:page-flashcards|lpDemoFlashcard|flashcards-preview)"/.test(doc)))throw Error('Removed flashcard UI was reintroduced');
 const landingCSS=fs.readFileSync('assets/landing.css','utf8');
 requireText(landingCSS,'body.public-mode:not(.authenticated):not(.auth-modal-open){overflow-y:auto!important','Public landing must remain vertically scrollable');
-for(const id of ['publicLanding','lpHeroTitle','signupKindStudent','signupKindCollaborator','signupNameInput','page-collaborate','collaboratorApplyForm','collabResourceForm'])requireText(html,'id="'+id+'"','public/auth/community UI');
+for(const id of ['publicLanding','lpHeroTitle','signupKindStudent','signupKindCollaborator','signupNameInput','loginGate'])requireText(html,'id="'+id+'"','public landing and auth UI');
+for(const htmlFile of ['student/index.html','contributor/index.html','admin/index.html'])
+  requireText(config,htmlFile,'Vite multi-page build input');
 for(const css of ['/assets/landing.css','/assets/community.css'])requireText(html,'href="'+css+'"','new independent CSS');
 for(const asset of ['assets/landing.js','assets/community.js','assets/ai-format.js'])requireText(config,asset,'Vite runtime packaging');
 if(/<script>\\s*[\\s\\S]{100}/.test(html))throw Error('Application logic should not be inline in the HTML');
@@ -95,15 +115,21 @@ const authRequirements=[
   "document.querySelectorAll('#loginGate .login-form button"
 ];
 for(const requirement of authRequirements)requireText(app,requirement,'auth safeguard');
-for(const id of ['id="passwordRecoveryPanel"','id="page-chapters"','id="loginGate"','id="chapterResults"'])requireText(html,id,'required interface');
+for(const id of ['id="passwordRecoveryPanel"','id="loginGate"'])requireText(html,id,'public authentication interface');
+for(const id of ['id="page-chapters"','id="chapterResults"'])requireText(studentHtml,id,'student learning interface');
 requireText(app,'userStorageKey(studentAuthUser.id)','private student storage key');
 if(app.includes('localStorage.getItem(CONFIG.storageKey)'))throw Error('Unscoped progress cache is not allowed');
 if(app.includes('window.prompt('))throw Error('Blocking browser prompts are not allowed in authentication');
 if(/sessionGeminiKey|x-goog-api-key|generativelanguage\\.googleapis\\.com|CONFIG\\.aiApiKey/.test(app))throw Error('Provider credentials or direct AI calls are not allowed in browser runtime');
 requireText(app,'callProxyAI(agentId,ctx)','authenticated AI proxy call');
+for(const marker of ["document.body.dataset.portal!=='student'","if(document.body.dataset.portal!==expected)"])
+  requireText(app,marker,'per-route DOM isolation');
+for(const marker of ['portal-authorized','window.location.replace','currentPortal!==expected'])
+  requireText(community,marker,'database-backed portal routing');
+
 requireText(app,'السؤال الذي يجب الإجابة عنه أولاً','AI should prioritize precise user questions');
 requireText(app,'if(window.renderAIAnswer)window.renderAIAnswer(out,ans);','model output formatted safely');
-requireText(html,'class="result-box ai-answer"','readable AI result area');
+requireText(studentHtml,'class="result-box ai-answer"','readable AI result area');
 const worker=fs.readFileSync('cloudflare/worker.js','utf8');
 for(const part of ['QUESTION EXACTE',"reasoning_effort:'low'",'max_completion_tokens:4096'])
   requireText(worker,part,'question-first Deploy backend');
