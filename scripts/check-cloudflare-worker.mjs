@@ -10,12 +10,38 @@ const home=await call('/');
 assert.equal(home.status,200);
 assert.equal(await home.text(),'STATIC:/');
 for(const role of ['login','student','contributor','admin']){
+  // The Worker must pass through the original URL, not rewrite to index.html.
+  // Native Cloudflare HTML handling does that lookup and canonicalization.
   const withSlash=await call('/'+role+'/');
   assert.equal(withSlash.status,200);
-  assert.equal(await withSlash.text(),'STATIC:/'+role+'/index.html');
-  const canonical=await call('/'+role);
-  assert.equal(canonical.status,308);
-  assert.equal(canonical.headers.get('location'),origin+'/'+role+'/');
+  assert.equal(await withSlash.text(),'STATIC:/'+role+'/');
+  assert.equal(withSlash.headers.get('location'),null);
+  const noSlash=await call('/'+role);
+  assert.equal(noSlash.status,200);
+  assert.equal(await noSlash.text(),'STATIC:/'+role);
+}
+
+// Simulate real Cloudflare asset handling, which redirects
+// /role/index.html back to /role/. A Worker rewriting the slash path
+// to index.html would now trigger a 307 and fail this regression test.
+const cloudflareAssets={
+  ...base,
+  ASSETS:{
+    fetch:async request=>{
+      const path=new URL(request.url).pathname;
+      if(/^\/(login|student|contributor|admin)\/index\.html$/.test(path)){
+        const url=new URL(request.url);
+        url.pathname=path.replace(/index\.html$/,'');
+        return Response.redirect(url.toString(),307);
+      }
+      return new Response('Cloudflare static asset: '+path,{status:200});
+    }
+  }
+};
+for(const role of ['login','student','contributor','admin']){
+  const page=await call('/'+role+'/',{},cloudflareAssets);
+  assert.equal(page.status,200,'Avoid asset index.html redirect loop on '+role);
+  assert.equal(await page.text(),'Cloudflare static asset: /'+role+'/');
 }
 
 

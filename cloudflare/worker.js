@@ -131,18 +131,10 @@ async function handleAI(request,env){
 export default {
   async fetch(request,env){
     const pathname=new URL(request.url).pathname;
-    // Canonicalize static multi-page routes so Cloudflare serves each
-    // dedicated /role/index.html instead of falling back to landing.
-    if(['/student','/contributor','/admin','/login'].includes(pathname)){
-      const next=new URL(request.url);next.pathname=pathname+'/';
-      return Response.redirect(next.toString(),308);
-    }
-    // A direct static lookup avoids the SPA fallback ever substituting the
-    // public landing document for a protected role's HTML entrypoint.
-    if(['/student/','/contributor/','/admin/','/login/'].includes(pathname)){
-      const next=new URL(request.url);next.pathname=pathname+'index.html';
-      return env.ASSETS.fetch(new Request(next.toString(),request));
-    }
+    // Route only API calls explicitly. Cloudflare's static-asset HTML
+    // handling natively serves /login/ from /login/index.html and redirects
+    // /login to /login/. Rewriting /login/ to /login/index.html here caused
+    // an infinite redirect: Cloudflare canonicalizes index.html back to /login/.
     if(pathname==='/api/ai')return handleAI(request,env);
     if(pathname.startsWith('/api/'))return reply({error:'Unknown API endpoint'},404);
     return env.ASSETS.fetch(request);

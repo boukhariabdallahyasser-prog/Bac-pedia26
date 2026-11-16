@@ -30,6 +30,16 @@ if(wranglerConfig.workers_dev!==true)throw Error('Public Cloudflare workers.dev 
 if(wranglerConfig.keep_vars!==true)throw Error('Cloudflare deploy must preserve dashboard secrets');
 
 if(wranglerConfig.assets?.binding!=='ASSETS'||!wranglerConfig.assets?.run_worker_first?.includes('/api/*'))throw Error('Cloudflare API routing must run Worker first');
+if(wranglerConfig.assets?.html_handling!=='auto-trailing-slash')
+  throw Error('Cloudflare must use native HTML directory routing');
+if(wranglerConfig.assets?.not_found_handling==='single-page-application')
+  throw Error('SPA fallback must not replace distinct role pages');
+if(wranglerConfig.assets?.run_worker_first?.some(path=>path!=='/api/*'))
+  throw Error('Role HTML must be served by Cloudflare assets directly, not Worker rewrite routes');
+const workerSource=fs.readFileSync('cloudflare/worker.js','utf8');
+if(workerSource.includes("pathname+'index.html'")||workerSource.includes("pathname+'/'"))
+  throw Error('Worker must not redirect or rewrite role URLs to index.html');
+
 
 const rolesSql=fs.readFileSync('supabase/role_portals_admin_2026.sql','utf8');
 const auditSql=fs.readFileSync('supabase/admin_moderation_audit_2026.sql','utf8');
@@ -149,7 +159,9 @@ requireText(main,"location.replace('/login/'+location.search+location.hash)",'le
 const authStyle=fs.readFileSync('assets/auth-page.css','utf8');
 for(const marker of ['[data-portal="login"]','.auth-visual','.login-field:focus-within','@media(max-width:760px)'])
   requireText(authStyle,marker,'premium login styling');
-requireText(worker,"'/login/'",'Cloudflare login path');
+requireText(config,'login/index.html','Vite must build independent login page');
+if(wranglerConfig.assets.html_handling!=='auto-trailing-slash')
+  throw Error('Cloudflare must serve login pages via native canonical HTML handling');
 
 for(const marker of ["from('collaborator_applications')","from('collaborator_resources')","window.onCommunityAuthChanged=","from('platform_roles')","claim_owner_access","review_collaborator_application","review_collaborator_resource","admin_delete_contributor_resource","admin_update_curated_resource","admin_update_contributor_profile","resubmit_contributor_resource","resubmit_collaborator_application","openAdminEditor","loadApprovedResources","renderAdmin"])requireText(community,marker,'role-separated dashboard flow');
 for(const marker of ['alter table public.flashcard_decks enable row level security','alter table public.flashcard_cards enable row level security','alter table public.collaborator_applications enable row level security','alter table public.collaborator_resources enable row level security','grant insert (user_id,display_name,organization,contribution_type,motivation)','grant insert (contributor_id,title,subject,description,resource_url)'])requireText(collaborationSchema,marker,'protected database schema');
