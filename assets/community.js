@@ -335,4 +335,5 @@ $('collabCancelEdit')?.addEventListener('click',cancelEdit);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());
 $('adminReload')?.addEventListener('click',()=>void loadAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
+if(user())void refreshPortalRole(); // Handles sessions restored before this classic script was loaded.
 })();
