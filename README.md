@@ -18,7 +18,7 @@ The previously supplied API token belongs to Deploy.com, not Google Gemini. The 
 
 ### Migrations and security tests
 
-The following migrations have been applied to the connected Supabase project: `role_portals_admin_2026.sql`, `resource_categories_2026.sql`, and `admin_moderation_audit_2026.sql`. All previously saved student progress and retired flashcard data are preserved. RLS protects individual records; an immutable-style moderation audit records privileged decisions. The admin RPCs are deliberately SECURITY DEFINER with explicit in-function owner checks, restricted authenticated execution and an empty search path. These privileged functions must be security-reviewed carefully.
+The following migrations have been applied to the connected Supabase project: `role_portals_admin_2026.sql`, `resource_categories_2026.sql`, and `admin_moderation_audit_2026.sql`. All previously saved student progress and retired flashcard data are preserved. RLS protects individual records; an immutable-style moderation audit records privileged decisions. The privileged moderation implementations live in the private `bac_private` schema with an empty search path and explicit owner checks. The public API exposes only SECURITY INVOKER wrappers; the private schema is not part of the exposed Supabase Data API. The owner dashboard also displays a private moderation audit log.
 
 Run `npm test`, `npm run build`, and `node scripts/check-dist.mjs` before merging, then check the Vercel preview. Real signup, SMTP confirmation, contributor approval and cross-account RLS require authenticated browser tests. Supabase Auth leaked-password protection must be enabled separately in Auth settings.
 
