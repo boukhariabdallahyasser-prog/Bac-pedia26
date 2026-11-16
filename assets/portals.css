@@ -54,3 +54,10 @@ body.light-mode .sidebar .nav-btn.active{background:#ecebfe!important}
 @media(max-width:1000px){.portal-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-admin-entry{flex-direction:column}.portal-admin-actions{justify-content:flex-start;max-width:none}}
 @media(max-width:560px){.portal-metrics{gap:9px}.portal-metrics>div{padding:14px;min-height:89px}.portal-admin-entry{padding:14px 2px}.portal-tabs button{flex:1}.portal-admin-actions{width:100%}}
 @media(prefers-reduced-motion:reduce){.sidebar .nav-btn{transition:none}}
+
+.approved-resources{border-top:1px solid var(--border);margin:32px 0 0;padding-top:25px}
+.approved-resources .portal-heading{margin-bottom:13px}
+.approved-resources .portal-heading h2{font-size:1.4rem}
+.approved-resources .comm-deck-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr))}
+.sidebar #sidebarRoleLabel{display:inline-flex;padding:4px 8px;font-size:.67rem;font-weight:800;border:1px solid rgba(151,142,235,.22);background:rgba(133,119,215,.1);border-radius:9px;margin-top:6px}
+.portal-action:focus-visible,.portal-tabs button:focus-visible,.sidebar .nav-btn:focus-visible{outline:3px solid #a99bff;outline-offset:2px}
