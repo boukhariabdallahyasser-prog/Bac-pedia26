@@ -1,3 +1,30 @@
+## Contributor submissions: persistent real-time owner inbox
+
+Approved contributors can submit any valid HTTPS resource URL, not only Google
+Drive. Supported examples include Google Drive, OneDrive, Dropbox, YouTube,
+Notion, and other HTTPS-hosted learning files or folders. Submissions still
+require a title, branch, subject, unit, and meaningful description.
+
+Every new pending resource, edited pending resource, and resubmitted rejected
+resource creates a persistent row in `public.admin_notifications` for the
+verified owner account. The database trigger runs in the private
+`bac_private` schema. Contributors cannot create or read admin notifications.
+RLS restricts the inbox to the single admin role; the owner can update only
+the `is_read` column. Notifications are retained across sign-outs.
+
+The admin portal has a bell badge, an **الإشعارات** tab, one-click source links,
+mark-read controls, and a Supabase Realtime subscription. When the owner is
+online, new submissions appear immediately and refresh the review queue.
+When offline, unread notifications appear on the next admin login.
+
+The notification channel is **in-app**, not email. Email delivery requires an
+external transactional mail provider and its server-side secret; no email
+provider credential is assumed or exposed in the browser.
+
+The migration also grants the contributor Data API permissions required by
+the already-defined RLS policies. RLS remains the row-level authorization
+boundary for applications and resources.
+
 ## Emergency fix: Cloudflare redirect loop (November 2026)
 
 Cloudflare's native `assets.html_handling = auto-trailing-slash` serves

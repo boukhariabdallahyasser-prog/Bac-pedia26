@@ -9,7 +9,7 @@ const labels={pending:'قيد المراجعة',approved:'منشور / مقبو�
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false;
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -23,8 +23,11 @@ function date(value){return value?new Date(value).toLocaleDateString('ar-DZ'):''
 function statusLabel(value){return labels[value]||value}
 function roleText(value){return value==='admin'?'المالك':value==='contributor'?'مساهم معتمد':value==='applicant'?'طلب مساهمة':'طالب'}
 function validUrl(value){
- try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='drive.google.com'&&/^\/(drive\/folders\/|file\/d\/)/.test(u.pathname)}
- catch{return false}
+ try{
+   const u=new URL(value);
+   return u.protocol==='https:'&&u.hostname.includes('.')&&!u.username&&!u.password&&
+     !['localhost','127.0.0.1','::1'].includes(u.hostname.toLowerCase())&&value.length<=2000;
+ }catch{return false}
 }
 function placeholder(title,description){
  const n=el('div','portal-empty');n.append(el('i','fa-solid fa-folder-open'),el('h3','',title),el('p','',description));return n;
@@ -84,6 +87,7 @@ async function refreshPortalRole(){
  window.BAC_PORTAL_ROLE=ownerRole;
  const expected=ownerRole==='admin'?'admin':
    ['contributor','applicant'].includes(ownerRole)?'contributor':'student';
+ if(ownerRole!=='admin')stopAdminRealtime();
  const currentPortal=document.body.dataset.portal||'landing';
  // HTML and primary routes are physically separate, and the server-side
  // Supabase RLS checks above are the authority for each user's role.
@@ -149,7 +153,7 @@ function renderContributor(){
    panel.append(el('p','','قدّم طلباً للمساهمة ليتم مراجعته. لا تمنح استمارة التسجيل أي صلاحية نشر.'));
  }else{
    panel.append(statusPill(request.status),el('p','',request.display_name+' · '+request.organization+' · '+(request.academic_branch||'الشعبة غير محددة')));
-   panel.append(el('p','',active?'حسابك معتمد. يمكنك إضافة روابط Google Drive وتعديل المقترحات قبل النشر.':
+   panel.append(el('p','',active?'حسابك معتمد. يمكنك إضافة روابط Google Drive وOneDrive وDropbox وYouTube وغيرها من المصادر الآمنة قبل النشر.':
      request.status==='pending'?'طلبك مسجّل، في انتظار مراجعة الإدارة.':'تم إيقاف صلاحية المساهمة. يمكنك التواصل مع الإدارة.'));
  }
  if(request&&['pending','rejected'].includes(request.status))panel.append(button('تعديل بياناتي',()=>editContributorProfile(),'portal-action'));
@@ -217,7 +221,7 @@ async function saveResource(event){
  };
  if(data.title.length<4||data.subject.length<2||!branchValid(data.academic_branch)||
     data.unit_title.length<2||data.description.length<12||!validUrl(data.resource_url)){
-   notify('الشعبة، المادة، الوحدة، الوصف المفيد ورابط Google Drive جميعها مطلوبة','warning');return;
+   notify('الشعبة والمادة والوحدة والوصف ورابط HTTPS كلها مطلوبة','warning');return;
  }
  busy=true;
  try{
@@ -225,7 +229,7 @@ async function saveResource(event){
      await client.from('collaborator_resources').update(data).eq('id',editId).eq('contributor_id',user().id):
      await client.from('collaborator_resources').insert({...data,contributor_id:user().id});
    if(result.error)throw result.error;
-   cancelEdit();await loadContributor();notify('تم حفظ المورد في قاعدة البيانات','success');
+   cancelEdit();await loadContributor();notify('تم إرسال المورد إلى لوحة الإدارة للمراجعة. ستصلك حالة الطلب هنا.','success');
  }catch(error){failed(error,'حفظ المورد');}finally{busy=false;}
 }
 async function removeResource(item){
@@ -308,33 +312,94 @@ async function sendApplication(event){
    notify('تم حفظ بياناتك للمراجعة','success');
  }catch(error){failed(error,'تقديم طلب المساهمة');}finally{busy=false;}
 }
+function stopAdminRealtime(){
+ if(adminRealtimeChannel&&db())void db().removeChannel(adminRealtimeChannel);
+ adminRealtimeChannel=null;adminRealtimeUser=null;
+}
+function updateAdminNotificationBadge(){
+ const unread=adminNotifications.filter(item=>!item.is_read).length;
+ for(const id of ['adminNotificationsBadge','adminNotificationCount']){
+   const badge=$(id);if(!badge)continue;
+   badge.textContent=unread>99?'99+':String(unread);
+   badge.hidden=unread===0;
+ }
+ $('adminNotificationsButton')?.setAttribute('aria-label','الإشعارات، '+unread+' غير مقروءة');
+}
+function subscribeAdminNotifications(id){
+ const client=db();if(!client||ownerRole!=='admin')return;
+ if(adminRealtimeChannel&&adminRealtimeUser===id)return;
+ stopAdminRealtime();adminRealtimeUser=id;
+ adminRealtimeChannel=client.channel('bac-admin-resource-inbox-'+id)
+   .on('postgres_changes',{
+     event:'INSERT',schema:'public',table:'admin_notifications',
+     filter:'recipient_id=eq.'+id
+   },payload=>{
+     const incoming=payload.new;
+     if(!incoming||ownerRole!=='admin'||user()?.id!==id)return;
+     if(!adminNotifications.some(item=>item.id===incoming.id))adminNotifications.unshift(incoming);
+     updateAdminNotificationBadge();
+     notify('وصل مورد جديد من '+(incoming.contributor_name||'مساهم')+' إلى صندوق الإدارة','success');
+     void loadAdmin();
+   })
+   .subscribe(status=>{
+     if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')
+       console.warn('Admin resource notification channel:',status);
+   });
+}
+async function markNotificationRead(id){
+ if(ownerRole!=='admin'||!user())return;
+ try{
+   const {error}=await db().from('admin_notifications').update({is_read:true})
+     .eq('id',id).eq('recipient_id',user().id);
+   if(error)throw error;
+   const item=adminNotifications.find(row=>row.id===id);if(item)item.is_read=true;
+   updateAdminNotificationBadge();renderAdmin();
+ }catch(error){failed(error,'تحديث الإشعار');}
+}
+async function markAllNotificationsRead(){
+ if(ownerRole!=='admin'||!user())return;
+ try{
+   const {error}=await db().from('admin_notifications').update({is_read:true})
+     .eq('recipient_id',user().id).eq('is_read',false);
+   if(error)throw error;
+   adminNotifications.forEach(item=>{item.is_read=true;});
+   updateAdminNotificationBadge();renderAdmin();
+   notify('تم تحديد جميع الإشعارات كمقروءة','success');
+ }catch(error){failed(error,'تحديث الإشعارات');}
+}
 async function loadAdmin(){
  if(ownerRole!=='admin'||!user())return;
  const marker=$('adminStatusNote');if(marker)marker.textContent='جار تحميل البيانات...';
  const id=user().id;
  try{
    const client=db();
-   const [applications,proposals,students,audit]=await Promise.all([
+   subscribeAdminNotifications(id);
+   const [applications,proposals,students,audit,notifications]=await Promise.all([
      client.from('collaborator_applications')
        .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
        .select('id,contributor_id,title,subject,academic_branch,description,resource_url,unit_title,resource_kind,status,created_at').order('created_at',{ascending:false}).limit(400),
      client.from('student_profiles')
        .select('user_id,full_name,email,branch,created_at,last_activity_at').order('created_at',{ascending:false}).limit(250),
-     client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100)
+     client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100),
+     client.from('admin_notifications')
+       .select('id,resource_id,contributor_id,contributor_name,event_type,resource_title,resource_subject,resource_description,resource_url,resource_kind,unit_title,academic_branch,is_read,created_at')
+       .order('created_at',{ascending:false}).limit(200)
    ]);
-   for(const q of [applications,proposals,students,audit])if(q.error)throw q.error;
+   for(const q of [applications,proposals,students,audit,notifications])if(q.error)throw q.error;
    if(user()?.id!==id||ownerRole!=='admin')return;
    adminApplications=applications.data||[];
    adminResources=proposals.data||[];
    profiles=students.data||[];
    auditEntries=audit.data||[];
+   adminNotifications=notifications.data||[];
+   updateAdminNotificationBadge();
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
      adminApplications.filter(x=>x.status==='approved').length,
      adminResources.filter(x=>x.status==='pending').length
    ]);
-   if(marker)marker.textContent='تُطبّق موافقات الإدارة في قاعدة البيانات مباشرة. لا يمكن لمساهم منح نفسه صلاحيات.';
+   if(marker)marker.textContent='كل رابط يرسله المساهم يصل تلقائياً إلى هذا المركز، مع إشعار فوري وسجل محفوظ للمراجعة.';
    renderAdmin();
  }catch(error){
    if(marker)marker.textContent='تعذر تحميل بيانات الإدارة.';
@@ -400,7 +465,7 @@ function adminVisible(rows){
  return rows.filter(x=>{
    if(status!=='all'&&x.status&&x.status!==status)return false;
    if(!search)return true;
-   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,
+   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,x.resource_url,
      x.unit_title,x.description,x.motivation,x.email].filter(Boolean).join(' ').toLocaleLowerCase();
    return joined.includes(search);
  });
@@ -440,7 +505,7 @@ function openAdminEditor(type,item){
    field('resource_kind','نوع المورد',item.resource_kind||'other',
      {choices:Object.entries(kind).map(([value,label])=>({value,label}))});
    field('unit_title','الوحدة أو الفصل',item.unit_title,{min:2,max:120});
-   field('resource_url','رابط Google Drive',item.resource_url,{url:true,max:2000});
+   field('resource_url','رابط المصدر (HTTPS)',item.resource_url,{url:true,max:2000});
    field('description','محتويات المجلد أو الملف',item.description,{min:12,max:2000,multiline:true});
  }else{
    field('display_name','اسم المساهم',item.display_name,{min:2,max:100});
@@ -461,7 +526,7 @@ function openAdminEditor(type,item){
    const data=Object.fromEntries(Object.entries(controls).map(([k,v])=>[k,txt(v.value)]));
    if(!branchValid(data.academic_branch)){notify('اختر الشعبة المطلوبة','warning');return;}
    if(type==='resource'&&(data.description.length<12||data.unit_title.length<2||!validUrl(data.resource_url))){
-     notify('أدخل رابط Google Drive ووحدة ووصفاً واضحاً','warning');return;
+     notify('أدخل رابط HTTPS صالحاً ووحدة ووصفاً واضحاً','warning');return;
    }
    if(type==='application'&&data.motivation.length<15){notify('وصف المساهمة قصير جداً','warning');return;}
    busy=true;save.disabled=true;
@@ -535,6 +600,35 @@ function renderAdmin(){
        el('p','','الشعبة: '+(p.branch||'غير محددة')+' · التسجيل: '+date(p.created_at)));
      card.append(main);root.append(card);
    }
+ }else if(adminTab==='notifications'){
+   const rows=adminVisible(adminNotifications.map(item=>({
+     ...item,title:item.resource_title,subject:item.resource_subject,
+     description:item.resource_description,display_name:item.contributor_name
+   })));
+   const unread=adminNotifications.filter(item=>!item.is_read).length;
+   const toolbar=el('div','portal-notification-toolbar');
+   toolbar.append(el('span','',unread+' إشعار غير مقروء · تُحفظ الإشعارات حتى بعد تسجيل الخروج'));
+   if(unread)toolbar.append(button('تحديد الكل كمقروء',()=>void markAllNotificationsRead(),'portal-action success'));
+   root.append(toolbar);
+   if(!rows.length){root.append(placeholder('صندوق الإشعارات فارغ','ستظهر هنا تلقائياً روابط Drive والملفات والمصادر التي يرسلها المساهمون.'));return;}
+   for(const item of rows){
+     const card=el('article','portal-admin-entry portal-notification-entry'+(item.is_read?'':' is-unread'));
+     const main=el('div','portal-admin-entry-text');
+     const heading=item.event_type==='resource_resubmitted'?'أُعيد إرسال مورد للمراجعة':
+       item.event_type==='resource_updated'?'تم تعديل مورد قيد المراجعة':'مورد جديد وصل للمراجعة';
+     main.append(el('strong','',heading+' · '+item.resource_title),
+       el('span','',item.contributor_name+' · '+(item.academic_branch||'جميع الشعب')+' · '+item.resource_subject+' · '+date(item.created_at)),
+       el('p','',item.resource_description||'لا يوجد وصف'));
+     const actions=el('div','portal-admin-actions');
+     if(validUrl(item.resource_url)){
+       const a=el('a','portal-action','فتح المصدر');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
+     }
+     if(item.resource_id&&adminResources.some(resource=>resource.id===item.resource_id))
+       actions.append(button('مراجعة المورد',()=>{adminTab='resources';$('adminSearch').value=item.resource_title;if($('adminReviewFilter'))$('adminReviewFilter').value='all';renderAdmin();},'portal-action success'));
+     if(!item.is_read)actions.append(button('تحديد كمقروء',()=>void markNotificationRead(item.id)));
+     actions.append(el('span','comm-state-tag '+(item.is_read?'approved':'pending'),item.is_read?'مقروء':'جديد'));
+     card.append(main,actions);root.append(card);
+   }
  }else if(adminTab==='audit'){
    if(!auditEntries.length){root.append(placeholder('لا توجد إجراءات','ستظهر قرارات الموافقة والرفض والحذف هنا.'));return;}
    for(const entry of auditEntries){
@@ -566,7 +660,8 @@ async function moderate(type,id,decision){
  }catch(error){failed(error,'مراجعة العنصر');}finally{busy=false;}
 }
 function resetSession(){
- identity=null;request=null;resources=[];adminApplications=[];adminResources=[];profiles=[];auditEntries=[];ownerRole='student';
+ stopAdminRealtime();
+ identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
  window.BAC_PORTAL_ROLE='student';document.body.classList.remove('portal-authorized');cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
