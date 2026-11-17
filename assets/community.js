@@ -221,7 +221,7 @@ async function saveResource(event){
  };
  if(data.title.length<4||data.subject.length<2||!branchValid(data.academic_branch)||
     data.unit_title.length<2||data.description.length<12||!validUrl(data.resource_url)){
-   notify('الشعبة، المادة، الوحدة، الوصف المفيد ورابط Google Drive جميعها مطلوبة','warning');return;
+   notify('الشعبة والمادة والوحدة والوصف ورابط HTTPS كلها مطلوبة','warning');return;
  }
  busy=true;
  try{
@@ -465,7 +465,7 @@ function adminVisible(rows){
  return rows.filter(x=>{
    if(status!=='all'&&x.status&&x.status!==status)return false;
    if(!search)return true;
-   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,
+   const joined=[x.display_name,x.organization,x.academic_branch,x.title,x.subject,x.resource_url,
      x.unit_title,x.description,x.motivation,x.email].filter(Boolean).join(' ').toLocaleLowerCase();
    return joined.includes(search);
  });
@@ -526,7 +526,7 @@ function openAdminEditor(type,item){
    const data=Object.fromEntries(Object.entries(controls).map(([k,v])=>[k,txt(v.value)]));
    if(!branchValid(data.academic_branch)){notify('اختر الشعبة المطلوبة','warning');return;}
    if(type==='resource'&&(data.description.length<12||data.unit_title.length<2||!validUrl(data.resource_url))){
-     notify('أدخل رابط Google Drive ووحدة ووصفاً واضحاً','warning');return;
+     notify('أدخل رابط HTTPS صالحاً ووحدة ووصفاً واضحاً','warning');return;
    }
    if(type==='application'&&data.motivation.length<15){notify('وصف المساهمة قصير جداً','warning');return;}
    busy=true;save.disabled=true;
@@ -624,7 +624,7 @@ function renderAdmin(){
        const a=el('a','portal-action','فتح المصدر');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
      }
      if(item.resource_id&&adminResources.some(resource=>resource.id===item.resource_id))
-       actions.append(button('مراجعة المورد',()=>{adminTab='resources';$('adminSearch').value=item.resource_title;renderAdmin();},'portal-action success'));
+       actions.append(button('مراجعة المورد',()=>{adminTab='resources';$('adminSearch').value=item.resource_title;if($('adminReviewFilter'))$('adminReviewFilter').value='all';renderAdmin();},'portal-action success'));
      if(!item.is_read)actions.append(button('تحديد كمقروء',()=>void markNotificationRead(item.id)));
      actions.append(el('span','comm-state-tag '+(item.is_read?'approved':'pending'),item.is_read?'مقروء':'جديد'));
      card.append(main,actions);root.append(card);
