@@ -36,6 +36,7 @@ for(const asset of cssPaths){
   cssText+=fs.readFileSync(stylesheet,'utf8');
 }
 if(!cssText.includes('.chapter-context')||!cssText.includes('.login-gate'))throw Error('Missing chapter or login styles in compiled CSS');
+for(const selector of ['.portal-notification-entry','.portal-notification-toolbar','.portal-notification-count'])if(!cssText.includes(selector))throw Error('Missing admin notification style: '+selector);
 for(const selector of ['.landing','.lp-hero','.auth-role-switch','.comm-study-card','.comm-deck-grid','.portal-metrics','.sidebar .nav-btn'])if(!cssText.includes(selector))throw Error('Missing public/community style: '+selector);
 if(!html.includes('id="publicLanding"')||html.includes('id="loginGate"'))throw Error('Public landing must not contain login form');
 for(const marker of ['id="loginGate"','id="loginEmailInput"','id="signupEmailInput"','id="passwordRecoveryPanel"'])
@@ -52,6 +53,10 @@ if(!loginStyles.includes('.auth-visual')||!loginStyles.includes('.auth-submit'))
   throw Error('Dedicated premium auth styles were not bundled');
 for(const [role,markup] of [['student',studentHtml],['contributor',contributorHtml],['admin',adminHtml]])
   if(!markup.includes('class="app-shell"'))throw Error('Built '+role+' is missing app shell');
+for(const marker of ['id="adminNotificationsTab"','id="adminNotificationsBadge"','id="adminNotificationCount"'])
+  if(!adminHtml.includes(marker))throw Error('Built admin inbox is missing '+marker);
+if(!contributorHtml.includes('رابط المصدر (HTTPS)'))throw Error('Built contributor form does not accept general HTTPS sources');
+
 
 const resources=JSON.parse(fs.readFileSync(path.join(root,'resources.json'),'utf8'));
 if(!resources.subjects||resources.schemaVersion!==1)throw Error('Generated resource index is invalid');
