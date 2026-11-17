@@ -505,7 +505,7 @@ function openAdminEditor(type,item){
    field('resource_kind','نوع المورد',item.resource_kind||'other',
      {choices:Object.entries(kind).map(([value,label])=>({value,label}))});
    field('unit_title','الوحدة أو الفصل',item.unit_title,{min:2,max:120});
-   field('resource_url','رابط Google Drive',item.resource_url,{url:true,max:2000});
+   field('resource_url','رابط المصدر (HTTPS)',item.resource_url,{url:true,max:2000});
    field('description','محتويات المجلد أو الملف',item.description,{min:12,max:2000,multiline:true});
  }else{
    field('display_name','اسم المساهم',item.display_name,{min:2,max:100});
@@ -626,7 +626,7 @@ function renderAdmin(){
      if(item.resource_id&&adminResources.some(resource=>resource.id===item.resource_id))
        actions.append(button('مراجعة المورد',()=>{adminTab='resources';$('adminSearch').value=item.resource_title;renderAdmin();},'portal-action success'));
      if(!item.is_read)actions.append(button('تحديد كمقروء',()=>void markNotificationRead(item.id)));
-     actions.append(statusPill(item.is_read?'approved':'pending'));
+     actions.append(el('span','comm-state-tag '+(item.is_read?'approved':'pending'),item.is_read?'مقروء':'جديد'));
      card.append(main,actions);root.append(card);
    }
  }else if(adminTab==='audit'){
