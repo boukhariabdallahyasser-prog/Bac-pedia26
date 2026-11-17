@@ -1,8 +1,15 @@
 -- Persist an admin inbox entry whenever an approved contributor submits or updates a resource.
 -- Notifications are private to the single verified platform owner and delivered live through Supabase Realtime.
 
+-- Existing RLS policies remain the row-level security boundary. These grants
+-- make the already-defined contributor insert/update flows callable through Data API.
+GRANT SELECT, INSERT, UPDATE ON TABLE public.collaborator_applications TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.collaborator_resources TO authenticated;
+
 ALTER TABLE public.collaborator_resources
   DROP CONSTRAINT IF EXISTS collaborator_resources_resource_url_check;
+ALTER TABLE public.collaborator_resources
+  DROP CONSTRAINT IF EXISTS collaborator_resources_resource_url_https_check;
 
 ALTER TABLE public.collaborator_resources
   ADD CONSTRAINT collaborator_resources_resource_url_https_check
@@ -37,7 +44,7 @@ CREATE INDEX IF NOT EXISTS admin_notifications_recipient_unread_created_idx
 
 ALTER TABLE public.admin_notifications ENABLE ROW LEVEL SECURITY;
 
-REVOKE ALL ON TABLE public.admin_notifications FROM PUBLIC, anon;
+REVOKE ALL ON TABLE public.admin_notifications FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON TABLE public.admin_notifications TO authenticated;
 GRANT UPDATE (is_read) ON TABLE public.admin_notifications TO authenticated;
 
