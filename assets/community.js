@@ -373,6 +373,7 @@ async function loadAdmin(){
  const id=user().id;
  try{
    const client=db();
+   subscribeAdminNotifications(id);
    const [applications,proposals,students,audit,notifications]=await Promise.all([
      client.from('collaborator_applications')
        .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
@@ -393,7 +394,6 @@ async function loadAdmin(){
    auditEntries=audit.data||[];
    adminNotifications=notifications.data||[];
    updateAdminNotificationBadge();
-   subscribeAdminNotifications(id);
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
      adminApplications.filter(x=>x.status==='approved').length,
