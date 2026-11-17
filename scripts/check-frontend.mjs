@@ -100,8 +100,9 @@ requireText(html,'href="/assets/portals.css"','portal stylesheet');
 requireText(adminHtml,'data-admin-tab="ai"','admin diagnostic tab');
 for(const marker of ['id="adminNotificationsTab"','id="adminNotificationsBadge"','id="adminNotificationCount"','id="adminNotificationsButton"'])
   requireText(adminHtml,marker,'admin notification inbox UI');
-for(const marker of ['admin_notifications','subscribeAdminNotifications','markNotificationRead','markAllNotificationsRead','resource_submitted'])
+for(const marker of ['admin_notifications','subscribeAdminNotifications','markNotificationRead','markAllNotificationsRead'])
   requireText(community,marker,'persistent real-time admin inbox');
+requireText(notificationsSql,'resource_submitted','database resource-submission notification trigger');
 requireText(community,"u.protocol==='https:'",'HTTPS-only resource URL validation');
 if(community.includes("u.hostname==='drive.google.com'"))throw Error('Contributor links must not be limited to Google Drive');
 requireText(contributorHtml,'رابط المصدر (HTTPS)','generic contributor source link');
