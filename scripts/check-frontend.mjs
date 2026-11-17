@@ -15,6 +15,19 @@ const community=fs.readFileSync('assets/community.js','utf8');
 const collaborationSchema=fs.readFileSync('supabase/landing_collaboration_flashcards.sql','utf8');
 const curatorSql=fs.readFileSync('supabase/contributor_curator_fields_2026.sql','utf8');
 const reapplySql=fs.readFileSync('supabase/reapply_contributor_2026.sql','utf8');
+const notificationsSql=fs.readFileSync('supabase/migrations/20261117213000_admin_resource_notifications.sql','utf8');
+for(const token of [
+  'CREATE TABLE IF NOT EXISTS public.admin_notifications',
+  'ENABLE ROW LEVEL SECURITY',
+  'Owner reads own admin notifications',
+  'GRANT UPDATE (is_read)',
+  'bac_private.notify_admin_on_contributor_resource',
+  'ALTER PUBLICATION supabase_realtime ADD TABLE public.admin_notifications',
+  'collaborator_resources_resource_url_https_check'
+])requireText(notificationsSql,token,'secure admin notification migration');
+if(notificationsSql.includes('GRANT INSERT ON TABLE public.admin_notifications'))
+  throw Error('Contributors must never be able to write admin notifications directly');
+
 for(const token of ['bac_private.resubmit_collaborator_application','user_id=caller',"status='rejected'",'SECURITY INVOKER'])
   requireText(reapplySql,token,'safe contributor reapplication');
 
@@ -85,6 +98,14 @@ for(const [role,doc,prohibited] of [
 ])for(const marker of prohibited)if(doc.includes(marker))throw Error('Mixed page code in '+role+': '+marker);
 requireText(html,'href="/assets/portals.css"','portal stylesheet');
 requireText(adminHtml,'data-admin-tab="ai"','admin diagnostic tab');
+for(const marker of ['id="adminNotificationsTab"','id="adminNotificationsBadge"','id="adminNotificationCount"','id="adminNotificationsButton"'])
+  requireText(adminHtml,marker,'admin notification inbox UI');
+for(const marker of ['admin_notifications','subscribeAdminNotifications','markNotificationRead','markAllNotificationsRead','resource_submitted'])
+  requireText(community,marker,'persistent real-time admin inbox');
+requireText(community,"u.protocol==='https:'",'HTTPS-only resource URL validation');
+if(community.includes("u.hostname==='drive.google.com'"))throw Error('Contributor links must not be limited to Google Drive');
+requireText(contributorHtml,'رابط المصدر (HTTPS)','generic contributor source link');
+
 for(const value of ['async function inspectOwnerAI()','async function testOwnerAI()','agent:\'smart_tutor\'','Authorization:\'Bearer \'+token'])requireText(community,value,'admin-only AI test flow');
 for(const marker of ['window.BAC_PORTAL_ROLE','sidebarBranches','sidebarStudyStats',"if(id==='admin')window.renderAdmin"])requireText(app,marker,'role-aware app navigation');
 
