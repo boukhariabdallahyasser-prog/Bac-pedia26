@@ -11,13 +11,14 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node scripts/check-frontend.mjs",
+    "test": "node scripts/check-frontend.mjs && node scripts/check-practice.mjs && node scripts/check-study-hub.mjs && node scripts/check-feature-phase.mjs && node scripts/check-content-workflows.mjs",
     "check": "npm run test && npm run build",
     "cf:preview": "npm run build && wrangler dev",
     "cf:deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.119.0"
+    "@supabase/supabase-js": "2.119.0",
+    "pdfjs-dist": "6.5.438"
   },
   "devDependencies": {
     "vite": "8.3.8",

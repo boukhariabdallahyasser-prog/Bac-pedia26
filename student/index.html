@@ -237,6 +237,64 @@
           </div>
         </div>
       </section>
+      <section class="page" id="page-practice">
+        <div class="section-head"><div><h2>التدريب بالوقت</h2><p>اختر موضوعاً من مكتبتك، ثم تدرب ضمن وقت محدد دون رفع بياناتك.</p></div></div>
+        <div class="grid-2">
+          <div class="card"><h3>جلسة تدريب جديدة</h3>
+            <label for="practiceSubject">المادة أو الموضوع</label>
+            <input class="input" id="practiceSubject" maxlength="100" value="مراجعة عامة" placeholder="مثال: الرياضيات · الدوال" />
+            <label for="practiceMinutes">المدة بالدقائق (5 إلى 240)</label>
+            <input class="input" id="practiceMinutes" type="number" min="5" max="240" step="1" value="60" />
+            <div id="practiceClock" role="timer" aria-live="off" style="font-size:2rem;font-weight:800;direction:ltr;text-align:center;margin:12px">00:00:00</div>
+            <progress id="practiceProgress" max="100" value="0" style="width:100%"></progress>
+            <div class="actions"><button class="btn primary" id="practiceStart">بدء التدريب</button><button class="btn" id="practiceStop" disabled>إنهاء وحفظ</button><button class="btn" onclick="openFilesAll()">فتح المواضيع</button></div>
+            <p class="muted" id="practiceStatus" role="status">النتائج هنا تقيس وقت التدريب فقط، ولا تصحح الإجابات.</p>
+          </div>
+          <div class="card"><h3>آخر الجلسات على هذا الجهاز</h3><ol id="practiceHistory"></ol><p class="muted">السجل محلي لهذا المتصفح، وليس متزامناً مع حسابك. لا تستخدمه على جهاز مشترك.</p></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-papers">
+        <div class="section-head"><div><h2>مستكشف مواضيع البكالوريا</h2><p>مواضيع وروابط امتحانات من الفهرس الحالي. سنة الامتحان غير مؤكدة ما لم تظهر في اسم المورد.</p></div></div>
+        <div class="card"><div class="grid-2"><input id="studyPapersQuery" class="input" type="search" placeholder="ابحث عن موضوع أو سنة..." aria-label="البحث عن مواضيع البكالوريا"><select id="studyPapersSubject" class="select" aria-label="المادة"><option value="">جميع المواد</option></select></div>
+          <p class="muted" id="studyPapersStatus" role="status"></p><div id="studyPapersResults"></div></div>
+      </section>
+      <section class="page" id="page-exercises">
+        <div class="section-head"><div><h2>التمارين حسب الموضوع</h2><p>البحث يستعمل أسماء المجلدات والملفات، ولا يدعي توثيق الحلول دون مراجعة بشرية.</p></div></div>
+        <div class="card"><div class="grid-2"><input id="studyExercisesQuery" class="input" type="search" placeholder="مثلاً: الدوال، المتتاليات، الفيزياء..." aria-label="البحث عن تمارين"><select id="studyExercisesSubject" class="select" aria-label="المادة"><option value="">جميع المواد</option></select></div>
+          <p class="muted" id="studyExercisesStatus" role="status"></p><div id="studyExercisesResults"></div></div>
+      </section>
+      <section class="page" id="page-collections">
+        <div class="section-head"><div><h2>مجموعتي الدراسية</h2><p>احتفظ بروابط الموارد المهمة في حسابك، مع نسخة محلية عند انقطاع الاتصال.</p></div></div>
+        <div class="card"><p>عدد الموارد المحفوظة: <strong id="studyCollectionCount">0</strong></p>
+          <p class="muted">تُزامَن الروابط مع حسابك عند توفر الاتصال. عند تعذر الاتصال تبقى نسخة محلية حتى المزامنة التالية.</p>
+          <div id="studyCollectionsResults"></div></div>
+      </section>
+      <section class="page" id="page-pdf">
+        <div class="section-head"><div><h2>تلخيص ملفات PDF</h2><p>يُستخرج النص على جهازك أولاً. لا يُرسل إلى خادم الذكاء الاصطناعي إلا إذا ضغطت زر التلخيص أو الأسئلة.</p></div></div>
+        <div class="card">
+          <label for="studyPdfInput">اختر PDF (حد أقصى 15 ميغابايت)</label>
+          <input type="file" id="studyPdfInput" accept=".pdf,application/pdf" class="input">
+          <div class="actions"><button type="button" class="btn primary" id="studyPdfExtract">استخراج النص محلياً</button></div>
+          <p id="studyPdfStatus" role="status" class="muted">يدعم الملفات النصية. لا يدعم OCR للصور الممسوحة.</p>
+          <label for="studyPdfText">راجع النص المستخرج قبل إرساله</label>
+          <textarea id="studyPdfText" class="textarea" rows="8" maxlength="12000" placeholder="سيظهر النص هنا..."></textarea>
+          <div class="actions"><button type="button" class="btn" id="studyPdfSummarize">تلخيص بالذكاء الاصطناعي</button><button type="button" class="btn" id="studyPdfQuiz">أسئلة من PDF</button></div>
+          <p class="muted">يتطلب الطلب تسجيل الدخول واتصال خادم AI. لا يُعد الناتج تصحيحاً رسمياً.</p>
+        </div>
+      </section>
+      <section class="page" id="page-quiz">
+        <div class="section-head"><div><h2>أنشئ أسئلة من ملاحظاتك</h2><p>اختبار ملء الفراغات اعتماداً على الجمل التي كتبتها بنفسك، دون إرسالها إلى خادم ذكاء اصطناعي.</p></div></div>
+        <div class="card"><label for="studyQuizNotes">ملاحظات الدرس</label>
+          <textarea id="studyQuizNotes" class="textarea" rows="7" maxlength="12000" placeholder="الصق ملاحظاتك هنا..."></textarea>
+          <div class="actions"><button class="btn primary" id="studyQuizGenerate">إنشاء أسئلة</button><button class="btn" id="studyQuizSendAI" type="button">إنشاء أسئلة بالذكاء الاصطناعي</button></div>
+          <p class="muted">أداة تدريب أولية: لا تقيّم صحة المعلومات ولا تغني عن التصحيح العلمي.</p>
+          <div id="studyQuizResult" aria-live="polite"></div></div>
+      </section>
+      <section class="page" id="page-coverage">
+        <div class="section-head"><div><h2>تغطية مكتبة الموارد</h2><p>إحصاء الموارد المفهرسة بحسب المادة، وليس نسبة استكمال المنهاج الرسمي.</p></div></div>
+        <div class="card"><div id="studyCoverageResults"></div></div>
+      </section>
       <section class="page" id="page-grades">
         <div class="section-head"><div><h2>حاسبة المعدل</h2><p>احسب معدلك التقريبي واعرف العلامة اللازمة لهدفك.</p></div><button class="btn" onclick="resetGrades()"><i class="fa-solid fa-rotate-left"></i> معاملات الشعبة</button></div>
         <div class="grid-2">

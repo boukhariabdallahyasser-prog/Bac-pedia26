@@ -9,6 +9,7 @@ const labels={pending:'قيد المراجعة',approved:'منشور / مقبو�
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
+let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null,adminReviews=[],approvedReputation=0;
 let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
@@ -115,10 +116,18 @@ async function loadApprovedResources(){
      .eq('status','approved').order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
    if(user()?.id!==id||ownerRole!=='student')return;
+   const ids=(data||[]).map(x=>x.id);
+   let verifiedIds=new Set();
+   if(ids.length){
+     const {data:verified,error:verifyError}=await db().from('resource_verifications')
+       .select('resource_id').in('resource_id',ids).limit(200);
+     if(!verifyError)verifiedIds=new Set((verified||[]).map(x=>x.resource_id));
+   }
    grid.replaceChildren();
    if(!data?.length){grid.append(placeholder('لا توجد إضافات منشورة','ستظهر الملفات الجديدة بعد موافقة إدارة Bac-pedia.'));return;}
    for(const item of data){
      const card=el('article','portal-resource');
+     if(verifiedIds.has(item.id))card.append(el('span','comm-state-tag approved','حل راجعه المشرف'));
      card.append(el('span','portal-type',kind[item.resource_kind]||'مورد'),
        el('h3','',item.title),el('p','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+(item.unit_title?' · '+item.unit_title:'')),
        el('p','',item.description||''));
@@ -126,6 +135,17 @@ async function loadApprovedResources(){
        const a=el('a','portal-action','فتح المصدر الموثق');
        a.href=item.resource_url;a.rel='noopener noreferrer';a.target='_blank';card.append(a);
      }
+     const actions=el('div','portal-resource-actions');
+     actions.append(button('تقييم 1–5',()=>{
+       const value=Number(window.prompt('أدخل تقييماً من 1 إلى 5'));
+       if(Number.isInteger(value)&&value>=1&&value<=5)void submitResourceReview(item,'rating',value);
+     }));
+     actions.append(button('إبلاغ عن مشكلة',()=>{
+       const reason=window.prompt('نوع البلاغ: broken_link / incorrect_solution / copyright / inappropriate / other','broken_link');
+       if(['broken_link','incorrect_solution','copyright','inappropriate','other'].includes(reason))void submitResourceReview(item,'report_reason',reason);
+     }));
+     actions.append(button('PDF المرفق إن وجد',()=>void openPDF(item.id)));
+     card.append(actions);
      grid.append(card);
    }
  }catch(error){grid.replaceChildren(placeholder('تعذر تحميل الملفات','تحقق من الاتصال وأعد المحاولة.'));console.warn(error);}
@@ -141,6 +161,19 @@ async function loadContributor(){
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
    resources=result.data||[];
+   // Optional until the additive SQL migration is installed.
+   const [draftResult,feedbackResult,pdfResult]=await Promise.all([
+     db().from('contributor_drafts').select('*').eq('contributor_id',id).order('updated_at',{ascending:false}).limit(60),
+     db().from('contributor_private_feedback').select('id,resource_id,message,created_at').eq('contributor_id',id).order('created_at',{ascending:false}).limit(100),
+     db().from('resource_pdf_attachments').select('resource_id,storage_path').eq('contributor_id',id).limit(200)
+   ]);
+   if(user()?.id!==id)return;
+   drafts=draftResult.error?[]:(draftResult.data||[]);
+   feedback=feedbackResult.error?[]:(feedbackResult.data||[]);
+   pdfAttachments=new Map((pdfResult.error?[]:(pdfResult.data||[])).map(x=>[x.resource_id,x.storage_path]));
+   const rep=await db().from('contributor_reputation').select('approved_contributions,reputation_points')
+     .eq('contributor_id',id).maybeSingle();
+   approvedReputation=rep.error?0:(rep.data?.reputation_points||0);
    renderContributor();
  }catch(error){failed(error,'تحميل مساحة المساهمة');}
 }
@@ -160,6 +193,7 @@ function renderContributor(){
  if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
  apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
+ panel.append(el('p','muted','نقاط السمعة: '+approvedReputation+' (10 نقاط لكل مورد منشور، دون تقييم ذاتي).'));
  metric('contributorMetrics',[
    resources.length,
    resources.filter(x=>x.status==='pending').length,
@@ -167,7 +201,7 @@ function renderContributor(){
    resources.filter(x=>x.status==='rejected').length
  ]);
  grid.replaceChildren();
- if(!resources.length){grid.append(placeholder('لم ترسل موارد بعد','عندما يصبح الحساب معتمداً يمكنك رفع روابط موثقة للمراجعة.'));return;}
+ if(!resources.length){grid.append(placeholder('لم ترسل موارد بعد','عندما يصبح الحساب معتمداً يمكنك رفع روابط موثقة للمراجعة.'));renderDrafts();return;}
  for(const item of resources){
    const card=el('article','portal-resource');
    const top=el('div','portal-resource-top');
@@ -180,12 +214,24 @@ function renderContributor(){
      const a=el('a','portal-action','فتح الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';tools.append(a);
    }
    if(active){
+     if(item.status==='pending'&&!pdfAttachments.has(item.id)){
+       const upload=el('input');upload.type='file';upload.accept='.pdf,application/pdf';
+       upload.style.maxWidth='220px';upload.setAttribute('aria-label','ارفع ملف PDF خاصاً بالمورد');
+       const send=button('رفع PDF',()=>{if(upload.files?.[0])void uploadPDF(item,upload.files[0]);else notify('اختر ملف PDF أولاً','warning')});
+       tools.append(upload,send);
+     }
+     if(pdfAttachments.has(item.id))tools.append(button('عرض PDF',()=>void openPDF(item.id)));
+     tools.append(button('سجل النسخ',()=>void viewVersions(item,card)));
      if(item.status!=='approved')tools.append(button('تعديل',()=>editResource(item)));
      if(item.status==='rejected')tools.append(button('إعادة إرسال',()=>void resubmitResource(item.id),'portal-action success'));
      tools.append(button('حذف',()=>void removeResource(item),'portal-action danger'));
    }
+   for(const note of feedback.filter(x=>x.resource_id===item.id).slice(0,3)){
+     card.append(el('p','portal-notice','تعليق خاص من الإدارة · '+date(note.created_at)+' : '+note.message));
+   }
    card.append(tools);grid.append(card);
  }
+ renderDrafts();
 }
 function editResource(item){
  editId=item.id;
@@ -206,6 +252,126 @@ function cancelEdit(){
  if($('collabEditorTitle'))$('collabEditorTitle').textContent='أضف مورداً تعليمياً';
  if($('collabSaveResource'))$('collabSaveResource').textContent='إرسال للمراجعة';
  $('collabCancelEdit')?.classList.add('hidden');
+}
+function draftFields(){
+ return {title:txt($('collabResourceTitle')?.value),subject:txt($('collabResourceSubject')?.value),
+ academic_branch:$('collabResourceBranch')?.value||'جميع الشعب',resource_kind:$('collabResourceKind')?.value||'other',
+ unit_title:txt($('collabResourceUnit')?.value),resource_url:txt($('collabResourceUrl')?.value),
+ description:txt($('collabResourceDescription')?.value)};
+}
+async function saveDraft(){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved'||!user())return;
+ const fields=draftFields();
+ if(!fields.title&&!fields.subject&&!fields.description&&!fields.resource_url){
+   notify('اكتب جزءاً من محتوى المسودة أولاً','warning');return;
+ }
+ busy=true;
+ try{
+   const row={...fields,contributor_id:user().id,updated_at:new Date().toISOString()};
+   if(draftEditId)row.id=draftEditId;
+   const {error}=await db().from('contributor_drafts').upsert(row);
+   if(error)throw error;
+   draftEditId=null;await loadContributor();notify('تم حفظ المسودة لحسابك','success');
+ }catch(e){failed(e,'حفظ المسودة');}finally{busy=false}
+}
+function renderDrafts(){
+ const grid=$('collabDraftsGrid');if(!grid)return;grid.replaceChildren();
+ if(!drafts.length){grid.append(el('p','muted','لا توجد مسودات محفوظة.'));return}
+ for(const draft of drafts){
+   const card=el('article','portal-resource');
+   card.append(el('h3','',draft.title||'مسودة بلا عنوان'),el('p','',draft.subject||'المادة غير محددة'));
+   card.append(button('فتح المسودة',()=>{
+     draftEditId=draft.id;editId=null;
+     for(const [field,id] of [['title','collabResourceTitle'],['subject','collabResourceSubject'],
+      ['academic_branch','collabResourceBranch'],['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
+      ['resource_url','collabResourceUrl'],['description','collabResourceDescription']]){
+       const elmt=$(id);if(elmt)elmt.value=draft[field]||'';
+     }
+     $('collabSubmitPanel')?.scrollIntoView({behavior:'smooth'});
+   }));
+   card.append(button('حذف المسودة',async()=>{
+     if(!window.confirm('حذف المسودة؟'))return;
+     const {error}=await db().from('contributor_drafts').delete().eq('id',draft.id).eq('contributor_id',user().id);
+     if(error)failed(error,'حذف المسودة');else{if(draftEditId===draft.id)draftEditId=null;await loadContributor()}
+   },'portal-action danger'));
+   grid.append(card);
+ }
+}
+async function viewVersions(item,card){
+ const {data,error}=await db().from('contributor_resource_versions')
+   .select('old_fields,changed_at').eq('resource_id',item.id).order('changed_at',{ascending:false}).limit(12);
+ if(error){failed(error,'قراءة الإصدارات');return}
+ card.querySelector('.resource-history')?.remove();
+ const section=el('div','resource-history');
+ section.append(el('h4','','سجل النسخ السابقة'));
+ if(!data?.length)section.append(el('p','muted','لا توجد نسخ سابقة بعد.'));
+ else for(const v of data){const details=el('details');
+   details.append(el('summary','',date(v.changed_at)+' · '+(v.old_fields?.title||'نسخة سابقة')),
+     el('p','',v.old_fields?.description||''),el('p','',v.old_fields?.resource_url||''));
+   section.append(details);
+ }
+ card.append(section);
+}
+async function uploadPDF(item,file){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved'||item.status!=='pending')return;
+ if(file.size<5||file.size>15728640){notify('حجم PDF يجب أن يكون أقل من 15 ميغابايت','warning');return}
+ const magic=Array.from(new Uint8Array(await file.slice(0,5).arrayBuffer())).map(x=>String.fromCharCode(x)).join('');
+ if(magic!=='%PDF-'){notify('الملف ليس PDF صالحاً','warning');return}
+ busy=true;
+ const id=user().id,path=id+'/'+item.id+'/'+crypto.randomUUID()+'.pdf';
+ try{
+   const {error:uploadError}=await db().storage.from('bac-resource-pdfs').upload(path,file,{upsert:false,contentType:'application/pdf'});
+   if(uploadError)throw uploadError;
+   const {error:recordError}=await db().from('resource_pdf_attachments').insert({
+     resource_id:item.id,contributor_id:id,storage_path:path,file_size:file.size
+   });
+   if(recordError){
+     await db().storage.from('bac-resource-pdfs').remove([path]);throw recordError;
+   }
+   await loadContributor();notify('تم إرفاق PDF خاص بالمورد، وسيظهر للطلاب بعد النشر.','success');
+ }catch(e){failed(e,'رفع PDF');}finally{busy=false}
+}
+async function openPDF(resourceId){
+ if(!user())return;
+ const {data:attachment,error}=await db().from('resource_pdf_attachments')
+   .select('storage_path').eq('resource_id',resourceId).maybeSingle();
+ if(error||!attachment?.storage_path){notify('ملف PDF غير متاح','warning');return}
+ const {data,error:signError}=await db().storage.from('bac-resource-pdfs').createSignedUrl(attachment.storage_path,300);
+ if(signError||!data?.signedUrl){notify('تعذر إنشاء رابط PDF الآمن','warning');return}
+ location.assign(data.signedUrl);
+}
+async function verifyHumanSolution(item){
+ if(ownerRole!=='admin'||!user()||!['exercise','exam'].includes(item.resource_kind))return;
+ const note=window.prompt('اكتب سبب التحقق البشري ومصدر الحل (15 إلى 1200 حرف):');
+ if(note===null)return;
+ if(note.trim().length<15||note.length>1200){notify('يرجى توثيق التحقق جيداً','warning');return;}
+ const {error}=await db().from('resource_verifications').upsert({
+   resource_id:item.id,verified_by:user().id,verification_note:note.trim()
+ });
+ if(error)failed(error,'توثيق الحل');else notify('تم توثيق مراجعة الحل بشرياً','success');
+}
+async function sendPrivateFeedback(item){
+ if(ownerRole!=='admin'||!user())return;
+ const message=window.prompt('تعليق خاص للمساهم حول هذا المورد (5 إلى 2000 حرف):');
+ if(message===null)return;
+ if(message.trim().length<5||message.length>2000){notify('طول التعليق غير صالح','warning');return}
+ const {error}=await db().from('contributor_private_feedback').insert({
+   resource_id:item.id,contributor_id:item.contributor_id,admin_id:user().id,message:message.trim()
+ });
+ if(error)failed(error,'إرسال تعليق خاص');else notify('تم إرسال التعليق الخاص إلى المساهم','success');
+}
+async function submitResourceReview(item,field,value){
+ if(ownerRole!=='student'||!user())return;
+ const uid=user().id;
+ const {data:existing,error:lookupError}=await db().from('resource_reviews')
+   .select('id').eq('reviewer_id',uid).eq('resource_id',item.id).maybeSingle();
+ if(lookupError){failed(lookupError,'التحقق من التقييم');return}
+ let request;
+ if(existing?.id)request=db().from('resource_reviews').update({[field]:value,updated_at:new Date().toISOString()})
+   .eq('id',existing.id).eq('reviewer_id',uid);
+ else request=db().from('resource_reviews').insert({resource_id:item.id,reviewer_id:uid,[field]:value});
+ const {error}=await request;
+ if(error)failed(error,'إرسال التقييم أو البلاغ');else notify('تم تسجيل رأيك للمراجعة','success');
 }
 async function saveResource(event){
  event.preventDefault();
@@ -374,7 +540,7 @@ async function loadAdmin(){
  try{
    const client=db();
    subscribeAdminNotifications(id);
-   const [applications,proposals,students,audit,notifications]=await Promise.all([
+   const [applications,proposals,students,audit,notifications,reviews]=await Promise.all([
      client.from('collaborator_applications')
        .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
@@ -384,15 +550,17 @@ async function loadAdmin(){
      client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100),
      client.from('admin_notifications')
        .select('id,resource_id,contributor_id,contributor_name,event_type,resource_title,resource_subject,resource_description,resource_url,resource_kind,unit_title,academic_branch,is_read,created_at')
-       .order('created_at',{ascending:false}).limit(200)
+       .order('created_at',{ascending:false}).limit(200),
+     client.from('resource_reviews').select('id,resource_id,reviewer_id,rating,report_reason,report_detail,created_at').not('report_reason','is',null).order('created_at',{ascending:false}).limit(250)
    ]);
-   for(const q of [applications,proposals,students,audit,notifications])if(q.error)throw q.error;
+   for(const q of [applications,proposals,students,audit,notifications,reviews])if(q.error)throw q.error;
    if(user()?.id!==id||ownerRole!=='admin')return;
    adminApplications=applications.data||[];
    adminResources=proposals.data||[];
    profiles=students.data||[];
    auditEntries=audit.data||[];
    adminNotifications=notifications.data||[];
+   adminReviews=reviews.data||[];
    updateAdminNotificationBadge();
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
@@ -574,6 +742,25 @@ function renderAdmin(){
    }
  }else if(adminTab==='resources'){
    const proposals=adminVisible(adminResources);
+   const toolbar=el('div','portal-notification-toolbar');
+   toolbar.append(el('span','','يمكن اختيار 20 مورداً معلقاً كحد أقصى في عملية واحدة.'));
+   toolbar.append(button('نشر المحددة',async()=>{
+     if(ownerRole!=='admin'||busy)return;
+     const ids=[...root.querySelectorAll('input[data-bulk-resource]:checked')].map(n=>n.value).slice(0,20);
+     if(!ids.length){notify('اختر موارد قيد المراجعة أولاً','warning');return;}
+     if(!window.confirm('تأكيد نشر '+ids.length+' مورداً؟'))return;
+     busy=true;let approved=0,failedCount=0;
+     try{
+       for(const id of ids){
+         const {data,error}=await db().rpc('review_collaborator_resource',{p_resource_id:id,p_decision:'approved'});
+         if(error||data!==true)failedCount++;else approved++;
+       }
+     }finally{
+       busy=false;await loadAdmin();
+       notify('تم نشر '+approved+' مورد؛ تعذر نشر '+failedCount,failedCount?'warning':'success');
+     }
+   },'portal-action success'));
+   root.append(toolbar);
    if(!proposals.length){root.append(placeholder('لا توجد موارد مطابقة','جرّب كلمة أخرى أو اختر حالة مختلفة.'));return;}
    for(const item of proposals){
      const card=el('article','portal-admin-entry');
@@ -581,7 +768,17 @@ function renderAdmin(){
      main.append(el('strong','',item.title),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+' · '+(kind[item.resource_kind]||'مورد')+
        (item.unit_title?' · '+item.unit_title:'')),el('p','',item.description||''));
      const actions=el('div','portal-admin-actions');actions.append(statusPill(item.status));
+     if(item.status==='pending'){
+       const label=el('label','portal-action');
+       const checkbox=el('input');checkbox.type='checkbox';checkbox.value=item.id;
+       checkbox.setAttribute('data-bulk-resource','');checkbox.setAttribute('aria-label','اختيار '+item.title);
+       label.append(checkbox,document.createTextNode(' تحديد'));actions.append(label);
+     }
      actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
+     actions.append(button('تعليق خاص للمساهم',()=>void sendPrivateFeedback(item)));
+     if(['exercise','exam'].includes(item.resource_kind))
+       actions.append(button('اعتماد الحل بعد المراجعة',()=>void verifyHumanSolution(item)));
+     actions.append(button('عرض PDF إن وجد',()=>void openPDF(item.id)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
      }
@@ -639,6 +836,40 @@ function renderAdmin(){
        el('p','',entry.target_id));
      card.append(main);root.append(card);
    }
+ }else if(adminTab==='reports'){
+   const complaints=adminReviews.filter(x=>x.report_reason);
+   if(!complaints.length){root.append(placeholder('لا توجد بلاغات','سيظهر هنا ما يبلّغ عنه الطلاب.'));return}
+   for(const report of complaints){
+     const resource=adminResources.find(x=>x.id===report.resource_id);
+     const card=el('article','portal-admin-entry');
+     const title=resource?.title||'مورد غير موجود';
+     card.append(el('strong','',title),el('p','',report.report_reason+' · '+date(report.created_at)),
+       el('p','',report.report_detail||'لا توجد تفاصيل إضافية'));
+     if(resource)card.append(button('مراجعة المورد',()=>{
+       adminTab='resources';if($('adminSearch'))$('adminSearch').value=title;
+       renderAdmin();
+     }));
+     root.append(card);
+   }
+ }else if(adminTab==='analytics'){
+   const now=Date.now(),week=7*86400000,month=30*86400000;
+   const recent=(rows,span)=>rows.filter(x=>{const t=Date.parse(x.created_at);return Number.isFinite(t)&&now-t<=span&&now>=t}).length;
+   const card=(heading,content)=>{
+     const section=el('article','portal-admin-entry');
+     section.append(el('h3','',heading),el('p','',content));root.append(section);
+   };
+   card('الحسابات المسجلة','في السجلات المحملة: '+profiles.length+' حساباً؛ آخر 7 أيام: '+recent(profiles,week)+'؛ آخر 30 يوماً: '+recent(profiles,month));
+   card('المساهمون','طلبات: '+adminApplications.length+'؛ مقبول: '+adminApplications.filter(x=>x.status==='approved').length+'؛ قيد المراجعة: '+adminApplications.filter(x=>x.status==='pending').length);
+   card('موارد المساهمين','إجمالي السجلات المحملة: '+adminResources.length+'؛ منشور: '+adminResources.filter(x=>x.status==='approved').length+'؛ معلق: '+adminResources.filter(x=>x.status==='pending').length+'؛ مرفوض: '+adminResources.filter(x=>x.status==='rejected').length);
+   card('التفاعل الإداري','إجراءات محفوظة ضمن السجلات المحملة: '+auditEntries.length+'؛ إشعارات غير مقروءة: '+adminNotifications.filter(x=>!x.is_read).length);
+   const subjects=new Map();
+   adminResources.forEach(x=>{const key=x.subject||'غير محدد';subjects.set(key,(subjects.get(key)||0)+1)});
+   const section=el('article','portal-admin-entry');
+   section.append(el('h3','','توزيع الموارد حسب المادة'));
+   [...subjects.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15).forEach(([name,count])=>section.append(el('p','',name+' : '+count)));
+   if(!subjects.size)section.append(el('p','','لا توجد موارد مساهمين بعد'));
+   root.append(section);
+   root.append(el('p','muted','هذه إحصائيات أولية من السجلات المحملة فقط (حد أقصى: 250 طالباً و250 طلباً و400 مورد و100 إجراء و200 إشعار). ليست قياسات كاملة لكل الزيارات أو المنهاج.'));
  }else if(adminTab==='ai'){
    void inspectOwnerAI();
  }
@@ -661,7 +892,8 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  stopAdminRealtime();
- identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
+ drafts=[];feedback=[];pdfAttachments.clear();draftEditId=null;adminReviews=[];approvedReputation=0;
+  identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
  window.BAC_PORTAL_ROLE='student';document.body.classList.remove('portal-authorized');cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
@@ -671,6 +903,7 @@ window.renderAdmin=()=>{if(user()&&ownerRole==='admin')void loadAdmin();};
 window.onCommunityAuthChanged=()=>{if(!user()){resetSession();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}void refreshPortalRole();};
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
+$('collabSaveDraft')?.addEventListener('click',()=>void saveDraft());
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);
 $('collabProfileCancel')?.addEventListener('click',resetContributorProfileForm);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());

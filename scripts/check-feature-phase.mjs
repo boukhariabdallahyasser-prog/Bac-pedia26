@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const file=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const admin=file('admin/index.html'),community=file('assets/community.js');
+const frontend=file('assets/legacy-app.js'),worker=file('cloudflare/worker.js'),vercel=file('api/ai.js');
+assert.match(admin,/data-admin-tab="analytics"/);
+assert.match(community,/adminTab==='analytics'/);
+assert.match(community,/data-bulk-resource/);
+assert.match(community,/review_collaborator_resource/);
+assert.match(community,/slice\(0,20\)/);
+for(const source of [frontend,worker,vercel])assert.match(source,/study_recommendations/);
+assert.match(file('assets/study-hub.js'),/student_resource_bookmarks/);
+assert.match(file('assets/study-hub.js'),/eq\('user_id',uid\)/);
+assert.match(file('assets/study-hub.js'),/resource_key/);
+assert.match(file('scripts/audit-live-links.mjs'),/\[404,410\]/);
+console.log('Owner dashboard, server AI allowlist and cloud bookmark integration checks passed');

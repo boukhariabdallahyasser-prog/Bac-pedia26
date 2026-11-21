@@ -3,7 +3,7 @@
  */
 const SUPABASE_BASE='https://vgioqexpyvwmxwtuntaa.supabase.co';
 const SUPABASE_PUBLISHABLE='sb_publishable_Q2oOVzL1g90i93jSICrvpQ_fZi9_NgE';
-const agents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
+const agents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','study_recommendations','essay_coach','mock_exam']);
 const agentAdvice={
   smart_tutor:'Répondre exactement à la question. Pour un exercice : raisonnement, calcul et vérification. Pour une définition : réponse concise.',
   summarizer:'Résumer uniquement le document ou le thème effectivement fourni ; signaler tout texte manquant.',
@@ -13,6 +13,7 @@ const agentAdvice={
   daily_plan:'Adapter le planning uniquement aux contraintes fournies.',
   mistake_analyzer:'Analyser précisément les erreurs décrites.',
   grade_advisor:'Ne pas inventer les notes ou coefficients manquants.',
+  study_recommendations:'Proposer des priorités de révision justifiées par le contexte réellement fourni; aucune donnée scolaire inventée.',
   essay_coach:'Corriger ou rédiger en suivant la consigne spécifique.'
 };
 const SYSTEM_INSTRUCTION=[
