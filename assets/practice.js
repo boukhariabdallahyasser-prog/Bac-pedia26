@@ -2,12 +2,12 @@
  * No credentials, answer keys or protected resources enter browser storage. */
 (function(root){
   'use strict';
-  const KEY='bacpedia-practice-sessions-v1';
+  const key=()=>typeof studentAuthUser!=='undefined'&&studentAuthUser?.id?'bacpedia-practice-sessions-v1:'+studentAuthUser.id:null;
   let tick=null, ends=0, total=0;
   const $=id=>document.getElementById(id);
   const store={
-    read(){try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v.slice(0,50):[]}catch{return []}},
-    write(v){try{localStorage.setItem(KEY,JSON.stringify(v.slice(0,50)))}catch{/* offline storage may be disabled */}}
+    read(){const k=key();if(!k)return [];try{const v=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(v)?v.slice(0,50):[]}catch{return []}},
+    write(v){const k=key();if(!k)return;try{localStorage.setItem(k,JSON.stringify(v.slice(0,50)))}catch{/* offline storage may be disabled */}}
   };
   function remaining(){return Math.max(0,Math.ceil((ends-Date.now())/1000))}
   function format(sec){return [Math.floor(sec/3600),Math.floor(sec%3600/60),sec%60].map(x=>String(x).padStart(2,'0')).join(':')}
@@ -42,7 +42,7 @@
     renderHistory();
   }
   function start(){
-    if(tick)return;
+    if(tick||!key())return;
     const minutes=Number($('practiceMinutes')?.value);
     if(!Number.isInteger(minutes)||minutes<5||minutes>240){
       if($('practiceStatus'))$('practiceStatus').textContent='اختر مدة بين 5 و240 دقيقة.';return;
@@ -60,6 +60,7 @@
     $('practiceStop').addEventListener('click',stop);
     renderHistory();update();
     document.addEventListener('visibilitychange',update);
+    document.addEventListener('bacpedia:session-changed',()=>{if(tick){clearInterval(tick);tick=null;}renderHistory();update()});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
   root.BacPractice={format,remaining};
