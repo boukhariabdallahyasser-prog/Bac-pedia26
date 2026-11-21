@@ -34,7 +34,8 @@ async function start(){
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',
-    '/assets/community.js'
+    '/assets/community.js',
+    '/assets/practice.js'
   ])await loadScript(path);
 }
 start().catch(error=>{
