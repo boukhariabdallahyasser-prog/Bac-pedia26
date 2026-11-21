@@ -109,6 +109,7 @@
       daily_plan:{icon:'fa-solid fa-sun',title:'خطة',group:'تنظيم',desc:'خطة مراجعة حسب وقتك.'},
       mistake_analyzer:{icon:'fa-solid fa-magnifying-glass-chart',title:'الأخطاء',group:'تنظيم',desc:'تحليل الأخطاء وطريقة علاجها.'},
       grade_advisor:{icon:'fa-solid fa-chart-simple',title:'المعدل',group:'تنظيم',desc:'أولوية المواد حسب العلامات.'},
+      study_recommendations:{icon:'fa-solid fa-compass',title:'توصيات دراسية',group:'تنظيم',desc:'اقتراح أولويات واقعية اعتماداً على المواد والأخطاء المتاحة.'},
       essay_coach:{icon:'fa-solid fa-pen-fancy',title:'المقال واللغات',group:'فهم',desc:'قوالب كتابة وحجج وروابط.'}
     };
     const resources = [
@@ -499,6 +500,7 @@
         daily_plan:'قدّم خطة واقعية حسب الوقت والأهداف المذكورة.',
         mistake_analyzer:'حدد الخطأ وأسبابه وكيفية تجنّبه.',
         grade_advisor:'حلّل المعدل باستخدام العلامات والمعاملات المتوفرة فقط.',
+        study_recommendations:'اقترح ثلاث أولويات دراسية مرتبة حسب بيانات الطالب المتاحة، مع الأسباب وخطوة عملية لكل أولوية. لا تفترض معلومات ناقصة.',
         essay_coach:'اكتب أو صحح المقال أو التعبير المقدم بدقة.'
       };
       const question=(ctx.prompt||'').trim();
@@ -511,10 +513,11 @@
         daily_plan:'ضع خطة مراجعة واقعية للمادة المختارة.',
         mistake_analyzer:'ما الأخطاء الشائعة في المادة وكيف أصلحها؟',
         grade_advisor:'كيف أرتب أولوياتي لتحسين المعدل؟',
+        study_recommendations:'اقترح ما ينبغي أن أدرسه اليوم حسب مستواي وأخطائي ومهامي المتاحة.',
         essay_coach:'أعطني نموذج مقدمة وفق المادة المختارة.'
       };
       const focus=question||fallback[agentId]||fallback.smart_tutor;
-      const extra=['daily_plan','mistake_analyzer','grade_advisor'].includes(agentId)?
+      const extra=['daily_plan','mistake_analyzer','grade_advisor','study_recommendations'].includes(agentId)?
         '، معدل الطالب المحسوب: '+(ctx.average??'غير متاح')+
         '، أخطاء مذكورة: '+(ctx.mistakes||[]).slice(0,3).map(x=>x.text).filter(Boolean).join('؛ ')+
         '، مهام مذكورة: '+(ctx.pendingTasks||[]).slice(0,3).map(x=>x.text).filter(Boolean).join('؛ '):'';
