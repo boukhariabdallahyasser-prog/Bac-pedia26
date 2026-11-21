@@ -237,6 +237,22 @@
           </div>
         </div>
       </section>
+      <section class="page" id="page-practice">
+        <div class="section-head"><div><h2>التدريب بالوقت</h2><p>اختر موضوعاً من مكتبتك، ثم تدرب ضمن وقت محدد دون رفع بياناتك.</p></div></div>
+        <div class="grid-2">
+          <div class="card"><h3>جلسة تدريب جديدة</h3>
+            <label for="practiceSubject">المادة أو الموضوع</label>
+            <input class="input" id="practiceSubject" maxlength="100" value="مراجعة عامة" placeholder="مثال: الرياضيات · الدوال" />
+            <label for="practiceMinutes">المدة بالدقائق (5 إلى 240)</label>
+            <input class="input" id="practiceMinutes" type="number" min="5" max="240" step="1" value="60" />
+            <div id="practiceClock" role="timer" aria-live="off" style="font-size:2rem;font-weight:800;direction:ltr;text-align:center;margin:12px">00:00:00</div>
+            <progress id="practiceProgress" max="100" value="0" style="width:100%"></progress>
+            <div class="actions"><button class="btn primary" id="practiceStart">بدء التدريب</button><button class="btn" id="practiceStop" disabled>إنهاء وحفظ</button><button class="btn" onclick="openFilesAll()">فتح المواضيع</button></div>
+            <p class="muted" id="practiceStatus" role="status">النتائج هنا تقيس وقت التدريب فقط، ولا تصحح الإجابات.</p>
+          </div>
+          <div class="card"><h3>آخر الجلسات على هذا الجهاز</h3><ol id="practiceHistory"></ol><p class="muted">السجل محلي لهذا المتصفح، وليس متزامناً مع حسابك. لا تستخدمه على جهاز مشترك.</p></div>
+        </div>
+      </section>
       <section class="page" id="page-grades">
         <div class="section-head"><div><h2>حاسبة المعدل</h2><p>احسب معدلك التقريبي واعرف العلامة اللازمة لهدفك.</p></div><button class="btn" onclick="resetGrades()"><i class="fa-solid fa-rotate-left"></i> معاملات الشعبة</button></div>
         <div class="grid-2">
