@@ -9,7 +9,7 @@ const labels={pending:'قيد المراجعة',approved:'منشور / مقبو�
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
-let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null;
+let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null,adminReviews=[],approvedReputation=0;
 let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
@@ -116,10 +116,18 @@ async function loadApprovedResources(){
      .eq('status','approved').order('created_at',{ascending:false}).limit(100);
    if(error)throw error;
    if(user()?.id!==id||ownerRole!=='student')return;
+   const ids=(data||[]).map(x=>x.id);
+   let verifiedIds=new Set();
+   if(ids.length){
+     const {data:verified,error:verifyError}=await db().from('resource_verifications')
+       .select('resource_id').in('resource_id',ids).limit(200);
+     if(!verifyError)verifiedIds=new Set((verified||[]).map(x=>x.resource_id));
+   }
    grid.replaceChildren();
    if(!data?.length){grid.append(placeholder('لا توجد إضافات منشورة','ستظهر الملفات الجديدة بعد موافقة إدارة Bac-pedia.'));return;}
    for(const item of data){
      const card=el('article','portal-resource');
+     if(verifiedIds.has(item.id))card.append(el('span','comm-state-tag approved','حل راجعه المشرف'));
      card.append(el('span','portal-type',kind[item.resource_kind]||'مورد'),
        el('h3','',item.title),el('p','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+(item.unit_title?' · '+item.unit_title:'')),
        el('p','',item.description||''));
@@ -163,6 +171,9 @@ async function loadContributor(){
    drafts=draftResult.error?[]:(draftResult.data||[]);
    feedback=feedbackResult.error?[]:(feedbackResult.data||[]);
    pdfAttachments=new Map((pdfResult.error?[]:(pdfResult.data||[])).map(x=>[x.resource_id,x.storage_path]));
+   const rep=await db().from('contributor_reputation').select('approved_contributions,reputation_points')
+     .eq('contributor_id',id).maybeSingle();
+   approvedReputation=rep.error?0:(rep.data?.reputation_points||0);
    renderContributor();
  }catch(error){failed(error,'تحميل مساحة المساهمة');}
 }
@@ -182,6 +193,7 @@ function renderContributor(){
  if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
  apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
+ panel.append(el('p','muted','نقاط السمعة: '+approvedReputation+' (10 نقاط لكل مورد منشور، دون تقييم ذاتي).'));
  metric('contributorMetrics',[
    resources.length,
    resources.filter(x=>x.status==='pending').length,
@@ -327,6 +339,16 @@ async function openPDF(resourceId){
  const {data,error:signError}=await db().storage.from('bac-resource-pdfs').createSignedUrl(attachment.storage_path,300);
  if(signError||!data?.signedUrl){notify('تعذر إنشاء رابط PDF الآمن','warning');return}
  location.assign(data.signedUrl);
+}
+async function verifyHumanSolution(item){
+ if(ownerRole!=='admin'||!user()||!['exercise','exam'].includes(item.resource_kind))return;
+ const note=window.prompt('اكتب سبب التحقق البشري ومصدر الحل (15 إلى 1200 حرف):');
+ if(note===null)return;
+ if(note.trim().length<15||note.length>1200){notify('يرجى توثيق التحقق جيداً','warning');return;}
+ const {error}=await db().from('resource_verifications').upsert({
+   resource_id:item.id,verified_by:user().id,verification_note:note.trim()
+ });
+ if(error)failed(error,'توثيق الحل');else notify('تم توثيق مراجعة الحل بشرياً','success');
 }
 async function sendPrivateFeedback(item){
  if(ownerRole!=='admin'||!user())return;
@@ -518,7 +540,7 @@ async function loadAdmin(){
  try{
    const client=db();
    subscribeAdminNotifications(id);
-   const [applications,proposals,students,audit,notifications]=await Promise.all([
+   const [applications,proposals,students,audit,notifications,reviews]=await Promise.all([
      client.from('collaborator_applications')
        .select('user_id,display_name,organization,contribution_type,motivation,academic_branch,status,created_at').order('created_at',{ascending:false}).limit(250),
      client.from('collaborator_resources')
@@ -528,15 +550,17 @@ async function loadAdmin(){
      client.from('moderation_audit').select('id,action,target_id,decision,created_at').order('created_at',{ascending:false}).limit(100),
      client.from('admin_notifications')
        .select('id,resource_id,contributor_id,contributor_name,event_type,resource_title,resource_subject,resource_description,resource_url,resource_kind,unit_title,academic_branch,is_read,created_at')
-       .order('created_at',{ascending:false}).limit(200)
+       .order('created_at',{ascending:false}).limit(200),
+     client.from('resource_reviews').select('id,resource_id,reviewer_id,rating,report_reason,report_detail,created_at').not('report_reason','is',null).order('created_at',{ascending:false}).limit(250)
    ]);
-   for(const q of [applications,proposals,students,audit,notifications])if(q.error)throw q.error;
+   for(const q of [applications,proposals,students,audit,notifications,reviews])if(q.error)throw q.error;
    if(user()?.id!==id||ownerRole!=='admin')return;
    adminApplications=applications.data||[];
    adminResources=proposals.data||[];
    profiles=students.data||[];
    auditEntries=audit.data||[];
    adminNotifications=notifications.data||[];
+   adminReviews=reviews.data||[];
    updateAdminNotificationBadge();
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
@@ -752,6 +776,8 @@ function renderAdmin(){
      }
      actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
      actions.append(button('تعليق خاص للمساهم',()=>void sendPrivateFeedback(item)));
+     if(['exercise','exam'].includes(item.resource_kind))
+       actions.append(button('اعتماد الحل بعد المراجعة',()=>void verifyHumanSolution(item)));
      actions.append(button('عرض PDF إن وجد',()=>void openPDF(item.id)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
@@ -810,6 +836,21 @@ function renderAdmin(){
        el('p','',entry.target_id));
      card.append(main);root.append(card);
    }
+ }else if(adminTab==='reports'){
+   const complaints=adminReviews.filter(x=>x.report_reason);
+   if(!complaints.length){root.append(placeholder('لا توجد بلاغات','سيظهر هنا ما يبلّغ عنه الطلاب.'));return}
+   for(const report of complaints){
+     const resource=adminResources.find(x=>x.id===report.resource_id);
+     const card=el('article','portal-admin-entry');
+     const title=resource?.title||'مورد غير موجود';
+     card.append(el('strong','',title),el('p','',report.report_reason+' · '+date(report.created_at)),
+       el('p','',report.report_detail||'لا توجد تفاصيل إضافية'));
+     if(resource)card.append(button('مراجعة المورد',()=>{
+       adminTab='resources';if($('adminSearch'))$('adminSearch').value=title;
+       renderAdmin();
+     }));
+     root.append(card);
+   }
  }else if(adminTab==='analytics'){
    const now=Date.now(),week=7*86400000,month=30*86400000;
    const recent=(rows,span)=>rows.filter(x=>{const t=Date.parse(x.created_at);return Number.isFinite(t)&&now-t<=span&&now>=t}).length;
@@ -851,7 +892,7 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  stopAdminRealtime();
- drafts=[];feedback=[];pdfAttachments.clear();draftEditId=null;
+ drafts=[];feedback=[];pdfAttachments.clear();draftEditId=null;adminReviews=[];approvedReputation=0;
   identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
  window.BAC_PORTAL_ROLE='student';document.body.classList.remove('portal-authorized');cancelEdit();resetContributorProfileForm();
 }
