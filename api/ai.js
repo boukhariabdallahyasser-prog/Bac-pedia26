@@ -1,6 +1,6 @@
 // Server-only Deploy.com inference adapter. The browser never receives API keys.
 // Deploy's official endpoint and model must be verified in the provider portal.
-const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','essay_coach','mock_exam']);
+const allowedAgents=new Set(['smart_tutor','daily_plan','summarizer','quiz','qcm','mistake_analyzer','grade_advisor','study_recommendations','essay_coach','mock_exam']);
 function deployConfig(){
  const key=process.env.DEPLOY_API_KEY;
  const endpoint=process.env.DEPLOY_API_ENDPOINT||'https://api-cdn.deploy.com/api/v1/chat/completions';
