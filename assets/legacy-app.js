@@ -18,6 +18,7 @@
       ['admin','fa-solid fa-shield-halved','لوحة الإدارة','الطلبات والموارد والحسابات'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
+      ['practice','fa-solid fa-hourglass-half','اختبار بالوقت','جلسة تدريب ومتابعة الوقت'],
       ['grades','fa-solid fa-calculator','المعدل','حاسبة ونصائح'],
       ['progress','fa-solid fa-chart-line','التقدم','نسب ودفتر أخطاء'],
       ['resources','fa-solid fa-book-open','الإضافات','كتب ومنهجيات وفيديوهات'],
