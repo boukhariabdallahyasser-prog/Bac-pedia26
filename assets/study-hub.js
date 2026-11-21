@@ -6,6 +6,42 @@ const clean=s=>String(s??'').trim();
 const norm=s=>root.BacSearch?.normalize(s)||clean(s).toLowerCase();
 const currentUser=()=>typeof studentAuthUser!=='undefined'?studentAuthUser:null;
 let catalog=[],loaded=false;
+const bookmarkClient=()=>typeof getStudentAuth==='function'?getStudentAuth():null;
+const hubKey=k=>'hub:'+k;
+async function syncSaved(){
+  const uid=currentUser()?.id,db=bookmarkClient();if(!uid||!db)return;
+  try{
+    const {data,error}=await db.from('student_resource_bookmarks')
+      .select('resource_key').eq('user_id',uid).like('resource_key','hub:%').limit(500);
+    if(error)throw error;
+    if(currentUser()?.id!==uid)return;
+    const remote=(data||[]).map(x=>x.resource_key).filter(k=>typeof k==='string'&&k.startsWith('hub:')).map(k=>k.slice(4));
+    const local=readSaved();const missing=local.filter(k=>!remote.includes(k));
+    if(missing.length){
+      const lookup=new Map(catalog.map(x=>[x.key,x]));
+      const rows=missing.filter(k=>lookup.has(k)).map(k=>({
+        user_id:uid,resource_key:hubKey(k).slice(0,240),subject_id:lookup.get(k).subject.slice(0,80)||'general'
+      }));
+      if(rows.length){
+        const response=await db.from('student_resource_bookmarks').upsert(rows,{onConflict:'user_id,resource_key'});
+        if(response.error)throw response.error;
+      }
+    }
+    if(currentUser()?.id!==uid)return;
+    saveSaved([...new Set([...local,...remote])]);
+  }catch(error){console.warn('Collection cloud sync unavailable, retaining local cache',error)}
+}
+async function updateCloudBookmark(item,enabled){
+  const uid=currentUser()?.id,db=bookmarkClient();
+  if(!uid||!db)return;
+  const resource_key=hubKey(item.key);
+  if(resource_key.length>240)return;
+  const q=enabled
+    ?db.from('student_resource_bookmarks').upsert({user_id:uid,resource_key,subject_id:item.subject.slice(0,80)||'general'},{onConflict:'user_id,resource_key'})
+    :db.from('student_resource_bookmarks').delete().eq('user_id',uid).eq('resource_key',resource_key);
+  const {error}=await q;if(error)console.warn('Collection change saved locally but could not sync',error);
+}
+
 const storageKey=()=>currentUser()?.id?'bacpedia:collections:'+currentUser().id:null;
 function readSaved(){
   const key=storageKey();if(!key)return [];
@@ -24,8 +60,10 @@ function addRow(container,item,showBookmark=true){
   if(showBookmark){
     const btn=document.createElement('button');btn.type='button';btn.className='btn';btn.textContent=readSaved().includes(item.key)?'إزالة من مجموعتي':'حفظ';
     btn.addEventListener('click',()=>{
-      let list=readSaved();list=list.includes(item.key)?list.filter(x=>x!==item.key):[...list,item.key];saveSaved(list);
-      btn.textContent=list.includes(item.key)?'إزالة من مجموعتي':'حفظ';
+      let list=readSaved();const enabled=!list.includes(item.key);
+      list=enabled?[...list,item.key]:list.filter(x=>x!==item.key);
+      saveSaved(list);void updateCloudBookmark(item,enabled);
+      btn.textContent=enabled?'إزالة من مجموعتي':'حفظ';
       if($('studyCollectionCount'))$('studyCollectionCount').textContent=String(list.length);
     });row.appendChild(btn);
   }
@@ -133,6 +171,7 @@ async function renderCoverage(){
 }
 async function render(id){
   if(document.body.dataset.portal!=='student'||!currentUser()?.id)return;
+  await load();await syncSaved();
   if(id==='papers'||id==='exercises')await renderList(id);
   if(id==='collections')await renderCollections();
   if(id==='coverage')await renderCoverage();
