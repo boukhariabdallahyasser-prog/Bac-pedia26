@@ -7,6 +7,7 @@ import {dirname,join,resolve} from 'node:path';
 // classic-script global functions for its HTML event handlers.
 const classicAssets = [
   'auth-config.js',
+  'service-worker.js',
   'resources.json',
   'assets/legacy-app.js',
   'assets/chapter-search.js',
