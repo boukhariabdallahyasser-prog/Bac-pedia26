@@ -270,11 +270,24 @@
           <p class="muted">تُزامَن الروابط مع حسابك عند توفر الاتصال. عند تعذر الاتصال تبقى نسخة محلية حتى المزامنة التالية.</p>
           <div id="studyCollectionsResults"></div></div>
       </section>
+      <section class="page" id="page-pdf">
+        <div class="section-head"><div><h2>تلخيص ملفات PDF</h2><p>يُستخرج النص على جهازك أولاً. لا يُرسل إلى خادم الذكاء الاصطناعي إلا إذا ضغطت زر التلخيص أو الأسئلة.</p></div></div>
+        <div class="card">
+          <label for="studyPdfInput">اختر PDF (حد أقصى 15 ميغابايت)</label>
+          <input type="file" id="studyPdfInput" accept=".pdf,application/pdf" class="input">
+          <div class="actions"><button type="button" class="btn primary" id="studyPdfExtract">استخراج النص محلياً</button></div>
+          <p id="studyPdfStatus" role="status" class="muted">يدعم الملفات النصية. لا يدعم OCR للصور الممسوحة.</p>
+          <label for="studyPdfText">راجع النص المستخرج قبل إرساله</label>
+          <textarea id="studyPdfText" class="textarea" rows="8" maxlength="12000" placeholder="سيظهر النص هنا..."></textarea>
+          <div class="actions"><button type="button" class="btn" id="studyPdfSummarize">تلخيص بالذكاء الاصطناعي</button><button type="button" class="btn" id="studyPdfQuiz">أسئلة من PDF</button></div>
+          <p class="muted">يتطلب الطلب تسجيل الدخول واتصال خادم AI. لا يُعد الناتج تصحيحاً رسمياً.</p>
+        </div>
+      </section>
       <section class="page" id="page-quiz">
         <div class="section-head"><div><h2>أنشئ أسئلة من ملاحظاتك</h2><p>اختبار ملء الفراغات اعتماداً على الجمل التي كتبتها بنفسك، دون إرسالها إلى خادم ذكاء اصطناعي.</p></div></div>
         <div class="card"><label for="studyQuizNotes">ملاحظات الدرس</label>
           <textarea id="studyQuizNotes" class="textarea" rows="7" maxlength="12000" placeholder="الصق ملاحظاتك هنا..."></textarea>
-          <div class="actions"><button class="btn primary" id="studyQuizGenerate">إنشاء أسئلة</button></div>
+          <div class="actions"><button class="btn primary" id="studyQuizGenerate">إنشاء أسئلة</button><button class="btn" id="studyQuizSendAI" type="button">إنشاء أسئلة بالذكاء الاصطناعي</button></div>
           <p class="muted">أداة تدريب أولية: لا تقيّم صحة المعلومات ولا تغني عن التصحيح العلمي.</p>
           <div id="studyQuizResult" aria-live="polite"></div></div>
       </section>
