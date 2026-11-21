@@ -639,6 +639,25 @@ function renderAdmin(){
        el('p','',entry.target_id));
      card.append(main);root.append(card);
    }
+ }else if(adminTab==='analytics'){
+   const now=Date.now(),week=7*86400000,month=30*86400000;
+   const recent=(rows,span)=>rows.filter(x=>{const t=Date.parse(x.created_at);return Number.isFinite(t)&&now-t<=span&&now>=t}).length;
+   const card=(heading,content)=>{
+     const section=el('article','portal-admin-entry');
+     section.append(el('h3','',heading),el('p','',content));root.append(section);
+   };
+   card('الحسابات المسجلة','في السجلات المحملة: '+profiles.length+' حساباً؛ آخر 7 أيام: '+recent(profiles,week)+'؛ آخر 30 يوماً: '+recent(profiles,month));
+   card('المساهمون','طلبات: '+adminApplications.length+'؛ مقبول: '+adminApplications.filter(x=>x.status==='approved').length+'؛ قيد المراجعة: '+adminApplications.filter(x=>x.status==='pending').length);
+   card('موارد المساهمين','إجمالي السجلات المحملة: '+adminResources.length+'؛ منشور: '+adminResources.filter(x=>x.status==='approved').length+'؛ معلق: '+adminResources.filter(x=>x.status==='pending').length+'؛ مرفوض: '+adminResources.filter(x=>x.status==='rejected').length);
+   card('التفاعل الإداري','إجراءات محفوظة ضمن السجلات المحملة: '+auditEntries.length+'؛ إشعارات غير مقروءة: '+adminNotifications.filter(x=>!x.is_read).length);
+   const subjects=new Map();
+   adminResources.forEach(x=>{const key=x.subject||'غير محدد';subjects.set(key,(subjects.get(key)||0)+1)});
+   const section=el('article','portal-admin-entry');
+   section.append(el('h3','','توزيع الموارد حسب المادة'));
+   [...subjects.entries()].sort((a,b)=>b[1]-a[1]).slice(0,15).forEach(([name,count])=>section.append(el('p','',name+' : '+count)));
+   if(!subjects.size)section.append(el('p','','لا توجد موارد مساهمين بعد'));
+   root.append(section);
+   root.append(el('p','muted','هذه إحصائيات أولية من السجلات المحملة فقط (حد أقصى: 250 طالباً و250 طلباً و400 مورد و100 إجراء و200 إشعار). ليست قياسات كاملة لكل الزيارات أو المنهاج.'));
  }else if(adminTab==='ai'){
    void inspectOwnerAI();
  }
