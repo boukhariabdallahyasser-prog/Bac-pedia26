@@ -150,3 +150,36 @@ create policy "Contributor deletes pending PDF" on storage.objects for delete to
  and exists(select 1 from public.collaborator_resources r where r.id::text=split_part(name,'/',2)
  and r.contributor_id=(select auth.uid()) and r.status<>'approved')
 );
+
+
+-- Human-verified solution status: AI results cannot write to this table.
+create table if not exists public.resource_verifications(
+ resource_id uuid primary key references public.collaborator_resources(id) on delete cascade,
+ verified_by uuid not null references auth.users(id) on delete cascade,
+ verification_note text not null check(length(trim(verification_note)) between 15 and 1200),
+ verified_at timestamptz not null default now()
+);
+alter table public.resource_verifications enable row level security;
+revoke all on public.resource_verifications from public,anon,authenticated;
+grant select,insert,update,delete on public.resource_verifications to authenticated;
+create policy "Read published human verification" on public.resource_verifications for select to authenticated using(
+ exists(select 1 from public.collaborator_resources r where r.id=resource_id and
+ (r.status='approved' or r.contributor_id=(select auth.uid())))
+ or exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'));
+create policy "Owner alone verifies solution" on public.resource_verifications for insert to authenticated with check(
+ verified_by=(select auth.uid()) and exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin')
+ and exists(select 1 from public.collaborator_resources r where r.id=resource_id and r.resource_kind in ('exercise','exam')));
+create policy "Owner alone edits verification" on public.resource_verifications for update to authenticated
+ using(verified_by=(select auth.uid()) and exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'))
+ with check(verified_by=(select auth.uid()) and exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'));
+create policy "Owner alone removes verification" on public.resource_verifications for delete to authenticated using(
+ exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'));
+
+-- Read-only reputation based solely on approved, published contributions.
+create or replace view public.contributor_reputation with (security_invoker=true) as
+select contributor_id,count(*)::integer as approved_contributions,
+       (count(*)*10)::integer as reputation_points
+from public.collaborator_resources where status='approved'
+group by contributor_id;
+revoke all on public.contributor_reputation from public,anon,authenticated;
+grant select on public.contributor_reputation to authenticated;
