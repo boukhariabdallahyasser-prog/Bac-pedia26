@@ -35,7 +35,8 @@ async function start(){
     '/assets/ai-format.js',
     '/assets/landing.js',
     '/assets/community.js',
-    '/assets/practice.js'
+    '/assets/practice.js',
+    '/assets/study-hub.js'
   ])await loadScript(path);
 }
 start().catch(error=>{
