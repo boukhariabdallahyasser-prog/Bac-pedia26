@@ -574,6 +574,25 @@ function renderAdmin(){
    }
  }else if(adminTab==='resources'){
    const proposals=adminVisible(adminResources);
+   const toolbar=el('div','portal-notification-toolbar');
+   toolbar.append(el('span','','يمكن اختيار 20 مورداً معلقاً كحد أقصى في عملية واحدة.'));
+   toolbar.append(button('نشر المحددة',async()=>{
+     if(ownerRole!=='admin'||busy)return;
+     const ids=[...root.querySelectorAll('input[data-bulk-resource]:checked')].map(n=>n.value).slice(0,20);
+     if(!ids.length){notify('اختر موارد قيد المراجعة أولاً','warning');return;}
+     if(!window.confirm('تأكيد نشر '+ids.length+' مورداً؟'))return;
+     busy=true;let approved=0,failedCount=0;
+     try{
+       for(const id of ids){
+         const {data,error}=await db().rpc('review_collaborator_resource',{p_resource_id:id,p_decision:'approved'});
+         if(error||data!==true)failedCount++;else approved++;
+       }
+     }finally{
+       busy=false;await loadAdmin();
+       notify('تم نشر '+approved+' مورد؛ تعذر نشر '+failedCount,failedCount?'warning':'success');
+     }
+   },'portal-action success'));
+   root.append(toolbar);
    if(!proposals.length){root.append(placeholder('لا توجد موارد مطابقة','جرّب كلمة أخرى أو اختر حالة مختلفة.'));return;}
    for(const item of proposals){
      const card=el('article','portal-admin-entry');
@@ -581,6 +600,12 @@ function renderAdmin(){
      main.append(el('strong','',item.title),el('span','',(item.academic_branch||'جميع الشعب')+' · '+item.subject+' · '+(kind[item.resource_kind]||'مورد')+
        (item.unit_title?' · '+item.unit_title:'')),el('p','',item.description||''));
      const actions=el('div','portal-admin-actions');actions.append(statusPill(item.status));
+     if(item.status==='pending'){
+       const label=el('label','portal-action');
+       const checkbox=el('input');checkbox.type='checkbox';checkbox.value=item.id;
+       checkbox.setAttribute('data-bulk-resource','');checkbox.setAttribute('aria-label','اختيار '+item.title);
+       label.append(checkbox,document.createTextNode(' تحديد'));actions.append(label);
+     }
      actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
