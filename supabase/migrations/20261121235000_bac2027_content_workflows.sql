@@ -114,7 +114,7 @@ create table if not exists public.resource_pdf_attachments(
  storage_path text not null unique,
  file_size integer not null check(file_size between 1 and 15728640),
  created_at timestamptz not null default now(),
- check(storage_path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f-]{36}\\.pdf$')
+ check(storage_path ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f-]{36}[.]pdf$')
 );
 alter table public.resource_pdf_attachments enable row level security;
 revoke all on public.resource_pdf_attachments from public,anon,authenticated;
@@ -132,7 +132,7 @@ create policy "Contributor detaches pending PDF" on public.resource_pdf_attachme
 
 create policy "Verified contributor uploads PDF" on storage.objects for insert to authenticated with check(
  bucket_id='bac-resource-pdfs'
- and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f-]{36}\\.pdf$'
+ and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}/[0-9a-f-]{36}[.]pdf$'
  and split_part(name,'/',1)=(select auth.uid())::text
  and exists(select 1 from public.collaborator_resources r where r.id::text=split_part(name,'/',2)
  and r.contributor_id=(select auth.uid()) and r.status='pending')
