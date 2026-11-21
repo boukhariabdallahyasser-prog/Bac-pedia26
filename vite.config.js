@@ -14,7 +14,8 @@ const classicAssets = [
   'assets/ai-format.js',
   'assets/landing.js',
   'assets/community.js',
-  'assets/practice.js'
+  'assets/practice.js',
+  'assets/study-hub.js'
 ];
 function copyClassicAssets() {
   return {
