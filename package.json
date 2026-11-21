@@ -17,7 +17,8 @@
     "cf:deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.119.0"
+    "@supabase/supabase-js": "2.119.0",
+    "pdfjs-dist": "6.5.438"
   },
   "devDependencies": {
     "vite": "8.3.8",
