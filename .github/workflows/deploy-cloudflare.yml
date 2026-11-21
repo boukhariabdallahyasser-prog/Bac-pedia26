@@ -1,0 +1,75 @@
+name: Deploy Bac-pedia to Cloudflare Workers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "student/**"
+      - "contributor/**"
+      - "admin/**"
+      - "index.html"
+      - "login/**"
+      - "src/**"
+      - "assets/**"
+      - "cloudflare/**"
+      - "service-worker.js"
+      - "resources.json"
+      - "package.json"
+      - "vite.config.js"
+      - "wrangler.jsonc"
+      - ".github/workflows/deploy-cloudflare.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bacpedia-cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify Cloudflare credentials are configured
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CF_TOKEN" || { echo 'CLOUDFLARE_API_TOKEN GitHub secret is missing'; exit 1; }
+          test -n "$CF_ACCOUNT" || { echo 'CLOUDFLARE_ACCOUNT_ID GitHub secret is missing'; exit 1; }
+      - name: Install pinned dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run all frontend and security regression tests
+        run: npm test
+      - name: Build static role-separated portals
+        run: npm run build
+      - name: Verify dist output
+        run: node scripts/check-dist.mjs
+      - name: Validate Cloudflare deployment bundle
+        run: npx wrangler deploy --dry-run
+      - name: Deploy ONLY to the existing bac-pedia26 Cloudflare Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          wranglerVersion: "4.163.0"
+      - name: Verify production routes and Worker identity
+        run: |
+          set -euo pipefail
+          BASE='https://bac-pedia26.boukhariabdallahyasser.workers.dev'
+          for ROLE in student contributor admin; do
+            CODE=$(curl --silent --show-error --location --max-redirs 3 --retry 3 --retry-delay 3 --max-time 20 -o "/tmp/bac-${ROLE}.html" -w '%{http_code}' "$BASE/$ROLE/")
+            test "$CODE" = 200 || { echo "$ROLE route unavailable: $CODE"; exit 1; }
+            grep -q "data-portal=\"$ROLE\"" "/tmp/bac-${ROLE}.html"
+          done
+          curl -fsS --retry 3 --retry-delay 3 "$BASE/service-worker.js" | grep -q bacpedia-public-v1
+          curl -fsS --retry 3 --retry-delay 3 "$BASE/api/ai" | grep -q '"provider":"deploy"'
+          echo 'Cloudflare production routes validated; protected sessions require separate account tests.'
