@@ -9,6 +9,7 @@ const labels={pending:'قيد المراجعة',approved:'منشور / مقبو�
 const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'موضوع امتحان',video:'فيديو',other:'آخر'};
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
+let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null;
 let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
@@ -126,6 +127,17 @@ async function loadApprovedResources(){
        const a=el('a','portal-action','فتح المصدر الموثق');
        a.href=item.resource_url;a.rel='noopener noreferrer';a.target='_blank';card.append(a);
      }
+     const actions=el('div','portal-resource-actions');
+     actions.append(button('تقييم 1–5',()=>{
+       const value=Number(window.prompt('أدخل تقييماً من 1 إلى 5'));
+       if(Number.isInteger(value)&&value>=1&&value<=5)void submitResourceReview(item,'rating',value);
+     }));
+     actions.append(button('إبلاغ عن مشكلة',()=>{
+       const reason=window.prompt('نوع البلاغ: broken_link / incorrect_solution / copyright / inappropriate / other','broken_link');
+       if(['broken_link','incorrect_solution','copyright','inappropriate','other'].includes(reason))void submitResourceReview(item,'report_reason',reason);
+     }));
+     actions.append(button('PDF المرفق إن وجد',()=>void openPDF(item.id)));
+     card.append(actions);
      grid.append(card);
    }
  }catch(error){grid.replaceChildren(placeholder('تعذر تحميل الملفات','تحقق من الاتصال وأعد المحاولة.'));console.warn(error);}
@@ -141,6 +153,16 @@ async function loadContributor(){
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
    resources=result.data||[];
+   // Optional until the additive SQL migration is installed.
+   const [draftResult,feedbackResult,pdfResult]=await Promise.all([
+     db().from('contributor_drafts').select('*').eq('contributor_id',id).order('updated_at',{ascending:false}).limit(60),
+     db().from('contributor_private_feedback').select('id,resource_id,message,created_at').eq('contributor_id',id).order('created_at',{ascending:false}).limit(100),
+     db().from('resource_pdf_attachments').select('resource_id,storage_path').eq('contributor_id',id).limit(200)
+   ]);
+   if(user()?.id!==id)return;
+   drafts=draftResult.error?[]:(draftResult.data||[]);
+   feedback=feedbackResult.error?[]:(feedbackResult.data||[]);
+   pdfAttachments=new Map((pdfResult.error?[]:(pdfResult.data||[])).map(x=>[x.resource_id,x.storage_path]));
    renderContributor();
  }catch(error){failed(error,'تحميل مساحة المساهمة');}
 }
@@ -167,7 +189,7 @@ function renderContributor(){
    resources.filter(x=>x.status==='rejected').length
  ]);
  grid.replaceChildren();
- if(!resources.length){grid.append(placeholder('لم ترسل موارد بعد','عندما يصبح الحساب معتمداً يمكنك رفع روابط موثقة للمراجعة.'));return;}
+ if(!resources.length){grid.append(placeholder('لم ترسل موارد بعد','عندما يصبح الحساب معتمداً يمكنك رفع روابط موثقة للمراجعة.'));renderDrafts();return;}
  for(const item of resources){
    const card=el('article','portal-resource');
    const top=el('div','portal-resource-top');
@@ -180,12 +202,24 @@ function renderContributor(){
      const a=el('a','portal-action','فتح الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';tools.append(a);
    }
    if(active){
+     if(item.status==='pending'&&!pdfAttachments.has(item.id)){
+       const upload=el('input');upload.type='file';upload.accept='.pdf,application/pdf';
+       upload.style.maxWidth='220px';upload.setAttribute('aria-label','ارفع ملف PDF خاصاً بالمورد');
+       const send=button('رفع PDF',()=>{if(upload.files?.[0])void uploadPDF(item,upload.files[0]);else notify('اختر ملف PDF أولاً','warning')});
+       tools.append(upload,send);
+     }
+     if(pdfAttachments.has(item.id))tools.append(button('عرض PDF',()=>void openPDF(item.id)));
+     tools.append(button('سجل النسخ',()=>void viewVersions(item,card)));
      if(item.status!=='approved')tools.append(button('تعديل',()=>editResource(item)));
      if(item.status==='rejected')tools.append(button('إعادة إرسال',()=>void resubmitResource(item.id),'portal-action success'));
      tools.append(button('حذف',()=>void removeResource(item),'portal-action danger'));
    }
+   for(const note of feedback.filter(x=>x.resource_id===item.id).slice(0,3)){
+     card.append(el('p','portal-notice','تعليق خاص من الإدارة · '+date(note.created_at)+' : '+note.message));
+   }
    card.append(tools);grid.append(card);
  }
+ renderDrafts();
 }
 function editResource(item){
  editId=item.id;
@@ -206,6 +240,116 @@ function cancelEdit(){
  if($('collabEditorTitle'))$('collabEditorTitle').textContent='أضف مورداً تعليمياً';
  if($('collabSaveResource'))$('collabSaveResource').textContent='إرسال للمراجعة';
  $('collabCancelEdit')?.classList.add('hidden');
+}
+function draftFields(){
+ return {title:txt($('collabResourceTitle')?.value),subject:txt($('collabResourceSubject')?.value),
+ academic_branch:$('collabResourceBranch')?.value||'جميع الشعب',resource_kind:$('collabResourceKind')?.value||'other',
+ unit_title:txt($('collabResourceUnit')?.value),resource_url:txt($('collabResourceUrl')?.value),
+ description:txt($('collabResourceDescription')?.value)};
+}
+async function saveDraft(){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved'||!user())return;
+ const fields=draftFields();
+ if(!fields.title&&!fields.subject&&!fields.description&&!fields.resource_url){
+   notify('اكتب جزءاً من محتوى المسودة أولاً','warning');return;
+ }
+ busy=true;
+ try{
+   const row={...fields,contributor_id:user().id,updated_at:new Date().toISOString()};
+   if(draftEditId)row.id=draftEditId;
+   const {error}=await db().from('contributor_drafts').upsert(row);
+   if(error)throw error;
+   draftEditId=null;await loadContributor();notify('تم حفظ المسودة لحسابك','success');
+ }catch(e){failed(e,'حفظ المسودة');}finally{busy=false}
+}
+function renderDrafts(){
+ const grid=$('collabDraftsGrid');if(!grid)return;grid.replaceChildren();
+ if(!drafts.length){grid.append(el('p','muted','لا توجد مسودات محفوظة.'));return}
+ for(const draft of drafts){
+   const card=el('article','portal-resource');
+   card.append(el('h3','',draft.title||'مسودة بلا عنوان'),el('p','',draft.subject||'المادة غير محددة'));
+   card.append(button('فتح المسودة',()=>{
+     draftEditId=draft.id;editId=null;
+     for(const [field,id] of [['title','collabResourceTitle'],['subject','collabResourceSubject'],
+      ['academic_branch','collabResourceBranch'],['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
+      ['resource_url','collabResourceUrl'],['description','collabResourceDescription']]){
+       const elmt=$(id);if(elmt)elmt.value=draft[field]||'';
+     }
+     $('collabSubmitPanel')?.scrollIntoView({behavior:'smooth'});
+   }));
+   card.append(button('حذف المسودة',async()=>{
+     if(!window.confirm('حذف المسودة؟'))return;
+     const {error}=await db().from('contributor_drafts').delete().eq('id',draft.id).eq('contributor_id',user().id);
+     if(error)failed(error,'حذف المسودة');else{if(draftEditId===draft.id)draftEditId=null;await loadContributor()}
+   },'portal-action danger'));
+   grid.append(card);
+ }
+}
+async function viewVersions(item,card){
+ const {data,error}=await db().from('contributor_resource_versions')
+   .select('old_fields,changed_at').eq('resource_id',item.id).order('changed_at',{ascending:false}).limit(12);
+ if(error){failed(error,'قراءة الإصدارات');return}
+ card.querySelector('.resource-history')?.remove();
+ const section=el('div','resource-history');
+ section.append(el('h4','','سجل النسخ السابقة'));
+ if(!data?.length)section.append(el('p','muted','لا توجد نسخ سابقة بعد.'));
+ else for(const v of data){const details=el('details');
+   details.append(el('summary','',date(v.changed_at)+' · '+(v.old_fields?.title||'نسخة سابقة')),
+     el('p','',v.old_fields?.description||''),el('p','',v.old_fields?.resource_url||''));
+   section.append(details);
+ }
+ card.append(section);
+}
+async function uploadPDF(item,file){
+ if(busy||ownerRole!=='contributor'||request?.status!=='approved'||item.status!=='pending')return;
+ if(file.size<5||file.size>15728640){notify('حجم PDF يجب أن يكون أقل من 15 ميغابايت','warning');return}
+ const magic=Array.from(new Uint8Array(await file.slice(0,5).arrayBuffer())).map(x=>String.fromCharCode(x)).join('');
+ if(magic!=='%PDF-'){notify('الملف ليس PDF صالحاً','warning');return}
+ busy=true;
+ const id=user().id,path=id+'/'+item.id+'/'+crypto.randomUUID()+'.pdf';
+ try{
+   const {error:uploadError}=await db().storage.from('bac-resource-pdfs').upload(path,file,{upsert:false,contentType:'application/pdf'});
+   if(uploadError)throw uploadError;
+   const {error:recordError}=await db().from('resource_pdf_attachments').insert({
+     resource_id:item.id,contributor_id:id,storage_path:path,file_size:file.size
+   });
+   if(recordError){
+     await db().storage.from('bac-resource-pdfs').remove([path]);throw recordError;
+   }
+   await loadContributor();notify('تم إرفاق PDF خاص بالمورد، وسيظهر للطلاب بعد النشر.','success');
+ }catch(e){failed(e,'رفع PDF');}finally{busy=false}
+}
+async function openPDF(resourceId){
+ if(!user())return;
+ const {data:attachment,error}=await db().from('resource_pdf_attachments')
+   .select('storage_path').eq('resource_id',resourceId).maybeSingle();
+ if(error||!attachment?.storage_path){notify('ملف PDF غير متاح','warning');return}
+ const {data,error:signError}=await db().storage.from('bac-resource-pdfs').createSignedUrl(attachment.storage_path,300);
+ if(signError||!data?.signedUrl){notify('تعذر إنشاء رابط PDF الآمن','warning');return}
+ location.assign(data.signedUrl);
+}
+async function sendPrivateFeedback(item){
+ if(ownerRole!=='admin'||!user())return;
+ const message=window.prompt('تعليق خاص للمساهم حول هذا المورد (5 إلى 2000 حرف):');
+ if(message===null)return;
+ if(message.trim().length<5||message.length>2000){notify('طول التعليق غير صالح','warning');return}
+ const {error}=await db().from('contributor_private_feedback').insert({
+   resource_id:item.id,contributor_id:item.contributor_id,admin_id:user().id,message:message.trim()
+ });
+ if(error)failed(error,'إرسال تعليق خاص');else notify('تم إرسال التعليق الخاص إلى المساهم','success');
+}
+async function submitResourceReview(item,field,value){
+ if(ownerRole!=='student'||!user())return;
+ const uid=user().id;
+ const {data:existing,error:lookupError}=await db().from('resource_reviews')
+   .select('id').eq('reviewer_id',uid).eq('resource_id',item.id).maybeSingle();
+ if(lookupError){failed(lookupError,'التحقق من التقييم');return}
+ let request;
+ if(existing?.id)request=db().from('resource_reviews').update({[field]:value,updated_at:new Date().toISOString()})
+   .eq('id',existing.id).eq('reviewer_id',uid);
+ else request=db().from('resource_reviews').insert({resource_id:item.id,reviewer_id:uid,[field]:value});
+ const {error}=await request;
+ if(error)failed(error,'إرسال التقييم أو البلاغ');else notify('تم تسجيل رأيك للمراجعة','success');
 }
 async function saveResource(event){
  event.preventDefault();
@@ -607,6 +751,8 @@ function renderAdmin(){
        label.append(checkbox,document.createTextNode(' تحديد'));actions.append(label);
      }
      actions.append(button('تعديل الرابط والحقول',()=>openAdminEditor('resource',item)));
+     actions.append(button('تعليق خاص للمساهم',()=>void sendPrivateFeedback(item)));
+     actions.append(button('عرض PDF إن وجد',()=>void openPDF(item.id)));
      if(validUrl(item.resource_url)){
        const a=el('a','portal-action','فحص الرابط');a.href=item.resource_url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
      }
@@ -705,7 +851,8 @@ async function moderate(type,id,decision){
 }
 function resetSession(){
  stopAdminRealtime();
- identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
+ drafts=[];feedback=[];pdfAttachments.clear();draftEditId=null;
+  identity=null;request=null;resources=[];adminApplications=[];adminResources=[];adminNotifications=[];profiles=[];auditEntries=[];ownerRole='student';
  window.BAC_PORTAL_ROLE='student';document.body.classList.remove('portal-authorized');cancelEdit();resetContributorProfileForm();
 }
 window.refreshPortalRole=refreshPortalRole;
@@ -715,6 +862,7 @@ window.renderAdmin=()=>{if(user()&&ownerRole==='admin')void loadAdmin();};
 window.onCommunityAuthChanged=()=>{if(!user()){resetSession();if(!['landing','login'].includes(document.body.dataset.portal))window.location.replace('/');return;}void refreshPortalRole();};
 $('collaboratorApplyForm')?.addEventListener('submit',event=>void sendApplication(event));
 $('collabResourceForm')?.addEventListener('submit',event=>void saveResource(event));
+$('collabSaveDraft')?.addEventListener('click',()=>void saveDraft());
 $('collabCancelEdit')?.addEventListener('click',cancelEdit);
 $('collabProfileCancel')?.addEventListener('click',resetContributorProfileForm);
 $('collabRefresh')?.addEventListener('click',()=>void loadContributor());
