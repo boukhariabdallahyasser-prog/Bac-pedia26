@@ -19,6 +19,11 @@
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
       ['practice','fa-solid fa-hourglass-half','اختبار بالوقت','جلسة تدريب ومتابعة الوقت'],
+      ['papers','fa-solid fa-file-lines','مواضيع البكالوريا','استكشف المواضيع المتاحة'],
+      ['exercises','fa-solid fa-pen-ruler','تمارين حسب الوحدة','تصفّح تمارين الفهرس'],
+      ['collections','fa-solid fa-bookmark','مجموعتي','مواردك المحفوظة'],
+      ['quiz','fa-solid fa-list-check','أسئلة من ملاحظاتي','اختبارات ملء الفراغات'],
+      ['coverage','fa-solid fa-chart-pie','تغطية الفهرس','إحصاء الملفات حسب المادة'],
       ['grades','fa-solid fa-calculator','المعدل','حاسبة ونصائح'],
       ['progress','fa-solid fa-chart-line','التقدم','نسب ودفتر أخطاء'],
       ['resources','fa-solid fa-book-open','الإضافات','كتب ومنهجيات وفيديوهات'],
@@ -204,7 +209,7 @@
         return;
       }
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
-        ['home','files','chapters','ai','planner','grades','progress','resources','help'];
+        ['home','files','chapters','ai','planner','grades','progress','resources','help','practice','papers','exercises','collections','quiz','coverage'];
       if(!allowed.includes(id))id=allowed[0];
       if(id==='files'){
         state.filter='all';
@@ -231,6 +236,7 @@
       if(id==='grades')renderGrades();
       if(id==='progress')renderProgress();
       if(id==='resources')renderResources();
+      if(['papers','exercises','collections','coverage'].includes(id))void window.BacStudyHub?.render(id);
        if(id==='chapters' && typeof window.renderChapters==='function')window.renderChapters();
       if(id==='ai'){renderAiSelectors();renderAgents();}
       
@@ -258,7 +264,7 @@
     function renderNavs(){
       const role=window.BAC_PORTAL_ROLE||'student';
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
-        ['home','chapters','files','ai','planner','grades','progress','resources','help'];
+        ['home','chapters','files','ai','planner','grades','progress','resources','help','practice','papers','exercises','collections','quiz','coverage'];
       const visible=pages.filter(item=>allowed.includes(item[0]));
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}" aria-current="${state.page===p[0]?'page':'false'}"><span class="nav-icon"><i class="${p[1]}"></i></span><span class="nav-label"><strong>${p[2]}</strong><small>${p[3]}</small></span><i class="fa-solid fa-chevron-left nav-chevron"></i></button>`;
