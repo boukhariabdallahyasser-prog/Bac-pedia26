@@ -124,7 +124,7 @@ function rowForResource(host,model,item){
  if(item.id.startsWith('db:')){
   const original=state.records.find(r=>r.id===item.id.slice(3));
   if(original){
-   actions.append(btn('تعديل البيانات',()=>{state.editing=original;state.view='resource';draw(host)},'subject-ui-btn'));
+   if(original.contributor_id===(typeof studentAuthUser!=='undefined'?studentAuthUser?.id:null))actions.append(btn('تعديل البيانات',()=>{state.editing=original;state.view='resource';draw(host)},'subject-ui-btn'));
    const pdf=state.files.find(f=>f.resource_id===original.id);
    if(pdf)actions.append(btn('عرض PDF',()=>void signedPdf(host,pdf.storage_path)));
   }
@@ -212,7 +212,7 @@ async function saveResource(host,model,data){
  }
  const group=data.content_group;
  if(!Object.hasOwn(resourceKind,group)){message(host,'نوع المورد غير صالح.','error');return;}
- const user=window.studentAuthUser,client=window.getStudentAuth?.();
+ const user=(typeof studentAuthUser!=='undefined'?studentAuthUser:null),client=(typeof getStudentAuth==='function'?getStudentAuth():null);
  if(!user?.id||!client)return;
  const payload={title:data.title,unit_title:data.unit_title,description:data.description,
   resource_url:data.resource_url,content_group:group,resource_kind:resourceKind[group],
@@ -250,7 +250,7 @@ async function uploadPdf(client,userId,resourceId,file){
  if(linked){await client.storage.from('bac-resource-pdfs').remove([path]);throw linked}
 }
 async function signedPdf(host,path){
- const client=window.getStudentAuth?.();if(!client)return;
+ const client=(typeof getStudentAuth==='function'?getStudentAuth():null);if(!client)return;
  const {data,error}=await client.storage.from('bac-resource-pdfs').createSignedUrl(path,300);
  if(error||!data?.signedUrl){message(host,'ملف PDF غير متاح حالياً.','error');return}
  window.open(data.signedUrl,'_blank','noopener,noreferrer');
@@ -275,7 +275,7 @@ function unitForm(host,model){
  form.append(actions);return form;
 }
 async function saveUnit(host,model,data){
- const user=window.studentAuthUser,client=window.getStudentAuth?.();
+ const user=(typeof studentAuthUser!=='undefined'?studentAuthUser:null),client=(typeof getStudentAuth==='function'?getStudentAuth():null);
  if(!user?.id||!client||!window.BacEducation?.inTrack(state.branch,state.specialization||null,model.id))return;
  if(data.source_url&&!validateUrl(data.source_url)){message(host,'رابط المصدر غير صالح.','error');return}
  if(data.title.length<3||data.title.length>160){message(host,'عنوان الوحدة غير صالح.','error');return}
@@ -295,7 +295,7 @@ async function saveUnit(host,model,data){
  }catch(error){console.warn('Admin unit update failed',error);message(host,'تعذر حفظ الوحدة. تأكد من الصلاحيات والاتصال.','error')}
 }
 async function toggleUnit(host,item){
- const client=window.getStudentAuth?.();if(!client)return;
+ const client=(typeof getStudentAuth==='function'?getStudentAuth():null);if(!client)return;
  const {error}=await client.from('bac_curriculum_units').update({is_published:!item.is_published}).eq('id',item.id);
  if(error){message(host,'فشل تحديث حالة الوحدة.','error');return}await refresh(host);
 }
@@ -316,8 +316,8 @@ function draw(host){
 async function refresh(host){
  const request=++state.version;
  host.replaceChildren(E('p','admin-library-muted','جار تحميل فهرس المواد والموارد...'));
- const client=window.getStudentAuth?.();
- if(!client||!window.studentAuthUser?.id||window.BAC_PORTAL_ROLE!=='admin'){
+ const client=(typeof getStudentAuth==='function'?getStudentAuth():null);
+ if(!client||!(typeof studentAuthUser!=='undefined'?studentAuthUser:null)?.id||window.BAC_PORTAL_ROLE!=='admin'){
   host.replaceChildren(E('p','admin-library-muted','هذه الصفحة مخصصة لحساب المدير المعتمد فقط.'));return;
  }
  try{
