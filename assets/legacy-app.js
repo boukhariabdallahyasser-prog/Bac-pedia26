@@ -267,9 +267,9 @@
     function renderNavs(){
       const role=window.BAC_PORTAL_ROLE||'student';
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
-        ['home','chapters','files','ai','planner','grades','progress','resources','help','practice','papers','exercises','collections','quiz','pdf','coverage'];
+        ['home','chapters','ai','planner','grades','progress','resources','help','practice','collections','quiz','pdf','coverage'];
       const visible=pages.filter(item=>allowed.includes(item[0]));
-      const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
+      const action=p=>`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}" aria-current="${state.page===p[0]?'page':'false'}"><span class="nav-icon"><i class="${p[1]}"></i></span><span class="nav-label"><strong>${p[2]}</strong><small>${p[3]}</small></span><i class="fa-solid fa-chevron-left nav-chevron"></i></button>`;
       if(role==='student'){
         const grouped=[
