@@ -253,6 +253,7 @@
       if(id==='files')window.renderApprovedResources?.();
     }
     function openFilesAll(){
+      window.BacSubjectOrganizer?.setPendingKind?.('all');
       showPage('chapters');
     }
     function updateFilesSubtitle(){
