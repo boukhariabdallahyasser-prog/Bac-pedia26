@@ -14,6 +14,7 @@ const classicAssets = [
   'assets/education-model.js',
   'assets/subject-taxonomy.js',
   'assets/subject-organizer.js',
+  'assets/student-launchpad.js',
   'assets/admin-library.js',
   'assets/chapters.js',
   'assets/ai-format.js',
