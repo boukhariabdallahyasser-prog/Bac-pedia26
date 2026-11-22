@@ -113,6 +113,11 @@
         </div>
       </section>
       <section class="page" id="page-chapters">
+  <div id="subjectOrganized" class="subject-ui" aria-live="polite"><p class="subject-ui-notice">جار تحميل المواد المرتبطة بشعبتك...</p></div>
+  <details id="chapterAdvancedSearch" class="subject-ui-advanced">
+    <summary><i class="fa-solid fa-magnifying-glass"></i> البحث المتقدم في جميع أسماء المجلدات والملفات</summary>
+    <p class="subject-ui-notice">استخدمه إذا لم تجد الملف ضمن أقسام المادة. يمكنه البحث بأسماء الملفات كما هي، دون اعتبارها أسماء مواد.</p>
+
   <div class="chapters-hero"><div>
     <div class="chapters-eyebrow"><i class="fa-solid fa-layer-group"></i> BAC-PEDIA · CHAPTERS STUDIO</div>
     <h1>كل دروسك ووحداتك.<br>بحث واحد، نتائج أوضح.</h1>
@@ -142,9 +147,10 @@
   <div class="chapter-results-title"><h2 id="chapterSectionTitle">اختر مادة للبدء</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
   <div class="chapter-results" id="chapterResults" aria-live="polite"></div>
   <p class="chapter-source-note"><i class="fa-solid fa-circle-info"></i> النتائج مبنية على فهرس الموارد المتاحة لشعبتك. الروابط تفتح في Google Drive؛ قد تتطلب بعض الملفات صلاحية وصول.</p>
+  </details>
 </section>
 <section class="page" id="page-files">
-        <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div class="section-head"><div><h2>مجلدات المواد الأصلية</h2><p id="filesSubtitle">افتح المادة للاطلاع على أقسامها، أو استخدم البحث المتقدم.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
         <div class="card">
           <div class="grid-2">
             <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
@@ -153,6 +159,15 @@
           <div class="pill-row" id="fileFilters" style="margin-top:12px"></div>
         </div>
         <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
+<div class="card" id="specialResourceShortcuts">
+  <h3>تبحث عن نوع معين من الموارد؟</h3>
+  <p class="muted">المواضيع والتمارين والمراجعات ليست مواد مستقلة. اخترها من الأقسام الواضحة التالية.</p>
+  <div class="actions">
+    <button class="btn" onclick="showPage('papers')">مواضيع البكالوريا</button>
+    <button class="btn" onclick="showPage('exercises')">التمارين</button>
+    <button class="btn" onclick="showPage('chapters')">مكتبة المواد المنظّمة</button>
+  </div>
+</div>
         <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
         <section id="approvedResourcesSection" class="approved-resources">
           <div class="portal-heading"><div><span class="portal-eyebrow">CURATED MATERIALS</span><h2>موارد تعليمية إضافية</h2><p>ملفات راجعتها إدارة الموقع قبل نشرها، مرتبة حسب المادة والوحدة.</p></div></div>
