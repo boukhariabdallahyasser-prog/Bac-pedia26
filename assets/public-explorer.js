@@ -166,7 +166,7 @@ async function loadManifest(){
  finally{state.loading=false;render()}
 }
 function init(){
- if(document.body.dataset.portal!=='landing'||!$('publicBranchGrid'))return;
+ if(!['landing','library'].includes(document.body.dataset.portal)||!$('publicBranchGrid'))return;
  const branches=model()?.branches||{};
  for(const item of document.querySelectorAll('[data-public-branch]')){
   const code=item.dataset.publicBranch;if(!Object.hasOwn(branches,code))continue;
