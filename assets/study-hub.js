@@ -8,38 +8,108 @@ const currentUser=()=>typeof studentAuthUser!=='undefined'?studentAuthUser:null;
 let catalog=[],loaded=false,rawManifest=null,catalogKey='';
 const bookmarkClient=()=>typeof getStudentAuth==='function'?getStudentAuth():null;
 const hubKey=k=>'hub:'+k;
+const stableKey=(subject,url)=>{
+ const raw=String(subject)+'|'+String(url);
+ let a=2166136261,b=2166136261;
+ for(let i=0;i<raw.length;i++){
+  const c=raw.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^(c+31),16777619);
+ }
+ return 'r'+(a>>>0).toString(36)+(b>>>0).toString(36);
+};
+const pendingStorageKey=()=>currentUser()?.id?'bacpedia:bookmark-pending:'+currentUser().id:null;
+function readPending(){
+ const key=pendingStorageKey();if(!key)return {};
+ try{
+  const p=JSON.parse(localStorage.getItem(key)||'{}');
+  return p&&typeof p==='object'&&!Array.isArray(p)?p:{};
+ }catch{return {}}
+}
+function writePending(pending){
+ const key=pendingStorageKey();if(!key)return;
+ try{localStorage.setItem(key,JSON.stringify(pending))}catch{}
+}
+function mapKey(key){
+ const item=catalog.find(x=>x.key===key||x.legacyKey===key);
+ return item?.key||key;
+}
+let syncedUid=null,syncFlight=null;
+async function mutateRemoteBookmark(db,uid,key,enabled){
+ const item=catalog.find(x=>x.key===key);
+ if(!item)return false;
+ const resource_key=hubKey(item.key);
+ if(resource_key.length>240)return false;
+ const aliases=[resource_key];
+ if(item.legacyKey&&item.legacyKey!==item.key)aliases.push(hubKey(item.legacyKey).slice(0,240));
+ let error=null;
+ if(enabled){
+  const response=await db.from('student_resource_bookmarks').upsert({
+   user_id:uid,resource_key,subject_id:item.subjectId||'general'
+  },{onConflict:'user_id,resource_key'});
+  error=response.error;
+ }else{
+  const response=await db.from('student_resource_bookmarks').delete()
+   .eq('user_id',uid).in('resource_key',aliases);
+  error=response.error;
+ }
+ if(error)throw error;
+ return true;
+}
 async function syncSaved(){
-  const uid=currentUser()?.id,db=bookmarkClient();if(!uid||!db)return;
+ const uid=currentUser()?.id,db=bookmarkClient();
+ if(!uid||!db)return;
+ if(syncedUid===uid)return;
+ if(syncFlight?.uid===uid)return syncFlight.promise;
+ const task=(async()=>{
   try{
-    const {data,error}=await db.from('student_resource_bookmarks')
-      .select('resource_key').eq('user_id',uid).like('resource_key','hub:%').limit(500);
-    if(error)throw error;
+   const {data,error}=await db.from('student_resource_bookmarks')
+     .select('resource_key').eq('user_id',uid).like('resource_key','hub:%').limit(500);
+   if(error)throw error;
+   if(currentUser()?.id!==uid)return;
+   const pending=readPending();
+   const remote=(data||[]).map(x=>x.resource_key).filter(k=>typeof k==='string'&&k.startsWith('hub:'))
+     .map(k=>mapKey(k.slice(4)));
+   const local=readSaved().map(mapKey);
+   const all=new Set([...remote,...local]);
+   for(const [key,value] of Object.entries(pending)){
+    if(value===false)all.delete(mapKey(key));
+    else if(value===true)all.add(mapKey(key));
+   }
+   if(currentUser()?.id!==uid)return;
+   saveSaved([...all]);
+   // Replay explicit offline changes first. A stale cloud item must never resurrect a deletion.
+   for(const [key,enabled] of Object.entries(pending)){
     if(currentUser()?.id!==uid)return;
-    const remote=(data||[]).map(x=>x.resource_key).filter(k=>typeof k==='string'&&k.startsWith('hub:')).map(k=>k.slice(4));
-    const local=readSaved();const missing=local.filter(k=>!remote.includes(k));
-    if(missing.length){
-      const lookup=new Map(catalog.map(x=>[x.key,x]));
-      const rows=missing.filter(k=>lookup.has(k)).map(k=>({
-        user_id:uid,resource_key:hubKey(k).slice(0,240),subject_id:lookup.get(k).subject.slice(0,80)||'general'
-      }));
-      if(rows.length){
-        const response=await db.from('student_resource_bookmarks').upsert(rows,{onConflict:'user_id,resource_key'});
-        if(response.error)throw response.error;
-      }
+    const canonical=mapKey(key);
+    if(await mutateRemoteBookmark(db,uid,canonical,enabled)){
+     const now=readPending();if(now[key]===enabled){delete now[key];writePending(now)}
     }
+   }
+   const currentRemote=new Set(remote);
+   const additions=[...all].filter(x=>!currentRemote.has(x));
+   for(const key of additions){
     if(currentUser()?.id!==uid)return;
-    saveSaved([...new Set([...local,...remote])]);
-  }catch(error){console.warn('Collection cloud sync unavailable, retaining local cache',error)}
+    await mutateRemoteBookmark(db,uid,key,true);
+   }
+   if(currentUser()?.id!==uid)return;
+   syncedUid=uid;
+  }catch(error){console.warn('Saved-resource cloud sync unavailable; local changes preserved',error)}
+ })();
+ syncFlight={uid,promise:task};
+ try{await task}finally{if(syncFlight?.promise===task)syncFlight=null}
 }
 async function updateCloudBookmark(item,enabled){
-  const uid=currentUser()?.id,db=bookmarkClient();
-  if(!uid||!db)return;
-  const resource_key=hubKey(item.key);
-  if(resource_key.length>240)return;
-  const q=enabled
-    ?db.from('student_resource_bookmarks').upsert({user_id:uid,resource_key,subject_id:item.subject.slice(0,80)||'general'},{onConflict:'user_id,resource_key'})
-    :db.from('student_resource_bookmarks').delete().eq('user_id',uid).eq('resource_key',resource_key);
-  const {error}=await q;if(error)console.warn('Collection change saved locally but could not sync',error);
+ const uid=currentUser()?.id,db=bookmarkClient();if(!uid)return;
+ const pending=readPending();pending[item.key]=enabled;writePending(pending);
+ if(!db)return;
+ try{
+  if(await mutateRemoteBookmark(db,uid,item.key,enabled)&&currentUser()?.id===uid){
+   const latest=readPending();
+   if(latest[item.key]===enabled){delete latest[item.key];writePending(latest)}
+  }
+ }catch(error){
+  console.warn('Bookmark retained locally but cloud sync failed',error);
+  if(typeof showToast==='function')showToast('حُفظ التغيير محلياً؛ ستُعاد محاولة المزامنة عند عودة الاتصال','warning');
+ }
 }
 
 const storageKey=()=>currentUser()?.id?'bacpedia:collections:'+currentUser().id:null;
@@ -75,16 +145,18 @@ function flatten(manifest,settings){
     const entries=root.BacSubjectCatalog.build({
       manifest,branch:settings.branch,subBranch:settings.subBranch,subjects:settings.subjects
     });
+    if(root.BacEducation&&Array.isArray(settings.records))root.BacEducation.overlay(entries,settings.records,[],settings.branch,settings.subBranch);
     const collected=[],seen=new Set();
     function add(model,item,source){
       if(!validUrl(source.url))return;
       const u=new URL(source.url);
-      const key=source.id||model.id+':'+u.pathname;
+      const legacyKey=source.id||model.id+':'+u.pathname;
+      const key=stableKey(model.id,source.url);
       const canonical=model.id+'|'+source.url;
       if(seen.has(canonical))return;
       seen.add(canonical);
       const parent=item.title===source.title?item.context:(item.title+' · '+item.context);
-      const rec={key,title:source.title,subject:model.name,subjectId:model.id,
+      const rec={key,legacyKey,title:source.title,subject:model.name,subjectId:model.id,
         parent,url:source.url,type:source.type,group:item.group,year:source.year||null,
         text:norm([model.name,source.title,parent].join(' '))};
       collected.push(rec);
@@ -125,7 +197,21 @@ async function load(){
       if(rawManifest.schemaVersion!==1||!rawManifest.subjects)throw Error('Invalid catalog');
     }
     const subjects=typeof getNormalSubjects==='function'?getNormalSubjects():[];
-    catalog=flatten(rawManifest,{branch,subBranch,subjects});loaded=true;catalogKey=stamp;
+    let records=[];
+    const client=bookmarkClient();
+    if(client&&root.BacEducation){
+      const label=root.BacEducation.branches[branch]?.name||'جميع الشعب';
+      const {data,error}=await client.from('collaborator_resources')
+        .select('id,title,subject,subject_key,specialization_code,academic_branch,content_group,unit_title,resource_url,resource_kind,status,exam_year')
+        .eq('status','approved').in('academic_branch',[label,'جميع الشعب']).limit(1000);
+      if(error)console.warn('Approved resource catalog unavailable',error);
+      else records=data||[];
+    }
+    catalog=flatten(rawManifest,{branch,subBranch,subjects,records});
+    loaded=true;catalogKey=stamp;
+    const original=readSaved();
+    const migrated=[...new Set(original.map(mapKey))];
+    if(migrated.some((x,i)=>x!==original[i]))saveSaved(migrated);
   }catch(error){
     console.warn('Study catalog unavailable:',error);catalog=[];loaded=false;
   }
@@ -172,7 +258,7 @@ async function renderList(mode){
 }
 async function renderCollections(){
   const dest=$('studyCollectionsResults');if(!dest)return;
-  const items=await load(),saved=readSaved();
+  const items=await load(),saved=readSaved().map(mapKey);
   if($('studyCollectionCount'))$('studyCollectionCount').textContent=String(saved.length);
   const dictionary=new Map(items.map(x=>[x.key,x]));
   dest.replaceChildren();let found=0;

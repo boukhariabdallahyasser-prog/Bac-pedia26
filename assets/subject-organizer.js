@@ -10,7 +10,9 @@ const h=(tag,className,text)=>{
 };
 const branchNames={math:'رياضيات',science:'علوم تجريبية',tech:'تقني رياضي',literature:'آداب وفلسفة',languages:'لغات أجنبية',economy:'تسيير واقتصاد'};
 let manifest=null,models=[],branchKey='',selected='',kind='all',opened=null,query='',loading=null;
+let itemQuery='',sortOrder='default',expandedGroups=new Set();
 let availablePdfPaths=new Map();
+let refreshFlight=null,cachedOverlay={key:null,expires:0,published:[],units:[],attachments:[]};
 function isStudent(){return document.body?.dataset.portal==='student'}
 function button(label,fn,className){
  const el=h('button',className||'subject-ui-btn',label);el.type='button';el.addEventListener('click',fn);return el;
@@ -58,9 +60,10 @@ function breadcrumb(host,model){
   if(opened)host.append(h('span','subject-ui-sep','/'),h('strong','',opened.title));
  }
 }
-function choose(id){
+function choose(id,goalKey='all'){
  if(!models.some(x=>x.id===id))return;
- selected=id;kind='all';opened=null;query='';
+ selected=id;kind=goalKey;opened=null;query='';itemQuery='';sortOrder='default';expandedGroups=new Set();
+ if(typeof window.rememberBacSubject==='function')window.rememberBacSubject(id,state.branch,state.subBranch);
  if($('subjectOrganizedSearch'))$('subjectOrganizedSearch').value='';
  render();
  $('subjectOrganized')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -169,7 +172,24 @@ function subjectDetail(model){
   tab.setAttribute('aria-pressed',String(kind===t.id));tabs.append(tab);
  }
  wrap.append(tabs);
+ const controls=h('div','subject-ui-content-controls');
+ const filter=h('input','subject-ui-search');
+ filter.id='subjectContentSearch';filter.type='search';filter.placeholder='ابحث داخل موارد هذه المادة أو اسم الوحدة...';
+ filter.setAttribute('aria-label','بحث في محتوى المادة');filter.value=itemQuery;
+ filter.addEventListener('input',e=>{
+  itemQuery=e.target.value;const position=e.target.selectionStart;render();
+  const next=$('subjectContentSearch');if(next){next.focus();next.setSelectionRange(position,position)}
+ });
+ const sort=h('select','subject-ui-sort');sort.id='subjectContentSort';
+ sort.setAttribute('aria-label','ترتيب محتوى المادة');
+ for(const [value,label] of [['default','ترتيب الفهرس'],['year','أحدث سنة ظاهرة في الاسم'],['az','الاسم أبجدياً']]){
+  const opt=h('option','',label);opt.value=value;sort.append(opt);
+ }
+ sort.value=sortOrder;
+ sort.addEventListener('change',e=>{sortOrder=e.target.value;render()});
+ controls.append(filter,sort);wrap.append(controls);
  const groups=kind==='all'?model.groups:model.groups.filter(x=>x.id===kind);
+ let visibleCount=0;
  for(const group of groups){
    const section=h('section','subject-ui-group');
    const sectionHeading=h('div','subject-ui-group-heading');
@@ -177,8 +197,29 @@ function subjectDetail(model){
    section.append(sectionHeading);
    section.append(h('p','subject-ui-group-hint',group.description));
    const rows=h('div','subject-ui-resources');
-   for(const item of group.items)rows.append(rowItem(item,model));
-   section.append(rows);wrap.append(section);
+   const search=BacSubjectCatalog.normalize(itemQuery);
+   const matches=group.items.filter(item=>!search||BacSubjectCatalog.normalize(
+     [item.title,item.context,...(item.children||[]).map(x=>x.title)].join(' ')).includes(search));
+   if(!matches.length)continue;
+   visibleCount+=matches.length;
+   if(sortOrder==='year')matches.sort((a,b)=>(Number(b.year)||0)-(Number(a.year)||0));
+   if(sortOrder==='az')matches.sort((a,b)=>a.title.localeCompare(b.title,'ar'));
+   const key=model.id+':'+group.id;
+   const shown=expandedGroups.has(key)?matches:matches.slice(0,12);
+   for(const item of shown)rows.append(rowItem(item,model));
+   section.append(rows);
+   if(matches.length>12&&!expandedGroups.has(key))section.append(button(
+     'عرض بقية '+(matches.length-12)+' عنصر في '+group.name,()=>{
+       expandedGroups.add(key);render();
+     },'subject-ui-more'));
+   wrap.append(section);
+ }
+ if(visibleCount===0){
+  const empty=h('div','subject-ui-empty',kind!=='all'&&model.groups.every(x=>x.id!==kind)?
+    'لا توجد موارد من هذا النوع مفهرسة لهذه المادة حالياً. يمكنك الرجوع إلى جميع موارد المادة.':
+    'لا توجد موارد مطابقة لهذا البحث في هذا القسم.');
+  empty.append(button('عرض جميع موارد المادة',()=>{kind='all';itemQuery='';render()},'subject-ui-btn'));
+  wrap.append(empty);
  }
  const source=external(model.sourceUrl,'تصفح مجلد المادة الكامل');
  if(source)wrap.append(source);
@@ -214,12 +255,20 @@ function render(){
  note.textContent='المواد المعروضة تعتمد على الشعبة المختارة. ظهور المادة لا يعني أن ملفاتها مكتملة أو متاحة للجميع.';
  host.append(note);
 }
-async function refresh(){
+function refresh(){
+ const key=currentBranch()+':'+(typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest');
+ if(refreshFlight?.key===key)return refreshFlight.promise;
+ const task=performRefresh();
+ const promise=task.finally(()=>{if(refreshFlight?.promise===promise)refreshFlight=null});
+ refreshFlight={key,promise};
+ return promise;
+}
+async function performRefresh(){
  const host=$('subjectOrganized');
  if(!isStudent()||!host)return;
  const next=currentBranch();
  if(next!==branchKey){
-  selected='';kind='all';opened=null;query='';branchKey=next;
+  selected='';kind='all';opened=null;query='';itemQuery='';sortOrder='default';expandedGroups.clear();branchKey=next;
  }
  if(!manifest){
   host.replaceChildren(h('p','subject-ui-notice','جار تحميل فهرس مواد شعبتك...'));
@@ -233,28 +282,35 @@ async function refresh(){
  const client=typeof getStudentAuth==='function'?getStudentAuth():null;
  if(client&&window.BacEducation){
    const branchName=window.BacEducation.branches[state.branch]?.name||'جميع الشعب';
-   const [published,extraUnits,attachments]=await Promise.all([
-     client.from('collaborator_resources')
-       .select('id,title,subject,subject_key,specialization_code,academic_branch,resource_kind,content_group,unit_title,resource_url,exam_year,status')
-       .eq('status','approved').in('academic_branch',[branchName,'جميع الشعب']).limit(1000),
-     client.from('bac_curriculum_units')
-       .select('id,title,subject_key,specialization_code,branch_code,is_published')
-       .eq('branch_code',state.branch).eq('is_published',true).limit(400),
-     client.from('resource_pdf_attachments').select('resource_id,storage_path').limit(1000)
-   ]);
-   if(next!==currentBranch())return;
-   if(published.error||extraUnits.error)console.warn('Academic content overlay unavailable',published.error||extraUnits.error);
-   models=window.BacEducation.overlay(models,published.error?[]:published.data||[],
-      extraUnits.error?[]:extraUnits.data||[],state.branch,state.subBranch);
-   availablePdfPaths=new Map((attachments.error?[]:attachments.data||[]).map(x=>[x.resource_id,x.storage_path]));
+   const uid=typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest';
+   const identity=next+':'+uid;
+   if(cachedOverlay.key!==identity||Date.now()>cachedOverlay.expires){
+     const [published,extraUnits,attachments]=await Promise.all([
+       client.from('collaborator_resources')
+         .select('id,title,subject,subject_key,specialization_code,academic_branch,resource_kind,content_group,unit_title,resource_url,exam_year,status')
+         .eq('status','approved').in('academic_branch',[branchName,'جميع الشعب']).limit(1000),
+       client.from('bac_curriculum_units')
+         .select('id,title,subject_key,specialization_code,branch_code,is_published')
+         .eq('branch_code',state.branch).eq('is_published',true).limit(400),
+       client.from('resource_pdf_attachments').select('resource_id,storage_path').limit(1000)
+     ]);
+     if(next!==currentBranch()||uid!==(typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest'))return;
+     if(published.error||extraUnits.error)console.warn('Academic content overlay unavailable',published.error||extraUnits.error);
+     cachedOverlay={key:identity,expires:Date.now()+90000,
+       published:published.error?[]:published.data||[],
+       units:extraUnits.error?[]:extraUnits.data||[],
+       attachments:attachments.error?[]:attachments.data||[]};
+   }
+   models=window.BacEducation.overlay(models,cachedOverlay.published,cachedOverlay.units,state.branch,state.subBranch);
+   availablePdfPaths=new Map(cachedOverlay.attachments.map(x=>[x.resource_id,x.storage_path]));
  }
  if(selected&&!models.some(x=>x.id===selected)){selected='';opened=null;kind='all'}
  render();
 }
-function open(id){
+function open(id,goalKey='all'){
  if(!isStudent())return;
  if(typeof showPage==='function')showPage('chapters');
- void refresh().then(()=>choose(id));
+ void refresh().then(()=>choose(id,goalKey));
 }
 window.renderSubjectOrganizer=()=>{void refresh()};
 window.openOrganizedSubject=open;

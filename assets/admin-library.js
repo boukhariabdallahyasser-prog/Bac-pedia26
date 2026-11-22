@@ -7,7 +7,7 @@ const E=(tag,cls,text)=>{
  const el=document.createElement(tag);if(cls)el.className=cls;
  if(text!==undefined)el.textContent=String(text);return el;
 };
-const state={branch:'math',specialization:'',subjectId:'',group:'all',manifest:null,records:[],units:[],files:[],editing:null,view:'library',version:0};
+const state={branch:'math',specialization:'',subjectId:'',group:'all',manifest:null,records:[],units:[],files:[],editing:null,view:'library',version:0,search:'',onlyEmpty:false};
 const resourceKind={lessons:'lesson',exercises:'exercise',summaries:'summary',tests:'exam',bac:'exam',other:'other'};
 const contentLabels={lessons:'دروس',exercises:'تمارين',summaries:'ملخصات ومراجع',tests:'فروض واختبارات',bac:'مواضيع البكالوريا',other:'ملفات أخرى'};
 const branchModel=()=>window.BacEducation;
@@ -58,14 +58,14 @@ function nav(host){
  const track=branchModel();
  const nav=E('div','admin-library-filters');
  nav.append(labelSelect('الشعبة',Object.entries(track.branches).map(([code,b])=>[code,b.name]),state.branch,val=>{
-  state.branch=val;state.specialization='';state.subjectId='';state.group='all';state.editing=null;state.view='library';draw(host);
+  state.branch=val;state.specialization='';state.subjectId='';state.group='all';state.editing=null;state.view='library';state.search='';state.onlyEmpty=false;draw(host);
  }));
  const subs=track.branches[state.branch]?.subspecialties||{};
  if(Object.keys(subs).length){
   if(state.branch==='tech'&&!state.specialization)state.specialization='electrical';
   if(state.branch==='languages'&&!state.specialization)state.specialization=Object.keys(subs)[0];
   nav.append(labelSelect('التخصص / اللغة الثالثة',Object.entries(subs),state.specialization,val=>{
-   state.specialization=val;state.subjectId='';state.group='all';state.editing=null;state.view='library';draw(host);
+   state.specialization=val;state.subjectId='';state.group='all';state.editing=null;state.view='library';state.search='';state.onlyEmpty=false;draw(host);
   }));
  }
  const model=models().find(x=>x.id===state.subjectId);
@@ -76,8 +76,26 @@ function nav(host){
  host.append(nav);
 }
 function drawCards(host,subjects){
+ const toolbar=E('div','admin-library-list-toolbar');
+ const search=E('input','admin-library-search');search.type='search';
+ search.id='adminLibrarySearch';search.value=state.search;
+ search.placeholder='ابحث عن مادة ضمن هذه الشعبة...';
+ search.setAttribute('aria-label','البحث في مواد الشعبة');
+ search.addEventListener('input',e=>{
+  state.search=e.target.value;const cursor=e.target.selectionStart;draw(host);
+  const newInput=get('adminLibrarySearch');if(newInput){newInput.focus();newInput.setSelectionRange(cursor,cursor)}
+ });
+ toolbar.append(search);
+ const emptyFilter=btn('المواد التي لا تتوفر لها موارد',()=>{
+  state.onlyEmpty=!state.onlyEmpty;draw(host);
+ },'admin-library-mini-filter'+(state.onlyEmpty?' active':''));
+ emptyFilter.setAttribute('aria-pressed',String(state.onlyEmpty));
+ toolbar.append(emptyFilter);host.append(toolbar);
+ const visible=subjects.filter(item=>(!state.onlyEmpty||!item.items.length)&&
+  (!state.search||window.BacEducation.normalize(item.name).includes(window.BacEducation.normalize(state.search))));
+ host.append(E('p','admin-library-help',visible.length+' مادة معروضة من أصل '+subjects.length+' مادة في الشعبة. الأعداد تخص فهرس الموقع وقاعدة البيانات فقط، ولا تعني اكتمال المنهاج.'));
  const grid=E('div','admin-library-grid');
- for(const item of subjects){
+ for(const item of visible){
   const card=E('article','subject-ui-card');
   card.append(E('h3','',item.name),E('p','subject-ui-hint',sourceDescription(item)));
   const tags=E('div','subject-ui-chips');
@@ -89,6 +107,7 @@ function drawCards(host,subjects){
   },'subject-ui-btn primary'));
   grid.append(card);
  }
+ if(!visible.length)grid.append(E('p','admin-library-muted','لا توجد مواد مطابقة للفلاتر. جرّب إزالة فلتر المواد الفارغة.'));
  host.append(grid);
 }
 function groupTabs(host,model){
@@ -184,22 +203,42 @@ function resourceForm(host,model){
  const desc=input('description','وصف ومحتوى المورد',{rows:3,required:true,minLength:12,maxLength:2000,value:editing?.description});
  const url=input('resource_url','رابط المصدر HTTPS',{required:true,type:'url',maxLength:2000,value:editing?.resource_url});
  const year=input('exam_year','سنة الامتحان إن كانت موثقة',{type:'number',min:1962,max:2035,value:editing?.exam_year});
- for(const field of [title,unit,desc,url,year])form.append(field.wrap);
+ form.append(E('p','admin-library-step','الخطوة 1 / 2 · بيانات المورد الأساسية'));
+ form.append(title.wrap,unit.wrap);
  const groupDefault=editing?.content_group||Object.keys(resourceKind).find(x=>resourceKind[x]===editing?.resource_kind)||'lessons';
  const group=labelSelect('نوع المورد',Object.entries(contentLabels),groupDefault,()=>{});
  form.append(group);
  const groupSelect=group.querySelector('select');
+ form.append(E('p','admin-library-step','الخطوة 2 / 2 · الرابط والوصف المفيد للطالب'));
+ form.append(url.wrap,desc.wrap);
+ const advanced=E('details','admin-library-advanced');
+ advanced.append(E('summary','','خيارات إضافية: سنة الامتحان وملف PDF'));
  const file=input('pdf','ملف PDF اختياري (15 ميغابايت كحد أقصى)',{type:'file'});
  file.field.accept='.pdf,application/pdf';file.field.required=false;
- form.append(file.wrap);
- form.append(E('p','admin-library-muted','سيظهر المورد في نفس المادة والشعبة عند الطلاب بعد حفظه. رابط HTTPS مطلوب حتى عند إرفاق PDF. لا نغيّر الملفات الأصلية.'));
+ advanced.append(year.wrap,file.wrap);
+ form.append(advanced);
+ const preview=E('div','admin-library-preview');
+ preview.setAttribute('aria-live','polite');
+ const showPreview=()=>{
+  preview.replaceChildren(E('h4','','معاينة بطاقة المورد كما سيراها الطالب'));
+  preview.append(E('p','',title.field.value.trim()||'عنوان المورد يظهر هنا'));
+  preview.append(E('small','',
+   window.BacEducation.branches[state.branch].name+' · '+model.name+' · '+(contentLabels[groupSelect.value]||'مورد')+' · '+(unit.field.value.trim()||'وحدة غير محددة')));
+  preview.append(E('p','',desc.field.value.trim().slice(0,150)||'أضف وصفاً ليفهم الطالب محتوى الرابط.'));
+ };
+ form.addEventListener('input',showPreview);
+ form.addEventListener('change',showPreview);
+ showPreview();form.append(preview);
+ form.append(E('p','admin-library-muted','لا نعدل مجلدات Drive الأصلية. يظهر المورد المنشور في قسم المادة فقط. رابط HTTPS مطلوب حتى مع PDF الخاص.'));
  const controls=E('div','admin-library-action-row');
  const save=btn(editing?'حفظ التعديلات':'نشر المورد',()=>{if(form.reportValidity())void saveResource(host,model,{
   title:title.field.value.trim(),unit_title:unit.field.value.trim(),description:desc.field.value.trim(),
   resource_url:url.field.value.trim(),content_group:groupSelect.value,exam_year:year.field.value,file:file.field.files?.[0]||null,editing
  })},'subject-ui-btn primary');
  controls.append(save,btn('إلغاء',()=>{state.view='library';state.editing=null;draw(host)}));
- form.append(controls);return form;
+ form.append(controls);
+ form.addEventListener('submit',event=>{event.preventDefault();save.click()});
+ return form;
 }
 async function saveResource(host,model,data){
  if(!window.BacEducation?.inTrack(state.branch,state.specialization||null,model.id)){message(host,'هذه المادة غير متاحة ضمن الشعبة المحددة.','error');return;}
@@ -210,6 +249,9 @@ async function saveResource(host,model,data){
  if(year!==null&&(!Number.isInteger(year)||year<1962||year>2035)){
   message(host,'سنة الامتحان خارج المجال المحدد.','error');return;
  }
+ const duplicate=model.items.find(item=>item.url===data.resource_url&&
+  (!data.editing||item.id!=='db:'+data.editing.id));
+ if(duplicate){message(host,'هذا الرابط موجود بالفعل في المادة باسم: '+duplicate.title+'. راجعه قبل إضافة نسخة مكررة.','error');return;}
  const group=data.content_group;
  if(!Object.hasOwn(resourceKind,group)){message(host,'نوع المورد غير صالح.','error');return;}
  const user=(typeof studentAuthUser!=='undefined'?studentAuthUser:null),client=(typeof getStudentAuth==='function'?getStudentAuth():null);
@@ -281,6 +323,9 @@ async function saveUnit(host,model,data){
  if(!user?.id||!client||!window.BacEducation?.inTrack(state.branch,state.specialization||null,model.id))return;
  if(data.source_url&&!validateUrl(data.source_url)){message(host,'رابط المصدر غير صالح.','error');return}
  if(data.title.length<3||data.title.length>160){message(host,'عنوان الوحدة غير صالح.','error');return}
+ const duplicate=state.units.some(u=>u.subject_key===model.id&&u.branch_code===state.branch&&
+  (u.specialization_code||'')===state.specialization&&window.BacEducation.normalize(u.title)===window.BacEducation.normalize(data.title)&&u.id!==data.editing?.id);
+ if(duplicate){message(host,'هذه الوحدة موجودة بالفعل في نفس المادة والتخصص.','error');return}
  const payload={title:data.title,description:data.description,source_url:data.source_url||null,
   branch_code:state.branch,specialization_code:state.specialization||null,subject_key:model.id,
   academic_year:'2026-2027',source_type:'editorial',is_published:data.is_published};

@@ -34,10 +34,12 @@ async function start(){
     '/assets/subject-taxonomy.js',
     '/assets/legacy-app.js',
     '/assets/subject-organizer.js',
+    '/assets/student-launchpad.js',
     '/assets/admin-library.js',
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',
+    '/assets/contributor-guide.js',
     '/assets/community.js',
     '/assets/practice.js',
     '/assets/study-hub.js'

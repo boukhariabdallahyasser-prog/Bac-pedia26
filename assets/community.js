@@ -10,7 +10,7 @@ const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'م�
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
 let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null,adminReviews=[],approvedReputation=0;
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='library',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -156,7 +156,7 @@ async function loadContributor(){
  try{
    request=await loadMyApplication(id);
    const result=await db().from('collaborator_resources')
-     .select('id,contributor_id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
+     .select('id,contributor_id,title,subject,subject_key,specialization_code,content_group,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
      .eq('contributor_id',id).order('created_at',{ascending:false}).limit(200);
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
@@ -193,6 +193,28 @@ function renderContributor(){
  if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
  apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
+ const action=$('contributorNextAction');
+ if(action){
+  action.replaceChildren();
+  const info=el('div','contributor-next-copy');
+  info.append(el('strong','',!request?'ابدأ بطلب المساهمة':
+    active?'أضف مورداً موثوقاً إلى المادة الصحيحة':
+    request.status==='pending'?'طلبك قيد المراجعة':'حدّث بياناتك قبل إعادة التقديم'));
+  info.append(el('p','',!request?'قدّم بيانات مختصرة ليتمكن المشرف من مراجعة طلبك.':
+    active?'اختر الشعبة، ثم المادة والوحدة. ستظهر الموارد للطالب بعد موافقة الإدارة.':
+    request.status==='pending'?'لا يمكنك النشر قبل اعتماد الحساب، ويمكنك متابعة الحالة هنا.':
+    'راجع ملفك وأعد تقديم الطلب إذا كان ذلك متاحاً.'));
+  const actions=el('div','contributor-next-buttons');
+  const target=active?'collabSubmitPanel':!request?'collaboratorApplyPanel':'collaboratorStatusPanel';
+  actions.append(button(active?'إضافة مورد جديد':!request?'تقديم طلب':'متابعة حالتي',()=>{
+   $(target)?.scrollIntoView({behavior:'smooth',block:'start'});
+  },'portal-action success'));
+  if(active){
+   actions.append(button('مواردي',()=>$('#contributorMyResources')?.scrollIntoView({behavior:'smooth'})));
+   actions.append(button('مسوداتي',()=>$('#contributorMyDrafts')?.scrollIntoView({behavior:'smooth'})));
+  }
+  action.append(info,actions);
+ }
  panel.append(el('p','muted','نقاط السمعة: '+approvedReputation+' (10 نقاط لكل مورد منشور، دون تقييم ذاتي).'));
  metric('contributorMetrics',[
    resources.length,
@@ -236,8 +258,9 @@ function renderContributor(){
 function editResource(item){
  editId=item.id;
  $('collabResourceTitle').value=item.title;
- $('collabResourceSubject').value=item.subject;
  $('collabResourceBranch').value=item.academic_branch||'جميع الشعب';
+ if(window.BacContributorGuide?.hydrate)window.BacContributorGuide.hydrate(item);
+ $('collabResourceSubject').value=item.subject;
  $('collabResourceKind').value=item.resource_kind||'other';
  $('collabResourceUnit').value=item.unit_title||'';
  $('collabResourceUrl').value=item.resource_url;
@@ -248,7 +271,7 @@ function editResource(item){
  $('collabSubmitPanel').scrollIntoView({behavior:'smooth'});
 }
 function cancelEdit(){
- editId=null;$('collabResourceForm')?.reset();
+ editId=null;$('collabResourceForm')?.reset();window.BacContributorGuide?.refresh();
  if($('collabEditorTitle'))$('collabEditorTitle').textContent='أضف مورداً تعليمياً';
  if($('collabSaveResource'))$('collabSaveResource').textContent='إرسال للمراجعة';
  $('collabCancelEdit')?.classList.add('hidden');
@@ -282,8 +305,10 @@ function renderDrafts(){
    card.append(el('h3','',draft.title||'مسودة بلا عنوان'),el('p','',draft.subject||'المادة غير محددة'));
    card.append(button('فتح المسودة',()=>{
      draftEditId=draft.id;editId=null;
+     $('collabResourceBranch').value=draft.academic_branch||'';
+     window.BacContributorGuide?.hydrate(draft);
      for(const [field,id] of [['title','collabResourceTitle'],['subject','collabResourceSubject'],
-      ['academic_branch','collabResourceBranch'],['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
+      ['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
       ['resource_url','collabResourceUrl'],['description','collabResourceDescription']]){
        const elmt=$(id);if(elmt)elmt.value=draft[field]||'';
      }
@@ -376,9 +401,14 @@ async function submitResourceReview(item,field,value){
 async function saveResource(event){
  event.preventDefault();
  if(busy||ownerRole!=='contributor'||request?.status!=='approved')return;
+ const guided=window.BacContributorGuide?.data();
+ if(!guided){notify('اختر الشعبة والمادة من القائمة قبل إرسال المورد','warning');return;}
  const data={
    title:txt($('collabResourceTitle').value),
-   subject:txt($('collabResourceSubject').value),
+   subject:guided.subject,
+   subject_key:guided.subject_key,
+   specialization_code:guided.specialization_code,
+   content_group:guided.content_group,
    academic_branch:$('collabResourceBranch').value,
    resource_kind:$('collabResourceKind').value,
    unit_title:txt($('collabResourceUnit').value),
@@ -562,6 +592,11 @@ async function loadAdmin(){
    adminNotifications=notifications.data||[];
    adminReviews=reviews.data||[];
    updateAdminNotificationBadge();
+   for(const [id,count] of [
+    ['resources',adminResources.filter(x=>x.status==='pending').length],
+    ['applications',adminApplications.filter(x=>x.status==='pending').length],
+    ['reports',adminReviews.filter(x=>x.report_reason).length]
+   ]){const badge=document.querySelector('[data-admin-count="'+id+'"]');if(badge)badge.textContent=count?count+' يحتاج مراجعة':'';}
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
      adminApplications.filter(x=>x.status==='approved').length,
@@ -722,6 +757,16 @@ function openAdminEditor(type,item){
 }
 function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
+ const current=$('adminCurrentTask');
+ const names={library:'مكتبة المواد',resources:'مراجعة الموارد',applications:'طلبات المساهمين',
+  reports:'البلاغات',students:'حسابات الطلاب',notifications:'الإشعارات',audit:'السجل',analytics:'التحليلات',ai:'فحص AI'};
+ if(current)current.textContent=names[adminTab]||'الإدارة';
+ for(const quick of document.querySelectorAll('[data-admin-shortcut]')){
+  const active=quick.dataset.adminShortcut===adminTab;quick.classList.toggle('active',active);
+  quick.setAttribute('aria-pressed',String(active));
+ }
+ const more=$('adminMoreSections');
+ if(more&&(!['library','resources','applications','reports'].includes(adminTab)))more.open=true;
  const filters=$('adminFilters');if(filters)filters.hidden=!['applications','resources','students'].includes(adminTab);
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
  if(adminTab==='library'){
@@ -917,5 +962,10 @@ $('adminReload')?.addEventListener('click',()=>void loadAdmin());
 $('adminSearch')?.addEventListener('input',()=>renderAdmin());
 $('adminReviewFilter')?.addEventListener('change',()=>renderAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
+document.querySelectorAll('[data-admin-shortcut]').forEach(button=>button.addEventListener('click',()=>{
+ if(ownerRole!=='admin')return;
+ adminTab=button.dataset.adminShortcut;renderAdmin();
+ $('adminList')?.scrollIntoView({behavior:'smooth',block:'start'});
+}));
 if(user())void refreshPortalRole(); // Handles sessions restored before this classic script was loaded.
 })();

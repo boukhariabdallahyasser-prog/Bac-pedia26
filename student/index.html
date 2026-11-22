@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/assets/community.css" />
   <link rel="stylesheet" href="/assets/portals.css" />
   <link rel="stylesheet" href="/assets/subject-organizer.css" />
+  <link rel="stylesheet" href="/assets/student-launchpad.css" />
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -66,6 +67,12 @@
         </div>
       </div>
       <section class="page active" id="page-home">
+        <div id="studyLaunchpad" class="study-launchpad" aria-live="polite">
+          <p class="study-launcher-footnote">جار إعداد المواد الدراسية...</p>
+        </div>
+        <details id="homeMoreTools" class="home-more-tools">
+          <summary><i class="fa-solid fa-sliders"></i> عرض العد التنازلي والإحصائيات والاختصارات الإضافية</summary>
+          <div class="home-more-tools-content">
         <div class="home-welcome-note"><i class="fa-solid fa-sparkles"></i><span>رحلتك نحو بكالوريا 2027 تبدأ بخطوة اليوم — ركّز على التقدّم، لا الكمال.</span></div>
         <div class="hero">
           <div class="hero-content">
@@ -112,6 +119,8 @@
           <div class="card quick-card" onclick="showPage('chapters')"><div class="quick-icon"><i class="fa-solid fa-book-open"></i></div><div><h3>استكشف مواد شعبتك</h3><p class="muted">انطلق من المادة، ثم افتح قسم الدروس أو التمارين أو البكالوريا.</p></div></div>
           <div class="card quick-card" onclick="showPage('ai')"><div class="quick-icon"><i class="fa-solid fa-robot"></i></div><div><h3>المساعد</h3><p class="muted">شرح، تلخيص، اختبارات وخطط باستعمال بياناتك.</p></div></div>
         </div>
+          </div>
+        </details>
       </section>
       <section class="page" id="page-chapters">
   <div id="subjectOrganized" class="subject-ui" aria-live="polite"><p class="subject-ui-notice">جار تحميل المواد المرتبطة بشعبتك...</p></div>
