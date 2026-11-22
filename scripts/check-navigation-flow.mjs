@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
-for(const path of ['assets/legacy-app.js','assets/subject-organizer.js','assets/weekly-planner.js','src/main.js','vite.config.js']){
+for(const path of ['assets/legacy-app.js','assets/subject-organizer.js','assets/weekly-planner.js','src/main.js','vite.config.js','service-worker.js']){
  const result=spawnSync(process.execPath,['--check',path],{encoding:'utf8'});
  assert.equal(result.status,0,path+': '+result.stderr);
 }
@@ -47,5 +47,8 @@ for(const id of routes)assert.match(student,new RegExp('id="page-'+id+'"'),'Feat
 const vite=read('vite.config.js');
 assert.match(vite,/library:resolve\('library\/index\.html'\)/);
 assert.match(read('src/main.js'),/assets\/public-explorer\.js/);
+assert.match(read('assets/public-explorer.js'),/\['landing','library'\]/);
+assert.match(read('service-worker.js'),/bacpedia-public-v2/);
+assert.match(read('service-worker.js'),/p==='\/library\/'/);
 assert.doesNotMatch(read('src/main.js'),/student-launchpad\.js/);
 console.log('Simple homepage, one branch-to-subject library, dedicated feature pages and no duplicate subject catalogue checks passed.');
