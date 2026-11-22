@@ -1,0 +1,50 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+for(const path of ['assets/legacy-app.js','assets/subject-organizer.js','assets/weekly-planner.js','src/main.js','vite.config.js']){
+ const result=spawnSync(process.execPath,['--check',path],{encoding:'utf8'});
+ assert.equal(result.status,0,path+': '+result.stderr);
+}
+const home=read('index.html'),library=read('library/index.html'),student=read('student/index.html');
+assert.match(home,/كل مادة واضحة/);assert.match(home,/وكل مورد في مكانه/);
+assert.match(home,/ابدأ باختيار شعبتك، ثم المادة التي تريد مراجعتها/);
+assert.match(home,/href="\/library\/"/);
+assert.doesNotMatch(home,/data-public-branch|publicBranchGrid|publicExplorerDetail|publicExplorerSearch/,
+ 'Homepage must not contain a second subject catalogue or subject search.');
+assert.match(library,/data-public-branch="math"/);
+assert.match(library,/id="publicBranchGrid"/);
+assert.match(library,/id="publicExplorerDetail"/);
+assert.match(library,/id="publicExplorerSearch"/);
+assert.equal((library.match(/data-public-branch=/g)||[]).length,6,'One branch picker with six current branches');
+const sidebar=student.slice(student.indexOf('<aside class="sidebar"'),student.indexOf('</aside>'));
+assert.doesNotMatch(sidebar,/branchGrid|subBranchRow|sidebarBranches|statTotal/,
+ 'The sidebar must be navigation only, not a repeated subject browser.');
+const homePage=student.slice(student.indexOf('id="page-home"'),student.indexOf('id="page-chapters"'));
+assert.match(homePage,/كل مادة واضحة/);assert.match(homePage,/وكل مورد في مكانه/);
+assert.match(homePage,/showPage\('chapters'\)/);
+assert.doesNotMatch(homePage,/studyLaunchpad|study-launcher-subject|branchGrid|weeklyStudio|statTotal/);
+const chapterPage=student.slice(student.indexOf('id="page-chapters"'),student.indexOf('id="page-files"'));
+assert.match(chapterPage,/id="libraryBranchPicker"/);
+assert.match(chapterPage,/id="branchGrid"/);
+assert.match(chapterPage,/id="subBranchRow"/);
+assert.match(chapterPage,/id="subjectOrganized"/);
+const planner=student.slice(student.indexOf('id="page-planner"'),student.indexOf('id="page-practice"'));
+assert.match(planner,/id="weeklyStudio"/);
+assert.doesNotMatch(planner,/weeklyStudioDisclosure/);
+const legacy=read('assets/legacy-app.js');
+assert.match(legacy,/libraryAliases=\{files:'all',papers:'bac',exercises:'exercises'\}/);
+assert.match(legacy,/function openFilesAll\(\)\{\s*showPage\('chapters'\)/);
+assert.match(legacy,/function renderNavs/);
+const nav=legacy.slice(legacy.indexOf('function renderNavs'),legacy.indexOf('function isMobileSidebar'));
+assert.doesNotMatch(nav,/\['home','chapters','files'\]/);
+assert.doesNotMatch(nav,/papers','exercises/);
+const organizer=read('assets/subject-organizer.js');
+assert.match(organizer,/pendingKind/);assert.match(organizer,/setPendingKind/);
+const routes=['ai','planner','practice','grades','progress','collections','pdf','quiz','resources','coverage','help'];
+for(const id of routes)assert.match(student,new RegExp('id="page-'+id+'"'),'Feature must have its own page: '+id);
+const vite=read('vite.config.js');
+assert.match(vite,/library:resolve\('library\/index\.html'\)/);
+assert.match(read('src/main.js'),/assets\/public-explorer\.js/);
+assert.doesNotMatch(read('src/main.js'),/student-launchpad\.js/);
+console.log('Simple homepage, one branch-to-subject library, dedicated feature pages and no duplicate subject catalogue checks passed.');
