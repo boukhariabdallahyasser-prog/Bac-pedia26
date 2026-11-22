@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="/assets/community.css" />
   <link rel="stylesheet" href="/assets/portals.css" />
   <link rel="stylesheet" href="/assets/subject-organizer.css" />
-  <link rel="stylesheet" href="/assets/student-launchpad.css" />
   <link rel="stylesheet" href="/assets/weekly-planner.css" />
+  <link rel="stylesheet" href="/assets/library-flow.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,22 +44,6 @@
         <div class="nav-group-title"><i class="fa-solid fa-compass"></i> الصفحات</div>
         <nav class="side-nav" id="sideNav" aria-label="قائمة المساحة الشخصية"></nav>
       </div>
-      <div id="sidebarBranches">
-        <div class="nav-group-title" id="sidebarBranchTitle"><i class="fa-solid fa-layer-group"></i> الشعبة</div>
-        <div class="branch-grid" id="branchGrid"></div>
-        <div class="sub-branches" id="subBranchRow"></div>
-        <div class="sub-branch-note" id="subBranchAvailabilityNote" hidden></div>
-      </div>
-      <div id="sidebarStudyStats">
-        <div class="nav-group-title"><i class="fa-solid fa-chart-simple"></i> إحصائيات سريعة</div>
-        <div class="sidebar-stats">
-          <div class="mini-stat"><strong id="statTotal">0</strong><span>مواد</span></div>
-          <div class="mini-stat"><strong id="statAvailable">0</strong><span>متاحة</span></div>
-          <div class="mini-stat"><strong id="statFavs">0</strong><span>مفضلة</span></div>
-          <div class="mini-stat"><strong id="statProgress">0%</strong><span>تقدم</span></div>
-        </div>
-      </div>
-      <button id="sidebarAIBtn" class="btn primary full" onclick="showPage('ai'); setTimeout(()=>document.getElementById('aiPrompt').focus(),250)"><i class="fa-solid fa-robot"></i> افتح المساعد</button>
     </aside>
     <main class="main" id="mainContent" tabindex="-1">
       <div class="topbar">
@@ -73,66 +57,24 @@
         </div>
       </div>
       <section class="page active" id="page-home">
-        <div id="studyLaunchpad" class="study-launchpad" aria-live="polite">
-          <p class="study-launcher-footnote">جار إعداد المواد الدراسية...</p>
+        <div class="student-home-welcome">
+          <span class="student-home-kicker"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> BAC-PEDIA · بكالوريا 2027</span>
+          <h1>كل مادة واضحة.<br><span>وكل مورد في مكانه.</span></h1>
+          <p>ابدأ باختيار شعبتك، ثم المادة التي تريد مراجعتها، ثم الدروس أو التمارين أو مواضيع البكالوريا. لا حاجة للبحث بين قوائم مختلطة.</p>
+          <button class="student-home-primary" type="button" onclick="showPage('chapters')">اختر شعبتك وابدأ <i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+          <div class="student-home-flow" aria-label="خطوات المراجعة"><span><b>01</b> الشعبة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i><span><b>02</b> المادة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i><span><b>03</b> الدروس والتمارين والمواضيع</span></div>
         </div>
-        <details id="weeklyStudioDisclosure" class="weekly-disclosure">
-  <summary><i class="fa-solid fa-calendar-week" aria-hidden="true"></i> بناء خطة مراجعة أسبوعية مرتبطة بمصادرك <span>اختيار المواد والوقت</span></summary>
-  <section id="weeklyStudio" class="weekly-studio" aria-label="إنشاء خطة مراجعة"><p class="weekly-empty">جار تجهيز الموارد...</p></section>
-</details>
-        <details id="homeMoreTools" class="home-more-tools">
-          <summary><i class="fa-solid fa-sliders"></i> عرض العد التنازلي والإحصائيات والاختصارات الإضافية</summary>
-          <div class="home-more-tools-content">
-        <div class="home-welcome-note"><i class="fa-solid fa-sparkles"></i><span>رحلتك نحو بكالوريا 2027 تبدأ بخطوة اليوم — ركّز على التقدّم، لا الكمال.</span></div>
-        <div class="hero">
-          <div class="hero-content">
-            <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="homeBranchKicker">شعبة رياضيات</span></div>
-            <h1>كل مادة واضحة.<br>وكل مورد في مكانه.</h1>
-            <p>ابدأ باختيار شعبتك، ثم المادة التي تريد مراجعتها، ثم الدروس أو التمارين أو مواضيع البكالوريا. لا حاجة للبحث بين قوائم مختلطة.</p>
-            <div class="countdown">
-              <div class="time-box"><strong id="cdDays">000</strong><span>يوم</span></div>
-              <div class="time-box"><strong id="cdHours">00</strong><span>ساعة</span></div>
-              <div class="time-box"><strong id="cdMins">00</strong><span>دقيقة</span></div>
-              <div class="time-box"><strong id="cdSecs">00</strong><span>ثانية</span></div>
-            </div>
-            <div class="year-progress"><span id="yearProgress"></span></div>
-            <div class="hero-actions">
-              <button class="btn primary" onclick="showPage('chapters')"><i class="fa-solid fa-layer-group"></i> اختر مادة وابدأ</button><button class="btn" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> مجلدات Drive</button>
-              <button class="btn success" onclick="showPage('ai'); runAgent('daily_plan')"><i class="fa-solid fa-wand-magic-sparkles"></i> خطة اليوم</button>
-              <button class="btn" onclick="showPage('planner')"><i class="fa-solid fa-stopwatch"></i> جلسة تركيز</button>
-            </div>
-          </div>
-        </div>
-        <div class="signature-strip" aria-label="ابدأ مراجعتك">
-          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('chapters')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('chapters')}"><i class="fa-solid fa-book-open-reader"></i><div><strong>مواد شعبتك</strong><small>المادة، ثم نوع المحتوى، ثم الوحدة أو الملف</small></div></div>
-          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('planner')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('planner')}"><i class="fa-solid fa-calendar-check"></i><div><strong>نظّم يومك</strong><small>مهام واضحة وجلسات تركيز فعّالة</small></div></div>
-          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('ai')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('ai')}"><i class="fa-solid fa-wand-magic-sparkles"></i><div><strong>مساعد المراجعة</strong><small>أدوات ذكية وخطط دراسة شخصية</small></div></div>
-        </div>
-        <div class="new-home-panel">
-          <div class="card">
-            <div class="home-eyebrow"><i class="fa-solid fa-chart-line"></i> تقدّمك الدراسي</div>
-            <div class="home-stat-value" id="homeProgressValue">0%</div>
-            <p class="muted">متوسط إنجاز مواد شعبتك الحالية</p>
-            <div class="home-progress-track"><div class="home-progress-fill" id="homeProgressFill" style="width:0%"></div></div>
-            <button class="home-panel-link" onclick="showPage('progress')">تابع تقدمك <i class="fa-solid fa-arrow-left"></i></button>
-          </div>
-          <div class="card">
-            <div class="home-eyebrow"><i class="fa-solid fa-list-check"></i> خطتك لهذا اليوم</div>
-            <div class="home-stat-value" id="homeTasksValue">0</div>
-            <p class="muted" id="homeTasksSubtitle">مهام تنتظر الإنجاز</p>
-            <button class="home-panel-link" onclick="showPage('planner')">افتح مخطط المراجعة <i class="fa-solid fa-arrow-left"></i></button>
-          </div>
-        </div>
-        <div class="section-head"><div><h2>اختصارات مفيدة</h2><p>اختر مسارك بسرعة، واترك التفاصيل داخل الصفحات.</p></div></div>
-        <div class="grid-3">
-          <div class="card quick-card" onclick="openSidebar(true)"><div class="quick-icon"><i class="fa-solid fa-layer-group"></i></div><div><h3>اختر الشعبة</h3><p class="muted">غير شعبتك من القائمة الجانبية.</p></div></div>
-          <div class="card quick-card" onclick="showPage('chapters')"><div class="quick-icon"><i class="fa-solid fa-book-open"></i></div><div><h3>استكشف مواد شعبتك</h3><p class="muted">انطلق من المادة، ثم افتح قسم الدروس أو التمارين أو البكالوريا.</p></div></div>
-          <div class="card quick-card" onclick="showPage('ai')"><div class="quick-icon"><i class="fa-solid fa-robot"></i></div><div><h3>المساعد</h3><p class="muted">شرح، تلخيص، اختبارات وخطط باستعمال بياناتك.</p></div></div>
-        </div>
-          </div>
-        </details>
       </section>
       <section class="page" id="page-chapters">
+        <div class="library-flow-header" id="libraryBranchPicker">
+          <div class="library-flow-copy"><span class="library-flow-kicker">مكتبة البكالوريا · 2027</span><h1>ابدأ بالشعبة، ثم المادة.</h1><p>ستجد داخل كل مادة الدروس والتمارين والملخصات ومواضيع البكالوريا في مكان واحد.</p></div>
+          <div id="sidebarBranches" class="library-branch-picker">
+            <div class="library-branch-title"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> اختر شعبتك</div>
+            <div class="branch-grid" id="branchGrid" aria-label="شعب البكالوريا"></div>
+            <div class="library-specializations" id="subBranchRow" aria-label="التخصص أو اللغة الثالثة"></div>
+            <div class="sub-branch-note" id="subBranchAvailabilityNote" hidden></div>
+          </div>
+        </div>
   <div id="subjectOrganized" class="subject-ui" aria-live="polite"><p class="subject-ui-notice">جار تحميل المواد المرتبطة بشعبتك...</p></div>
   <details id="chapterAdvancedSearch" class="subject-ui-advanced">
     <summary><i class="fa-solid fa-magnifying-glass"></i> البحث المتقدم في جميع أسماء المجلدات والملفات</summary>
@@ -256,6 +198,7 @@
         </div>
       </section>
       <section class="page" id="page-planner">
+        <section id="weeklyStudio" class="weekly-studio weekly-studio-page" aria-label="خطة مراجعة أسبوعية"><p class="weekly-empty">جار تجهيز الخطة...</p></section>
         <div class="section-head"><div><h2>المخطط والتركيز</h2><p>خطة يومية + مهام + Pomodoro.</p></div><button class="btn success" onclick="generateDailyTasks()"><i class="fa-solid fa-wand-magic-sparkles"></i> توليد مهام اليوم</button></div>
         <div class="grid-2">
           <div class="card">
