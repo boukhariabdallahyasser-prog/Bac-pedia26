@@ -10,7 +10,7 @@ const kind={lesson:'درس',summary:'ملخص',exercise:'تمارين',exam:'م�
 const branchChoices=['جميع الشعب','رياضيات','علوم تجريبية','تقني رياضي','تسيير واقتصاد','آداب وفلسفة','لغات أجنبية'];
 const branchValid=value=>branchChoices.includes(value);
 let drafts=[],feedback=[],pdfAttachments=new Map(),draftEditId=null,adminReviews=[],approvedReputation=0;
-let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='applications',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
+let ownerRole='student',request=null,resources=[],adminApplications=[],adminResources=[],adminNotifications=[],profiles=[],auditEntries=[],editId=null,adminTab='library',busy=false,identity=null,profileEditing=false,adminRealtimeChannel=null,adminRealtimeUser=null;
 window.BAC_PORTAL_ROLE='student';
 function el(tag,className,text){
  const n=document.createElement(tag);if(className)n.className=className;if(text!==undefined)n.textContent=String(text);return n;
@@ -570,6 +570,11 @@ async function loadAdmin(){
    adminNotifications=notifications.data||[];
    adminReviews=reviews.data||[];
    updateAdminNotificationBadge();
+   for(const [id,count] of [
+    ['resources',adminResources.filter(x=>x.status==='pending').length],
+    ['applications',adminApplications.filter(x=>x.status==='pending').length],
+    ['reports',adminReviews.filter(x=>x.report_reason).length]
+   ]){const badge=document.querySelector('[data-admin-count="'+id+'"]');if(badge)badge.textContent=count?count+' يحتاج مراجعة':'';}
    metric('adminMetrics',[
      profiles.length,adminApplications.filter(x=>x.status==='pending').length,
      adminApplications.filter(x=>x.status==='approved').length,
@@ -730,6 +735,16 @@ function openAdminEditor(type,item){
 }
 function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
+ const current=$('adminCurrentTask');
+ const names={library:'مكتبة المواد',resources:'مراجعة الموارد',applications:'طلبات المساهمين',
+  reports:'البلاغات',students:'حسابات الطلاب',notifications:'الإشعارات',audit:'السجل',analytics:'التحليلات',ai:'فحص AI'};
+ if(current)current.textContent=names[adminTab]||'الإدارة';
+ for(const quick of document.querySelectorAll('[data-admin-shortcut]')){
+  const active=quick.dataset.adminShortcut===adminTab;quick.classList.toggle('active',active);
+  quick.setAttribute('aria-pressed',String(active));
+ }
+ const more=$('adminMoreSections');
+ if(more&&(!['library','resources','applications','reports'].includes(adminTab)))more.open=true;
  const filters=$('adminFilters');if(filters)filters.hidden=!['applications','resources','students'].includes(adminTab);
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
  if(adminTab==='library'){
@@ -925,5 +940,10 @@ $('adminReload')?.addEventListener('click',()=>void loadAdmin());
 $('adminSearch')?.addEventListener('input',()=>renderAdmin());
 $('adminReviewFilter')?.addEventListener('change',()=>renderAdmin());
 document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{adminTab=button.dataset.adminTab;renderAdmin();}));
+document.querySelectorAll('[data-admin-shortcut]').forEach(button=>button.addEventListener('click',()=>{
+ if(ownerRole!=='admin')return;
+ adminTab=button.dataset.adminShortcut;renderAdmin();
+ $('adminList')?.scrollIntoView({behavior:'smooth',block:'start'});
+}));
 if(user())void refreshPortalRole(); // Handles sessions restored before this classic script was loaded.
 })();
