@@ -1190,7 +1190,8 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
         // Non-student entry points never touch student-only page elements.
         applyTheme();
       }
-      initSession();
+      // Public library and search routes must remain browsable without a student session.
+      if(!['library','discover'].includes(portal))initSession();
       window.addEventListener('resize',()=>{
         if(!isMobileSidebar()){
           document.body.classList.remove('sidebar-open');
