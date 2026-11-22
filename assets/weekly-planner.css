@@ -30,3 +30,11 @@
 body.light-mode .weekly-task a{color:var(--primary-dark)}
 .weekly-empty{padding:12px;color:var(--text-sub);font-size:.81rem;line-height:1.7}
 @media(max-width:600px){.weekly-options label{max-width:none}.weekly-actions>*{flex:1 1 140px}.weekly-day{padding:12px}}
+
+.weekly-disclosure{margin:14px 0 20px;border:1px solid var(--border);border-radius:15px;background:var(--bg-card);padding:12px 14px}
+.weekly-disclosure>summary{list-style:none;cursor:pointer;color:var(--text-main);font-size:.88rem;font-weight:800;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.weekly-disclosure>summary::-webkit-details-marker{display:none}
+.weekly-disclosure>summary i{color:var(--primary-light)}
+.weekly-disclosure>summary span{color:var(--text-muted);font-size:.77rem;margin-inline-start:auto;font-weight:500}
+.weekly-disclosure .weekly-studio{border:0;margin:13px 0 0;padding-inline:0;padding-bottom:0;background:transparent}
+.weekly-disclosure:focus-within{border-color:var(--primary)}
