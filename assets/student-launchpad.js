@@ -103,6 +103,7 @@ function render(){
  }
  root.append(choice,createSelection());
  const bottom=node('div','study-launcher-shortcuts');
+ bottom.append(makeButton('بحث شامل في الملفات',()=>{location.assign('/discover/')},'launch-action outlined'));
  bottom.append(makeButton('تنظيم وقتي',()=>showPage('planner'),'launch-action outlined'));
  bottom.append(makeButton('مواردي المحفوظة',()=>showPage('collections'),'launch-action outlined'));
  bottom.append(makeButton('مساعدة في المراجعة',()=>showPage('ai'),'launch-action outlined'));
