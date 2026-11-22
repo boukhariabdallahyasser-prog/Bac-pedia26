@@ -3,16 +3,26 @@ import {readFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import vm from 'node:vm';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-const scripts=['assets/student-launchpad.js','assets/contributor-guide.js','assets/study-hub.js',
+const scripts=['assets/contributor-guide.js','assets/study-hub.js',
   'assets/subject-organizer.js','assets/admin-library.js','assets/legacy-app.js','assets/community.js'];
 for(const script of scripts){
  const result=spawnSync(process.execPath,['--check',script],{encoding:'utf8'});
  assert.equal(result.status,0,script+' syntax: '+result.stderr);
 }
 const student=read('student/index.html'),admin=read('admin/index.html'),contributor=read('contributor/index.html');
-assert.match(student,/id="studyLaunchpad"/);
-assert.match(student,/id="homeMoreTools"/);
-assert.match(student,/assets\/student-launchpad\.css/);
+assert.match(student,/كل مادة واضحة/);
+assert.match(student,/وكل مورد في مكانه/);
+assert.match(student,/id="libraryBranchPicker"/);
+assert.match(student,/id="branchGrid"/);
+assert.match(student,/id="subjectOrganized"/);
+assert.doesNotMatch(student,/id="studyLaunchpad"|id="homeMoreTools"|weeklyStudioDisclosure|student-launchpad\.css/);
+const sidebar=student.slice(student.indexOf('<aside class="sidebar"'),student.indexOf('</aside>'));
+assert.doesNotMatch(sidebar,/branchGrid|subBranchRow|sidebarBranches|statTotal/,
+ 'Subject and branch choices must not be repeated in the sidebar');
+const planner=student.slice(student.indexOf('id="page-planner"'),student.indexOf('id="page-practice"'));
+assert.match(planner,/id="weeklyStudio"/);
+const home=student.slice(student.indexOf('id="page-home"'),student.indexOf('id="page-chapters"'));
+assert.doesNotMatch(home,/branchGrid|study-launcher-subject|weeklyStudio|statTotal/);
 assert.match(admin,/data-admin-shortcut="library"/);
 assert.match(admin,/data-admin-shortcut="resources"/);
 assert.match(admin,/id="adminMoreSections"/);
@@ -45,14 +55,15 @@ assert.match(bookmarks,/readPending/);
 assert.match(bookmarks,/pending\[item\.key\]=enabled/);
 assert.match(bookmarks,/mutateRemoteBookmark/);
 assert.match(bookmarks,/BacEducation\.overlay/);
-const start=read('assets/student-launchpad.js');
-assert.match(start,/rememberBacSubject/);
-assert.match(start,/recentKey/);
-assert.match(start,/study-launcher-subject/);
-for(const path of ['assets/student-launchpad.js','assets/contributor-guide.js']){
+for(const path of ['assets/contributor-guide.js']){
  assert.ok(read('src/main.js').includes('/'+path));
  assert.ok(read('vite.config.js').includes("'"+path+"'"));
 }
+assert.doesNotMatch(read('src/main.js'),/student-launchpad\.js/);
+assert.doesNotMatch(read('vite.config.js'),/student-launchpad\.js/);
+assert.match(read('vite.config.js'),/library:resolve\('library\/index\.html'\)/);
+assert.match(read('assets/legacy-app.js'),/libraryAliases=\{files:'all',papers:'bac',exercises:'exercises'\}/);
+assert.match(read('assets/subject-organizer.js'),/setPendingKind/);
 assert.doesNotMatch(read('assets/education-model.js'),/computer_science_3as|accounting_3as/);
 const scope={window:{},document:{readyState:'loading',addEventListener(){}},URL,console};
 scope.window=scope;
