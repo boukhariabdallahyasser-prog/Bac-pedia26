@@ -83,7 +83,7 @@ const elements={
 };
 elements.collabResourceBranch.value='رياضيات';
 const doc={
- readyState:'loading',addEventListener(){},
+ readyState:'complete',body:{dataset:{portal:'contributor'}},addEventListener(){},
  getElementById(id){return elements[id]||null},
  createElement(tag){return {tagName:tag,value:'',textContent:'',dataset:{}}}
 };
