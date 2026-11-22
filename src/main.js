@@ -46,7 +46,7 @@ async function start(){
     '/assets/study-hub.js'
   ])await loadScript(path);
   if(document.body.dataset.portal==='student')await import('./pdf-tools.js');
-  if(document.body.dataset.portal==='student'&&'serviceWorker' in navigator&&location.protocol==='https:'){
+  if(['student','library'].includes(document.body.dataset.portal)&&'serviceWorker' in navigator&&location.protocol==='https:'){
     navigator.serviceWorker.register('/service-worker.js').catch(error=>console.warn('Offline mode unavailable',error));
   }
 }
