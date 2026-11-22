@@ -30,9 +30,11 @@ async function start(){
   for(const path of [
     '/auth-config.js',
     '/assets/chapter-search.js',
+    '/assets/education-model.js',
     '/assets/subject-taxonomy.js',
     '/assets/legacy-app.js',
     '/assets/subject-organizer.js',
+    '/assets/admin-library.js',
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',

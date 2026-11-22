@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="/assets/landing.css" />
   <link rel="stylesheet" href="/assets/community.css" />
   <link rel="stylesheet" href="/assets/portals.css" />
+  <link rel="stylesheet" href="/assets/subject-organizer.css" />
+  <link rel="stylesheet" href="/assets/admin-library.css" />
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -53,7 +55,7 @@
         <div class="portal-heading"><div><span class="portal-eyebrow"><i class="fa-solid fa-shield-halved"></i> OWNER CONTROL CENTER</span><h2>لوحة إدارة Bac-pedia</h2><p>مساحة خاصة بالمالك: راجع طلبات المساهمة والملفات وحالة المجتمع.</p></div><button id="adminReload" type="button" class="btn"><i class="fa-solid fa-rotate"></i> تحديث البيانات</button></div>
         <div id="adminStatusNote" class="portal-notice" role="status" aria-live="polite"></div>
         <div id="adminMetrics" class="portal-metrics"><div><strong>—</strong><span>الطلاب</span></div><div><strong>—</strong><span>طلبات المساهمة</span></div><div><strong>—</strong><span>المساهمون المقبولون</span></div><div><strong>—</strong><span>موارد قيد المراجعة</span></div></div>
-        <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة"><button type="button" data-admin-tab="applications" class="active">طلبات المساهمين</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button id="adminNotificationsTab" type="button" data-admin-tab="notifications"><i class="fa-solid fa-bell"></i> الإشعارات <span id="adminNotificationsBadge" class="portal-notification-count" hidden>0</span></button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button><button type="button" data-admin-tab="analytics"><i class="fa-solid fa-chart-column"></i> التحليلات</button><button type="button" data-admin-tab="reports"><i class="fa-solid fa-flag"></i> بلاغات الطلاب</button><button type="button" data-admin-tab="ai"><i class="fa-solid fa-robot"></i> فحص الذكاء الاصطناعي</button></div>
+        <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة"><button type="button" data-admin-tab="applications" class="active">طلبات المساهمين</button><button type="button" data-admin-tab="library"><i class="fa-solid fa-book-open"></i> مكتبة الطالب وإضافة المحتوى</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button id="adminNotificationsTab" type="button" data-admin-tab="notifications"><i class="fa-solid fa-bell"></i> الإشعارات <span id="adminNotificationsBadge" class="portal-notification-count" hidden>0</span></button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button><button type="button" data-admin-tab="analytics"><i class="fa-solid fa-chart-column"></i> التحليلات</button><button type="button" data-admin-tab="reports"><i class="fa-solid fa-flag"></i> بلاغات الطلاب</button><button type="button" data-admin-tab="ai"><i class="fa-solid fa-robot"></i> فحص الذكاء الاصطناعي</button></div>
         <div class="portal-panel">
           <div class="portal-filters" id="adminFilters">
             <label><i class="fa-solid fa-magnifying-glass"></i><input id="adminSearch" type="search" placeholder="ابحث عن مساهم أو رابط أو مادة..." autocomplete="off" aria-label="ابحث في الإدارة"></label>

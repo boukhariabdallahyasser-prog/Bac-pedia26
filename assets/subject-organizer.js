@@ -10,6 +10,7 @@ const h=(tag,className,text)=>{
 };
 const branchNames={math:'رياضيات',science:'علوم تجريبية',tech:'تقني رياضي',literature:'آداب وفلسفة',languages:'لغات أجنبية',economy:'تسيير واقتصاد'};
 let manifest=null,models=[],branchKey='',selected='',kind='all',opened=null,query='',loading=null;
+let availablePdfPaths=new Map();
 function isStudent(){return document.body?.dataset.portal==='student'}
 function button(label,fn,className){
  const el=h('button',className||'subject-ui-btn',label);el.type='button';el.addEventListener('click',fn);return el;
@@ -95,7 +96,9 @@ function rowItem(item,model){
  body.append(h('strong','',item.title));
  if(item.context)body.append(h('small','',item.context));
  if(item.children?.length)body.append(h('small','',item.children.length+' عناصر مفهرسة داخل هذا المجلد'));
- else if(folder)body.append(h('small','','افتح المجلد الأصلي لعرض محتوياته على Google Drive'));
+ else if(folder)body.append(h('small','',item.origin==='editorial-unit'?
+  'وحدة أضافتها الإدارة، ولا توجد روابط مفهرسة داخلها بعد.':
+  'افتح المجلد الأصلي لعرض محتوياته على Google Drive'));
  article.append(body);
  const actions=h('div','subject-ui-actions');
  if(item.children?.length){
@@ -106,6 +109,13 @@ function rowItem(item,model){
  }
  const link=external(item.url,folder?'فتح المجلد':'فتح الملف');
  if(link)actions.append(link);
+ if(item.id.startsWith('db:')&&availablePdfPaths.has(item.id.slice(3)))actions.append(button('قراءة PDF المرفق',async()=>{
+   const client=typeof getStudentAuth==='function'?getStudentAuth():null;
+   if(!client)return;
+   const {data,error}=await client.storage.from('bac-resource-pdfs').createSignedUrl(availablePdfPaths.get(item.id.slice(3)),300);
+   if(error||!data?.signedUrl){alert('ملف PDF غير متاح أو لا تملك صلاحية الوصول إليه.');return}
+   window.location.assign(data.signedUrl);
+ },'subject-ui-btn'));
  article.append(actions);
  return article;
 }
@@ -145,7 +155,7 @@ function subjectDetail(model){
  wrap.append(h('p','subject-ui-hint','الشعبة: '+(branchNames[state.branch]||state.branch)+'. اختر نوع المحتوى أولاً، ثم الوحدة أو الملف.'));
  if(opened){wrap.append(folderDetail(model));return wrap;}
  if(!model.items.length){
-  wrap.append(h('div','subject-ui-empty','لم نُدرج لهذه المادة ملفات موثّقة في الفهرس الحالي. لن نعرض ملفات مادة أخرى على أنها تخصها.'));
+  wrap.append(h('div','subject-ui-empty','لا توجد ملفات مفهرسة أو موارد منشورة لهذه المادة حالياً، ولا يعني ظهور المادة اكتمال محتواها.'));
   const link=external(model.sourceUrl,'فتح مجلد المادة إن كان متاحاً');
   if(link)wrap.append(link);
   return wrap;
@@ -219,6 +229,25 @@ async function refresh(){
  }
  if(next!==currentBranch())return;
  models=BacSubjectCatalog.build({manifest,branch:state.branch,subBranch:state.subBranch,subjects:definitions()});
+ // Published additions are filtered both by the existing RLS policies and academic scope.
+ const client=typeof getStudentAuth==='function'?getStudentAuth():null;
+ if(client&&window.BacEducation){
+   const branchName=window.BacEducation.branches[state.branch]?.name||'جميع الشعب';
+   const [published,extraUnits,attachments]=await Promise.all([
+     client.from('collaborator_resources')
+       .select('id,title,subject,subject_key,specialization_code,academic_branch,resource_kind,content_group,unit_title,resource_url,exam_year,status')
+       .eq('status','approved').in('academic_branch',[branchName,'جميع الشعب']).limit(1000),
+     client.from('bac_curriculum_units')
+       .select('id,title,subject_key,specialization_code,branch_code,is_published')
+       .eq('branch_code',state.branch).eq('is_published',true).limit(400),
+     client.from('resource_pdf_attachments').select('resource_id,storage_path').limit(1000)
+   ]);
+   if(next!==currentBranch())return;
+   if(published.error||extraUnits.error)console.warn('Academic content overlay unavailable',published.error||extraUnits.error);
+   models=window.BacEducation.overlay(models,published.error?[]:published.data||[],
+      extraUnits.error?[]:extraUnits.data||[],state.branch,state.subBranch);
+   availablePdfPaths=new Map((attachments.error?[]:attachments.data||[]).map(x=>[x.resource_id,x.storage_path]));
+ }
  if(selected&&!models.some(x=>x.id===selected)){selected='';opened=null;kind='all'}
  render();
 }
