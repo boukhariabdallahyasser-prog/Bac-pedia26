@@ -39,12 +39,13 @@ async function start(){
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',
-    '/assets/public-explorer.js',
+
     '/assets/contributor-guide.js',
     '/assets/community.js',
     '/assets/practice.js',
     '/assets/study-hub.js'
   ])await loadScript(path);
+  if(document.body.dataset.portal==='library')await loadScript('/assets/public-explorer.js');
   if(document.body.dataset.portal==='student')await import('./pdf-tools.js');
   if(['student','library'].includes(document.body.dataset.portal)&&'serviceWorker' in navigator&&location.protocol==='https:'){
     navigator.serviceWorker.register('/service-worker.js').catch(error=>console.warn('Offline mode unavailable',error));
