@@ -11,7 +11,7 @@ const el=(tag,cls,text)=>{
 const groupNames={lessons:'افهم درساً',exercises:'حل تمريناً',
  summaries:'راجع ملخصاً',tests:'اختبر نفسك',bac:'تدرب على البكالوريا'};
 const pattern=['lessons','exercises','summaries','exercises','tests','lessons','bac'];
-let manifest=null,models=[],branchKey='',chosen=new Set(),plans=[],busy=false,ready=false;
+let manifest=null,models=[],branchKey='',chosen=new Set(),plans=[],busy=false,ready=false,hadManifest=false;
 function currentBranch(){
  return typeof state!=='undefined'?state.branch+':'+(state.subBranch||''):null;
 }
@@ -179,8 +179,8 @@ function refresh(){
  const root=$('weeklyStudio');
  if(!root||document.body.dataset.portal!=='student'||typeof state==='undefined')return;
  const now=currentBranch();
- if(now!==branchKey||!ready){
-  branchKey=now;models=eligible();pref();ready=true;
+ if(now!==branchKey||!ready||Boolean(manifest)!==hadManifest){
+  branchKey=now;hadManifest=Boolean(manifest);models=eligible();pref();ready=true;
   render();
  }
 }
