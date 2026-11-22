@@ -41,3 +41,11 @@ body.light-mode .admin-action-card i{color:#5b53b6}
 @media(max-width:960px){.admin-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.admin-action-grid{grid-template-columns:1fr 1fr;gap:8px}.admin-action-card{min-height:134px;padding:11px}.admin-action-hub{padding:12px}.admin-current-task{display:none}}
 @media(max-width:410px){.admin-action-grid{grid-template-columns:1fr 1fr}.admin-action-card strong{font-size:.82rem}.admin-action-card small{font-size:.73rem}}
+
+.contributor-next-action{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;padding:17px 19px;margin:14px 0;border:1px solid rgba(138,148,193,.21);border-radius:16px;background:rgba(123,119,200,.08)}
+.contributor-next-copy{flex:1 1 280px}
+.contributor-next-copy strong{display:block;font:900 1.05rem/1.6 Cairo,Tajawal,sans-serif;color:var(--text-main)}
+.contributor-next-copy p{margin:4px 0 0;color:var(--text-sub);font-size:.85rem;line-height:1.65}
+.contributor-next-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.contributor-next-buttons .portal-action{min-height:42px}
+@media(max-width:600px){.contributor-next-action{padding:13px}.contributor-next-buttons{width:100%}.contributor-next-buttons>.portal-action{flex:1}}
