@@ -79,7 +79,7 @@ class FakeSelect{
 }
 const elements={
  collabResourceBranch:new FakeSelect(),collabResourceSubject:new FakeSelect(),collabResourceSpecialization:new FakeSelect(),
- contributorSpecializationWrap:{hidden:true},contributorSubjectHint:{textContent:''},collabResourceKind:{value:'exercise'}
+ contributorSpecializationWrap:{hidden:true},contributorSubjectHint:{textContent:''},collabResourceKind:Object.assign(new FakeSelect(),{value:'exercise'})
 };
 elements.collabResourceBranch.value='رياضيات';
 const doc={
