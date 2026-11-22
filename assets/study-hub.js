@@ -55,7 +55,7 @@ function addRow(container,item,showBookmark=true){
   const row=document.createElement('article');row.className='resource-item';row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
   const info=document.createElement('div');info.style.flex='1';
   const title=document.createElement('strong');title.textContent=item.title;info.appendChild(title);
-  const hint=document.createElement('p');hint.className='muted';hint.textContent=item.subject+' · '+(item.parent||'مورد')+(item.type==='folder'?' · مجلد':'');info.appendChild(hint);row.appendChild(info);
+  const hint=document.createElement('p');hint.className='muted';hint.textContent=item.subject+' · '+(item.parent||'مورد')+(item.year?' · '+item.year:'')+(item.type==='folder'?' · مجلد':'');info.appendChild(hint);row.appendChild(info);
   const link=document.createElement('a');link.className='btn';link.target='_blank';link.rel='noopener noreferrer';link.href=item.url;link.textContent='فتح المورد';row.appendChild(link);
   if(showBookmark){
     const btn=document.createElement('button');btn.type='button';btn.className='btn';btn.textContent=readSaved().includes(item.key)?'إزالة من مجموعتي':'حفظ';
@@ -160,8 +160,14 @@ async function renderList(mode){
   const filtered=items.filter(item=>(!subject||item.subject===subject)&&matching(item,query));
   dest.replaceChildren();
   const status=$(mode==='papers'?'studyPapersStatus':'studyExercisesStatus');
-  if(status)status.textContent=filtered.length+' مورد مطابق لشعبتك، مرتّب حسب المادة. تصنيف العناوين والمصادر يحتاج مراجعة عند الشك.';
+  if(status)status.textContent=filtered.length+' مورد مطابق لشعبة '+(typeof state!=='undefined'?state.branch:'')+'. التصنيف يعتمد على العناوين وفهرس المصادر.';
   filtered.slice(0,80).forEach(item=>addRow(dest,item));
+  if(!filtered.length){
+    const empty=document.createElement('p');empty.className='muted';
+    empty.textContent=mode==='papers'?'لم نجد مواضيع بكالوريا مفهرسة لهذه المادة في شعبتك. جرّب مادة أخرى؛ لا نعرض مواضيع شعبة مختلفة.':
+      'لم نجد تمارين مصنفة لهذا البحث في شعبتك. ابحث عن وحدة داخل «موادي الدراسية».';
+    dest.appendChild(empty);
+  }
   if(filtered.length>80){const note=document.createElement('p');note.textContent='عرض أول 80 نتيجة. ضيّق البحث للحصول على نتائج أدق.';dest.appendChild(note)}
 }
 async function renderCollections(){
