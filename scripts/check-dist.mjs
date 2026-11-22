@@ -1,18 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve('dist');
-const required=['index.html','login/index.html','student/index.html','contributor/index.html','admin/index.html','auth-config.js','resources.json','assets/legacy-app.js','assets/chapter-search.js','assets/chapters.js','assets/ai-format.js','assets/landing.js','assets/community.js'];
+const required=['index.html','library/index.html','discover/index.html','login/index.html','student/index.html','contributor/index.html','admin/index.html','auth-config.js','resources.json','assets/legacy-app.js','assets/chapter-search.js','assets/subject-organizer.js','assets/weekly-planner.js','assets/public-explorer.js','assets/bac-index.js','assets/discover.js','assets/discover.css','assets/library-flow.css','assets/chapters.js','assets/ai-format.js','assets/landing.js','assets/community.js'];
 for(const name of required){
   const file=path.join(root,name);
   if(!fs.existsSync(file)||fs.statSync(file).size===0)throw Error('Build output missing: '+name);
 }
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const libraryHtml=fs.readFileSync(path.join(root,'library/index.html'),'utf8');
+const discoverHtml=fs.readFileSync(path.join(root,'discover/index.html'),'utf8');
 const loginHtml=fs.readFileSync(path.join(root,'login/index.html'),'utf8');
 const studentHtml=fs.readFileSync(path.join(root,'student/index.html'),'utf8');
 const contributorHtml=fs.readFileSync(path.join(root,'contributor/index.html'),'utf8');
 const adminHtml=fs.readFileSync(path.join(root,'admin/index.html'),'utf8');
 for(const [name,markup,expected,excluded] of [
   ['landing',html,'publicLanding',['loginGate','page-home','page-admin','page-collaborate']],
+  ['library',libraryHtml,'publicBranchGrid',['loginGate','page-home','page-admin','page-collaborate']],
+  ['discover',discoverHtml,'discoveryForm',['loginGate','page-home','page-admin','page-collaborate']],
   ['login',loginHtml,'loginGate',['publicLanding','page-home','page-admin','page-collaborate']],
   ['student',studentHtml,'page-home',['page-admin','page-collaborate']],
   ['contributor',contributorHtml,'page-collaborate',['page-admin','page-home','page-ai']],
@@ -66,4 +70,4 @@ const boot=jsFiles.filter(x=>/^main-[a-z0-9_-]+\.js$/i.test(x)||/^index-[a-z0-9_
 if(!boot.length)throw Error('Bundled entry JavaScript not found');
 const entry=fs.readFileSync(path.join(root,'assets',boot[0]),'utf8');
 if(!entry.includes('legacy-app.js')||!entry.includes('chapter-search.js'))throw Error('Runtime bootstrap not present in compiled JS');
-console.log('Vite production build verified: 5 independent HTML pages, '+required.length+' static resources and '+jsFiles.length+' JavaScript bundles.');
+console.log('Vite production build verified: 7 independent HTML pages, '+required.length+' static resources and '+jsFiles.length+' JavaScript bundles.');
