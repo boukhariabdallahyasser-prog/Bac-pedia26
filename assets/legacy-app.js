@@ -790,6 +790,7 @@
         void window.BacStudyHub.render(state.page);
       renderNavs();renderBranches();
       if(typeof window.renderStudyLaunchpad==='function')window.renderStudyLaunchpad();
+      if(window.BacWeeklyPlanner?.refresh)window.BacWeeklyPlanner.refresh();
       renderFilters();renderSubjects();
       renderAgents();renderTasks();renderGrades();renderProgress();renderResources();
       applyTheme();renderHomeSummary();updateAIModeIndicator();
