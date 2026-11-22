@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const docs=[
  ['index.html','landing','welcome'],
- ['library/index.html','landing','mainContent'],
+ ['library/index.html','library','mainContent'],
  ['login/index.html','login','loginGate'],
  ['student/index.html','student','mainContent'],
  ['contributor/index.html','contributor','mainContent'],
@@ -54,7 +54,7 @@ assert.deepEqual(branchIds,['math','science','tech','literature','languages','ec
 assert.match(library,/id="publicExplorerSearch"/);
 assert.match(library,/id="publicExplorerDetail"/);
 assert.match(library,/id="publicBranchGrid"/);
-assert.match(library,/data-portal="landing"/);
+assert.match(library,/data-portal="library"/);
 assert.match(landing,/lp-simple-steps/);
 assert.doesNotMatch(landing,/lp-mini-metrics|lp-mini-dashboard/);
 const boot=read('src/main.js');
