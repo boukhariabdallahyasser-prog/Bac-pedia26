@@ -13,6 +13,7 @@ assert.match(home,/href="\/library\/"/);
 assert.doesNotMatch(home,/data-public-branch|publicBranchGrid|publicExplorerDetail|publicExplorerSearch/,
  'Homepage must not contain a second subject catalogue or subject search.');
 assert.match(library,/data-public-branch="math"/);
+assert.match(library,/data-portal="library"/);
 assert.match(library,/id="publicBranchGrid"/);
 assert.match(library,/id="publicExplorerDetail"/);
 assert.match(library,/id="publicExplorerSearch"/);
