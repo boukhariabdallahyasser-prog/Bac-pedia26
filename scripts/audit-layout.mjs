@@ -28,7 +28,7 @@ const html=[
 " const stats={type,width:w.innerWidth,documentWidth:doc.scrollWidth,mainWidth:rect?.width||0,mainHeight:rect?.height||0,publicBranches:d.querySelectorAll('#publicBranchGrid [data-public-branch]').length,subjectCards:d.querySelectorAll('#publicExplorerDetail .public-subject-card').length,scrollable:doc.scrollHeight>doc.clientHeight};",
 ' finish(doc.scrollWidth<=w.innerWidth+3&&rect?.width>40&&rect?.height>20,stats);clearInterval(timer);',
 '},250);',
-"setTimeout(()=>finish(false,{type,reason:'timed out before primary content loaded'}),12000);",
+"setTimeout(()=>{const d=frame.contentDocument,w=frame.contentWindow;finish(false,{type,reason:'timed out before primary content loaded',portal:d?.body?.dataset?.portal,branchCards:d?.querySelectorAll('#publicBranchGrid [data-public-branch]').length,subjectCards:d?.querySelectorAll('#publicExplorerDetail .public-subject-card').length,detailText:d?.querySelector('#publicExplorerDetail')?.textContent?.slice(0,180),hasModel:!!w?.BacEducation,hasTaxonomy:!!w?.BacSubjectCatalog,explorer:typeof w?.BacPublicExplorer,readyState:d?.readyState,scripts:[...(d?.scripts||[])].map(x=>x.src).filter(Boolean)});},12000);",
 '</script></body></html>'
 ].join('');
 writeFileSync(file,html,'utf8');
