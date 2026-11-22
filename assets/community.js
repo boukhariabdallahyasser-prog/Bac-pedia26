@@ -724,6 +724,12 @@ function renderAdmin(){
  const root=$('adminList');if(!root)return;root.replaceChildren();
  const filters=$('adminFilters');if(filters)filters.hidden=!['applications','resources','students'].includes(adminTab);
  document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===adminTab));
+ if(adminTab==='library'){
+   if(ownerRole!=='admin'||!user())return;
+   if(window.BacAdminLibrary?.render)window.BacAdminLibrary.render(root);
+   else root.append(el('p','muted','تعذر تحميل أدوات المكتبة. حدّث الصفحة.'));
+   return;
+ }
  if(adminTab==='applications'){
    const applications=adminVisible(adminApplications);
    if(!applications.length){root.append(placeholder('لا توجد طلبات مطابقة','جرّب مسح البحث أو تغيير حالة الطلب.'));return;}
