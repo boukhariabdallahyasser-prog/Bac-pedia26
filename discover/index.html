@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#0c1423"/>
+  <meta name="description" content="ابحث في ملفات بكالوريا الجزائر الموجودة في فهرس Bac-pedia: الشعبة والمادة والوحدة والتمارين ومواضيع البكالوريا."/>
+  <title>ابحث في مكتبة البكالوريا | Bac-pedia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/discover.css"/>
+</head>
+<body data-portal="discover">
+  <a href="#main" class="skip-link">تجاوز القائمة إلى البحث</a>
+  <header class="discovery-header">
+    <a class="discovery-brand" href="/" aria-label="Bac-pedia الرئيسية"><span class="discovery-mark">B+</span><span><b>BAC<span>PEDIA</span></b><small>مكتبة البكالوريا</small></span></a>
+    <nav aria-label="التنقل الأساسي"><a href="/">الرئيسية</a><a href="/#divisions">الشعب</a><a href="/login/">حسابي</a></nav>
+  </header>
+  <main id="main" class="discovery-container" tabindex="-1">
+    <div class="discovery-intro">
+      <span class="discovery-eyebrow">مكتبة BAC-PEDIA</span>
+      <h1>كل مواردك، <span>في بحث واحد.</span></h1>
+      <p>ابحث عن درس أو تمرين أو موضوع بكالوريا بين الملفات المفهرسة، ثم ضيّق النتائج حسب شعبتك والمادة ونوع الملف. لا تحتاج إلى حساب للبحث.</p>
+    </div>
+    <section class="discovery-search-panel" aria-label="بحث وتصنيف الموارد">
+      <form id="discoveryForm" autocomplete="off" role="search">
+        <label for="discoveryQuery" class="discovery-search-label">ماذا تريد أن تراجع؟</label>
+        <div class="discovery-search-line">
+          <input id="discoveryQuery" name="q" type="search" placeholder="مثال: المتتاليات، physique، بكالوريا 2024..." spellcheck="false" aria-describedby="discoverySearchHelp"/>
+          <button id="discoverySubmit" class="discovery-search-submit" type="submit">ابحث الآن</button>
+        </div>
+        <p id="discoverySearchHelp" class="discovery-help">البحث بالعربية أو الفرنسية، ويمكنك البحث بعنوان الوحدة أو اسم ملف PDF.</p>
+      </form>
+      <div id="discoveryExamples" class="discovery-examples" aria-label="عمليات بحث سريعة">
+        <span>جرّب:</span>
+        <button type="button" data-example="المتتاليات">المتتاليات</button>
+        <button type="button" data-example="physique">Physique</button>
+        <button type="button" data-example="بكالوريا">البكالوريا</button>
+      </div>
+      <div class="discovery-filters">
+        <label>الشعبة<select id="discoveryBranch" aria-label="تصفية الشعبة">
+          <option value="">جميع الشعب</option>
+        </select></label>
+        <label id="discoverySpecializationWrap" hidden>التخصص / اللغة الثالثة<select id="discoverySpecialization" aria-label="التخصص أو اللغة"></select></label>
+        <label>المادة<select id="discoverySubject" aria-label="تصفية المادة"><option value="">جميع المواد</option></select></label>
+        <label>نوع المحتوى<select id="discoveryGroup" aria-label="نوع المحتوى">
+          <option value="">جميع الأنواع</option>
+        </select></label>
+        <label>صيغة المورد<select id="discoveryKind" aria-label="صيغة المورد">
+          <option value="">الملفات والمجلدات</option>
+          <option value="pdf">PDF</option>
+          <option value="file">ملف</option>
+          <option value="folder">مجلد</option>
+        </select></label>
+        <label>السنة المذكورة<select id="discoveryYear" aria-label="السنة"><option value="">كل السنوات</option></select></label>
+      </div>
+      <div class="discovery-filter-actions">
+        <button type="button" id="discoveryReset">إعادة ضبط الفلاتر</button>
+        <p>المصادر مأخوذة من فهرس الملفات الحالي، ولا يُفترض أنها تصحيحات رسمية أو متاحة للجميع.</p>
+      </div>
+    </section>
+    <section aria-label="نتائج البحث" class="discovery-results">
+      <div class="discovery-results-header">
+        <div><h2>الموارد المفهرسة <span id="discoveryCount"></span></h2><p id="discoverySummary" role="status" aria-live="polite">جار تحميل الفهرس...</p></div>
+        <div class="discovery-result-actions">
+          <label>الترتيب<select id="discoverySort" aria-label="ترتيب النتائج">
+            <option value="relevance">الأكثر صلة</option>
+            <option value="year">السنة الأحدث بالعنوان</option>
+            <option value="az">ترتيب أبجدي</option>
+          </select></label>
+          <button type="button" id="discoveryShare">نسخ رابط البحث</button>
+        </div>
+      </div>
+      <div id="discoveryResults" class="discovery-grid">
+        <div class="discovery-empty">جار تحميل موارد البكالوريا...</div>
+      </div>
+      <button type="button" id="discoveryMore" class="discovery-more" hidden>عرض المزيد من الموارد</button>
+    </section>
+    <aside class="discovery-note" aria-label="توضيح المصادر">
+      <strong>كيف تتحقق من المصدر؟</strong>
+      <p>ملف في المكتبة يعني أن الرابط موجود في الفهرس. قد يكون من Google Drive ولا نضمن إمكانية فتحه دون صلاحيات، أو مطابقته للبرنامج الرسمي. افحص تاريخ الملف ومحتواه قبل اعتماده.</p>
+    </aside>
+  </main>
+  <footer class="discovery-footer"><span>BAC-PEDIA · الجزائر 2027</span><a href="/">الرئيسية</a><a href="/login/?tab=signup">إنشاء حساب</a></footer>
+  <script src="/assets/education-model.js" defer></script>
+  <script src="/assets/subject-taxonomy.js" defer></script>
+  <script src="/assets/bac-index.js" defer></script>
+  <script src="/assets/discover.js" defer></script>
+</body>
+</html>

@@ -35,6 +35,7 @@ async function start(){
     '/assets/legacy-app.js',
     '/assets/subject-organizer.js',
     '/assets/student-launchpad.js',
+    '/assets/weekly-planner.js',
     '/assets/admin-library.js',
     '/assets/chapters.js',
     '/assets/ai-format.js',

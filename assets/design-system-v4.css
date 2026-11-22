@@ -607,3 +607,6 @@ body :is(h1,h2,h3,h4,h5,h6,p,label,button,input,select,textarea,summary,a,small,
 .lp-simple-link:hover{background:#c3cdff}
 .lp-simple-disclaimer{font-size:.72rem;line-height:1.75;margin:12px 0 0;color:#aebcd4;text-align:center}
 @media(max-width:840px){.lp-simple-preview{max-width:650px;margin-inline:auto}}
+
+.discover-top-link{display:grid;place-items:center;min-height:42px;min-width:42px;line-height:1;text-decoration:none;color:var(--text-main);flex:none}
+.discover-top-link:hover{border-color:var(--primary);background:var(--ds-hover)}

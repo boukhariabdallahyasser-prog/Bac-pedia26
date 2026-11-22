@@ -77,7 +77,7 @@ jobs:
             if curl -fsS --max-time 2 http://127.0.0.1:8787/api/ai >/dev/null; then break; fi
             sleep 1
           done
-          for ROLE in login student contributor admin; do
+          for ROLE in login student contributor admin discover; do
             for URL in "/$ROLE/" "/$ROLE"; do
               CODE=$(curl -sS -L --max-redirs 3 --max-time 12 -o "/tmp/bac-worker-$ROLE.html" -w "%{http_code}" "http://127.0.0.1:8787$URL")
               test "$CODE" = "200" || { echo "Cloudflare routing failed: $URL -> $CODE"; cat /tmp/bacpedia-wrangler.log; exit 1; }
@@ -122,6 +122,9 @@ jobs:
           ! grep -q 'id="page-admin"' /tmp/bac-student.html
           ! grep -q 'id="page-home"' /tmp/bac-admin.html
           ! grep -q 'id="page-collaborate"' /tmp/bac-student.html
+          curl -fsS http://127.0.0.1:4173/discover/ > /tmp/bac-discover.html
+          grep -q 'id="discoveryForm"' /tmp/bac-discover.html
+          grep -q 'data-portal="discover"' /tmp/bac-discover.html
           if command -v google-chrome >/dev/null 2>&1; then
             google-chrome --headless --no-sandbox --disable-gpu --virtual-time-budget=5000 --dump-dom http://127.0.0.1:4173/login/ > login-rendered.html
             grep -q 'data-portal="login"' login-rendered.html
@@ -143,6 +146,13 @@ jobs:
             test -s login-mobile.png
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=signup-mobile.png 'http://127.0.0.1:4173/login/?tab=signup&role=collaborator'
             test -s signup-mobile.png
+            google-chrome --headless --no-sandbox --disable-gpu --virtual-time-budget=7500 --dump-dom 'http://127.0.0.1:4173/discover/?q=physique&branch=math' > /tmp/bac-discover-rendered.html
+            grep -q 'id="discoveryCount"' /tmp/bac-discover-rendered.html
+            grep -q 'class="discovery-card"' /tmp/bac-discover-rendered.html
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=6500 --screenshot=discover-mobile.png 'http://127.0.0.1:4173/discover/?q=physique&branch=math'
+            test -s discover-mobile.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,900 --virtual-time-budget=6500 --screenshot=discover-desktop.png 'http://127.0.0.1:4173/discover/'
+            test -s discover-desktop.png
             node scripts/audit-layout.mjs
           fi
       - uses: actions/upload-artifact@v4
@@ -155,5 +165,7 @@ jobs:
             login-desktop.png
             login-mobile.png
             signup-mobile.png
+            discover-mobile.png
+            discover-desktop.png
           if-no-files-found: ignore
 
