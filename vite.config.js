@@ -11,6 +11,8 @@ const classicAssets = [
   'resources.json',
   'assets/legacy-app.js',
   'assets/chapter-search.js',
+  'assets/subject-taxonomy.js',
+  'assets/subject-organizer.js',
   'assets/chapters.js',
   'assets/ai-format.js',
   'assets/landing.js',
