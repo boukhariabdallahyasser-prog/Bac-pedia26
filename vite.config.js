@@ -16,6 +16,7 @@ const classicAssets = [
   'assets/subject-organizer.js',
   'assets/weekly-planner.js',
   'assets/weekly-planner.css',
+  'assets/library-flow.css',
   'assets/admin-library.js',
   'assets/chapters.js',
   'assets/ai-format.js',
