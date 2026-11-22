@@ -156,7 +156,7 @@ async function loadContributor(){
  try{
    request=await loadMyApplication(id);
    const result=await db().from('collaborator_resources')
-     .select('id,contributor_id,title,subject,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
+     .select('id,contributor_id,title,subject,subject_key,specialization_code,content_group,academic_branch,description,resource_url,resource_kind,unit_title,status,created_at')
      .eq('contributor_id',id).order('created_at',{ascending:false}).limit(200);
    if(result.error)throw result.error;
    if(user()?.id!==id)return;
@@ -236,8 +236,9 @@ function renderContributor(){
 function editResource(item){
  editId=item.id;
  $('collabResourceTitle').value=item.title;
- $('collabResourceSubject').value=item.subject;
  $('collabResourceBranch').value=item.academic_branch||'جميع الشعب';
+ if(window.BacContributorGuide?.hydrate)window.BacContributorGuide.hydrate(item);
+ $('collabResourceSubject').value=item.subject;
  $('collabResourceKind').value=item.resource_kind||'other';
  $('collabResourceUnit').value=item.unit_title||'';
  $('collabResourceUrl').value=item.resource_url;
@@ -248,7 +249,7 @@ function editResource(item){
  $('collabSubmitPanel').scrollIntoView({behavior:'smooth'});
 }
 function cancelEdit(){
- editId=null;$('collabResourceForm')?.reset();
+ editId=null;$('collabResourceForm')?.reset();window.BacContributorGuide?.refresh();
  if($('collabEditorTitle'))$('collabEditorTitle').textContent='أضف مورداً تعليمياً';
  if($('collabSaveResource'))$('collabSaveResource').textContent='إرسال للمراجعة';
  $('collabCancelEdit')?.classList.add('hidden');
@@ -282,8 +283,10 @@ function renderDrafts(){
    card.append(el('h3','',draft.title||'مسودة بلا عنوان'),el('p','',draft.subject||'المادة غير محددة'));
    card.append(button('فتح المسودة',()=>{
      draftEditId=draft.id;editId=null;
+     $('collabResourceBranch').value=draft.academic_branch||'';
+     window.BacContributorGuide?.hydrate(draft);
      for(const [field,id] of [['title','collabResourceTitle'],['subject','collabResourceSubject'],
-      ['academic_branch','collabResourceBranch'],['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
+      ['resource_kind','collabResourceKind'],['unit_title','collabResourceUnit'],
       ['resource_url','collabResourceUrl'],['description','collabResourceDescription']]){
        const elmt=$(id);if(elmt)elmt.value=draft[field]||'';
      }
@@ -376,9 +379,14 @@ async function submitResourceReview(item,field,value){
 async function saveResource(event){
  event.preventDefault();
  if(busy||ownerRole!=='contributor'||request?.status!=='approved')return;
+ const guided=window.BacContributorGuide?.data();
+ if(!guided){notify('اختر الشعبة والمادة من القائمة قبل إرسال المورد','warning');return;}
  const data={
    title:txt($('collabResourceTitle').value),
-   subject:txt($('collabResourceSubject').value),
+   subject:guided.subject,
+   subject_key:guided.subject_key,
+   specialization_code:guided.specialization_code,
+   content_group:guided.content_group,
    academic_branch:$('collabResourceBranch').value,
    resource_kind:$('collabResourceKind').value,
    unit_title:txt($('collabResourceUnit').value),
