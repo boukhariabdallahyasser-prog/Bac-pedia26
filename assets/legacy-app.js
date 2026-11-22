@@ -353,8 +353,19 @@
     }
     function closeSidebarMobileOnly(){ if(isMobileSidebar()) closeSidebar(); else updateSidebarButton(); }
     window.addEventListener('resize',()=>{
-      if(!isMobileSidebar()) closeSidebar();
-      else updateSidebarButton();
+      // Resizing the browser must never silently collapse desktop navigation.
+      if(!isMobileSidebar()){
+        document.body.classList.remove('sidebar-open','sidebar-collapsed');
+        $('#sidebar')?.classList.remove('show');
+        $('#sidebarOverlay')?.classList.remove('show');
+      }
+      updateSidebarButton();
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&isMobileSidebar()&&isSidebarVisible()){
+        closeSidebar();
+        document.querySelector('.sidebar-toggle')?.focus({preventScroll:true});
+      }
     });
     function renderBranches(){
       $('#branchGrid').innerHTML=Object.entries(branches).map(([id,b])=>`<button class="branch-btn ${state.branch===id?'active':''}" onclick="selectBranch('${id}')"><i class="${b.icon}"></i><span>${b.name}</span></button>`).join('');
@@ -374,8 +385,8 @@
       $('#homeBranchKicker').textContent='شعبة '+branches[state.branch].name;
       updateFilesSubtitle();
     }
-    function selectBranch(id){state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');if(!branches[id].subs || window.matchMedia('(max-width:980px)').matches)closeSidebar();}
-    function selectSubBranch(id){state.subBranch=id;saveState();renderAll();showToast('تم اختيار '+(branches[state.branch].subs?.[id]||''),'success');closeSidebar();}
+    function selectBranch(id){if(!branches[id])return;state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');closeSidebarMobileOnly();}
+    function selectSubBranch(id){if(!branches[state.branch].subs?.[id])return;state.subBranch=id;saveState();renderAll();showToast('تم اختيار '+(branches[state.branch].subs?.[id]||''),'success');closeSidebarMobileOnly();}
     function renderFilters(){if(state.filter==='special')state.filter='all';const filters=[['all','كل المواد'],['available','لها رابط'],['preparing','غير مفهرسة'],['favorites','مفضلتي']];$('#fileFilters').innerHTML=filters.map(f=>`<button class="chip ${state.filter===f[0]?'active':''}" onclick="state.filter='${f[0]}';saveState();renderSubjects();renderFilters()">${f[1]}</button>`).join('');$('#sortSelect').value=state.sort||'default';}
     function renderSubjects(){const q=normalize($('#searchInput')?.value||'');let list=getNormalSubjects().filter(s=>!q||normalize(s.name+' '+s.desc+' '+s.id).includes(q));if(state.filter==='available')list=list.filter(s=>!!s.url);if(state.filter==='preparing')list=list.filter(s=>!s.url);if(state.filter==='favorites')list=list.filter(s=>state.favorites.includes(s.id));if(state.sort==='available')list.sort((a,b)=>(!!b.url)-(!!a.url));if(state.sort==='progress')list.sort((a,b)=>((a.special?1:0)-(b.special?1:0)) || ((state.progress[a.id]||0)-(state.progress[b.id]||0)));if(state.sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));$('#subjectsGrid').innerHTML=list.map(subjectCard).join('');$('#noResults').classList.toggle('hide',!!list.length);renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();}
     function subjectCard(s){
