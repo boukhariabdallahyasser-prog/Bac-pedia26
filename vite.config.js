@@ -20,6 +20,9 @@ const classicAssets = [
   'assets/ai-format.js',
   'assets/landing.js',
   'assets/public-explorer.js',
+  'assets/bac-index.js',
+  'assets/discover.js',
+  'assets/discover.css',
   'assets/design-system-v4.css',
   'assets/contributor-guide.js',
   'assets/community.js',
@@ -50,6 +53,7 @@ export default defineConfig({
       // A genuine multi-page app: each role has an independent HTML build.
       input:{
         landing:resolve('index.html'),
+        discover:resolve('discover/index.html'),
         login:resolve('login/index.html'),
         student:resolve('student/index.html'),
         contributor:resolve('contributor/index.html'),
