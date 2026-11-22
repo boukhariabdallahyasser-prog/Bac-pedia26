@@ -36,10 +36,11 @@ function safeUrl(value){
 function groupFor(title,forced){
  if(forced)return forced;
  const text=normalize(title);
+ if(/تمارين|تمرين/.test(text)&&/بكالوريا|بكالوريات/.test(text))return 'other';
  if(/بكالوريا|بكالوريات|bac blanc|annale|sujet bac/.test(text))return 'bac';
  if(/تمارين|تمرين|تطبيق|انشطه|سلسله|exercices?|exercises?|td\b/.test(text))return 'exercises';
- if(/ملخص|مراجعه|كتاب|كتب|مراجع|مصطلحات|منهجيه|method|paragraph|بروتوكول|نصوص علميه|مكتسبات|تحويلات/.test(text))return 'summaries';
  if(/مواضيع|فروض|فرض|اختبارات|اختبار|مراقبه|امتحانات|examens?|compo\b|devoir/.test(text))return 'tests';
+ if(/ملخص|مراجعه|كتاب|كتب|مراجع|مصطلحات|منهجيه|method|paragraph|بروتوكول|نصوص علميه|مكتسبات|تحويلات/.test(text))return 'summaries';
  if(/درس|دروس|الوحده|الوحدة|دوال|متتاليات|الاحتمالات|اعداد مركبه|قسمه|الظواهر|المتابعه|علوم طبيعيه/.test(text))return 'lessons';
  return 'other';
 }
