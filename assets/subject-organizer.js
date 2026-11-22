@@ -192,7 +192,7 @@ function render(){
  if(model){host.append(subjectDetail(model));return;}
  const search=h('input','subject-ui-search');
  search.id='subjectOrganizedSearch';search.type='search';search.placeholder='ابحث عن مادة في شعبتك...';search.value=query;
- search.setAttribute('aria-label','البحث عن المواد');search.addEventListener('input',e=>{query=e.target.value;render()});
+ search.setAttribute('aria-label','البحث عن المواد');search.addEventListener('input',e=>{query=e.target.value;const pos=e.target.selectionStart;render();const next=$('subjectOrganizedSearch');if(next){next.focus();next.setSelectionRange(pos,pos)}});
  host.append(search);
  const norm=BacSubjectCatalog.normalize(query);
  const visible=models.filter(x=>BacSubjectCatalog.normalize(x.name+' '+x.description).includes(norm));
