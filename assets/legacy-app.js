@@ -12,7 +12,7 @@
     const pages = [
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
       ['files','fa-solid fa-folder-open','مجلدات Drive','المجلدات الأصلية حسب المادة'],
-       ['chapters','fa-solid fa-layer-group','موادي الدراسية','الشعبة، المادة، الوحدات، ثم نوع الملف'],
+       ['chapters','fa-solid fa-layer-group','المكتبة','الشعبة، ثم المادة، ثم نوع المورد'],
       
       ['collaborate','fa-solid fa-briefcase','لوحة المساهم','إدارة مواردي ومقترحاتي'],
       ['admin','fa-solid fa-shield-halved','لوحة الإدارة','الطلبات والموارد والحسابات'],
@@ -210,8 +210,13 @@
         window.location.replace('/'+expected+'/');
         return;
       }
+      const libraryAliases={files:'all',papers:'bac',exercises:'exercises'};
+      if(role==='student'&&Object.hasOwn(libraryAliases,id)){
+        window.BacSubjectOrganizer?.setPendingKind?.(libraryAliases[id]);
+        id='chapters';
+      }
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
-        ['home','files','chapters','ai','planner','grades','progress','resources','help','practice','papers','exercises','collections','quiz','pdf','coverage'];
+        ['home','chapters','ai','planner','grades','progress','resources','help','practice','collections','quiz','pdf','coverage'];
       if(!allowed.includes(id))id=allowed[0];
       if(id==='files'){
         state.filter='all';
@@ -248,12 +253,8 @@
       if(id==='files')window.renderApprovedResources?.();
     }
     function openFilesAll(){
-      state.filter='all';
-      state.sort='default';
-      const search=$('#searchInput');
-      if(search)search.value='';
-      saveState();
-      showPage('files');
+      window.BacSubjectOrganizer?.setPendingKind?.('all');
+      showPage('chapters');
     }
     function updateFilesSubtitle(){
       const el=$('#filesSubtitle');
@@ -267,17 +268,17 @@
     function renderNavs(){
       const role=window.BAC_PORTAL_ROLE||'student';
       const allowed=role==='admin'?['admin']:['contributor','applicant'].includes(role)?['collaborate']:
-        ['home','chapters','files','ai','planner','grades','progress','resources','help','practice','papers','exercises','collections','quiz','pdf','coverage'];
+        ['home','chapters','ai','planner','grades','progress','resources','help','practice','collections','quiz','pdf','coverage'];
       const visible=pages.filter(item=>allowed.includes(item[0]));
-      const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
+      const action=p=>`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}" aria-current="${state.page===p[0]?'page':'false'}"><span class="nav-icon"><i class="${p[1]}"></i></span><span class="nav-label"><strong>${p[2]}</strong><small>${p[3]}</small></span><i class="fa-solid fa-chevron-left nav-chevron"></i></button>`;
       if(role==='student'){
         const grouped=[
-          ['ابدأ من هنا',['home','chapters','files']],
-          ['التدريب والامتحانات',['papers','exercises','practice']],
-          ['خطة تقدمي',['planner','grades','progress','collections']],
-          ['الأدوات الذكية',['ai','pdf','quiz']],
-          ['معلومات إضافية',['resources','coverage','help']]
+          ['ابدأ من هنا',['home','chapters']],
+          ['التدريب',['practice']],
+          ['التنظيم والمتابعة',['planner','grades','progress']],
+          ['أدوات الدراسة',['ai','pdf','quiz']],
+          ['مواردي ومعلوماتي',['collections','resources','coverage','help']]
         ];
         $('#sideNav').innerHTML=grouped.map(([heading,ids])=>{
           const groupItems=visible.filter(p=>ids.includes(p[0]));
@@ -286,7 +287,7 @@
             escapeHtml(heading)+'</summary><div class="sidebar-nav-items">'+groupItems.map(make).join('')+'</div></details>';
         }).join('');
       }else $('#sideNav').innerHTML=visible.map(make).join('');
-      const bottom=role==='student'?visible.filter(p=>['home','chapters','papers','ai'].includes(p[0])):visible;
+      const bottom=role==='student'?visible.filter(p=>['home','chapters','planner','practice'].includes(p[0])):visible;
       $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+
         `<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
       const nonStudent=role!=='student';
@@ -317,6 +318,11 @@
     function openSidebar(focusBranch=false){
       const s=$('#sidebar'),o=$('#sidebarOverlay');
       if(!s)return;
+      if(focusBranch){
+        showPage('chapters');
+        document.getElementById('libraryBranchPicker')?.scrollIntoView({behavior:'smooth',block:'start'});
+        return;
+      }
       if(!isMobileSidebar()){
         document.body.classList.remove('sidebar-collapsed','sidebar-open');
         if(o)o.classList.remove('show');
@@ -382,7 +388,7 @@
         note.classList.toggle('is-available',isTech&&state.subBranch==='electrical');
         note.classList.toggle('is-unavailable',isTech&&state.subBranch!=='electrical');
       }
-      $('#homeBranchKicker').textContent='شعبة '+branches[state.branch].name;
+      const homeKicker=$('#homeBranchKicker');if(homeKicker)homeKicker.textContent='شعبة '+branches[state.branch].name;
       updateFilesSubtitle();
     }
     function selectBranch(id){if(!branches[id])return;state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');closeSidebarMobileOnly();}
@@ -438,10 +444,10 @@
     function renderStats(){
       const normal=getNormalSubjects(),available=normal.filter(s=>!!s.url).length;
       const avg=Math.round(normal.reduce((a,s)=>a+(state.progress[s.id]||0),0)/Math.max(1,normal.length));
-      $('#statTotal').textContent=normal.length;
-      $('#statAvailable').textContent=available;
-      $('#statFavs').textContent=state.favorites.length;
-      $('#statProgress').textContent=avg+'%';
+      if($('#statTotal'))$('#statTotal').textContent=normal.length;
+      if($('#statAvailable'))$('#statAvailable').textContent=available;
+      if($('#statFavs'))$('#statFavs').textContent=state.favorites.length;
+      if($('#statProgress'))$('#statProgress').textContent=avg+'%';
     }
     function renderAiSelectors(){
       const sel=$('#aiSubject');
@@ -789,7 +795,6 @@
       if(['papers','exercises','collections','coverage'].includes(state.page)&&window.BacStudyHub)
         void window.BacStudyHub.render(state.page);
       renderNavs();renderBranches();
-      if(typeof window.renderStudyLaunchpad==='function')window.renderStudyLaunchpad();
       if(window.BacWeeklyPlanner?.refresh)window.BacWeeklyPlanner.refresh();
       renderFilters();renderSubjects();
       renderAgents();renderTasks();renderGrades();renderProgress();renderResources();
@@ -1185,7 +1190,8 @@ window.onCommunityAuthChanged?.();resetStudentData();renderAll();
         // Non-student entry points never touch student-only page elements.
         applyTheme();
       }
-      initSession();
+      // Public library and search routes must remain browsable without a student session.
+      if(!['library','discover'].includes(portal))initSession();
       window.addEventListener('resize',()=>{
         if(!isMobileSidebar()){
           document.body.classList.remove('sidebar-open');

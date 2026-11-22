@@ -129,7 +129,7 @@ function renderSelected(host,selected){
 }
 function render(){
  const container=$('publicExplorerDetail');
- if(!container||document.body.dataset.portal!=='landing')return;
+ if(!container||!['landing','library'].includes(document.body.dataset.portal))return;
  const branches=model()?.branches||{};
  for(const b of document.querySelectorAll('[data-public-branch]')){
   const active=b.dataset.publicBranch===state.branch;
@@ -166,7 +166,7 @@ async function loadManifest(){
  finally{state.loading=false;render()}
 }
 function init(){
- if(document.body.dataset.portal!=='landing'||!$('publicBranchGrid'))return;
+ if(!['landing','library'].includes(document.body.dataset.portal)||!$('publicBranchGrid'))return;
  const branches=model()?.branches||{};
  for(const item of document.querySelectorAll('[data-public-branch]')){
   const code=item.dataset.publicBranch;if(!Object.hasOwn(branches,code))continue;

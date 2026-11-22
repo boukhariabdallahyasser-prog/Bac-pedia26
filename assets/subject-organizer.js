@@ -9,7 +9,7 @@ const h=(tag,className,text)=>{
  return node;
 };
 const branchNames={math:'رياضيات',science:'علوم تجريبية',tech:'تقني رياضي',literature:'آداب وفلسفة',languages:'لغات أجنبية',economy:'تسيير واقتصاد'};
-let manifest=null,models=[],branchKey='',selected='',kind='all',opened=null,query='',loading=null;
+let manifest=null,models=[],branchKey='',selected='',kind='all',pendingKind='all',opened=null,query='',loading=null;
 let itemQuery='',sortOrder='default',expandedGroups=new Set();
 let availablePdfPaths=new Map();
 let refreshFlight=null,cachedOverlay={key:null,expires:0,published:[],units:[],attachments:[]};
@@ -62,7 +62,7 @@ function breadcrumb(host,model){
 }
 function choose(id,goalKey='all'){
  if(!models.some(x=>x.id===id))return;
- selected=id;kind=goalKey;opened=null;query='';itemQuery='';sortOrder='default';expandedGroups=new Set();
+ selected=id;kind=goalKey==='all'?pendingKind:goalKey;pendingKind='all';opened=null;query='';itemQuery='';sortOrder='default';expandedGroups=new Set();
  if(typeof window.rememberBacSubject==='function')window.rememberBacSubject(id,state.branch,state.subBranch);
  if($('subjectOrganizedSearch'))$('subjectOrganizedSearch').value='';
  render();
@@ -314,6 +314,13 @@ function open(id,goalKey='all'){
 }
 window.renderSubjectOrganizer=()=>{void refresh()};
 window.openOrganizedSubject=open;
+window.BacSubjectOrganizer={
+ setPendingKind(value){
+  const allowed=new Set(['all',...(BacSubjectCatalog?.types||[]).map(x=>x.id)]);
+  pendingKind=allowed.has(value)?value:'all';
+  selected='';kind='all';opened=null;query='';itemQuery='';sortOrder='default';expandedGroups.clear();
+ }
+};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>void refresh(),{once:true});
 else void refresh();
 })();

@@ -1,6 +1,6 @@
 /* Offline study shell: public catalog/assets only; never caches authenticated APIs or user content. */
-const CACHE='bacpedia-public-v1';
-const CORE=['/student/','/assets/app.css','/assets/chapters.css','/assets/portals.css','/assets/legacy-app.js','/assets/chapter-search.js','/assets/chapters.js','/assets/study-hub.js','/assets/practice.js','/assets/community.js','/assets/ai-format.js','/resources.json'];
+const CACHE='bacpedia-public-v2';
+const CORE=['/student/','/library/','/assets/app.css','/assets/chapters.css','/assets/portals.css','/assets/landing.css','/assets/design-system-v4.css','/assets/library-flow.css','/assets/weekly-planner.css','/assets/weekly-planner.js','/assets/education-model.js','/assets/subject-taxonomy.js','/assets/subject-organizer.js','/assets/public-explorer.js','/assets/legacy-app.js','/assets/chapter-search.js','/assets/chapters.js','/assets/study-hub.js','/assets/practice.js','/assets/community.js','/assets/ai-format.js','/resources.json'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(async cache=>{
    await Promise.all(CORE.map(async url=>{try{const response=await fetch(url,{credentials:'omit'});if(response.ok&&response.type==='basic')await cache.put(url,response)}catch{/* offline first load */}}));
@@ -16,7 +16,7 @@ self.addEventListener('fetch',event=>{
  const p=url.pathname;
  if(p.startsWith('/api/')||p.startsWith('/admin/')||p.startsWith('/contributor/')||p.startsWith('/login/')||p.startsWith('/auth'))return;
  if(req.headers.has('Authorization'))return;
- const eligible=p==='/student/'||p==='/resources.json'||p.startsWith('/assets/');
+ const eligible=p==='/student/'||p==='/library/'||p==='/resources.json'||p.startsWith('/assets/');
  if(!eligible)return;
  event.respondWith((async()=>{
    const cache=await caches.open(CACHE);

@@ -34,20 +34,19 @@ async function start(){
     '/assets/subject-taxonomy.js',
     '/assets/legacy-app.js',
     '/assets/subject-organizer.js',
-    '/assets/student-launchpad.js',
     '/assets/weekly-planner.js',
     '/assets/admin-library.js',
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',
-    '/assets/public-explorer.js',
     '/assets/contributor-guide.js',
     '/assets/community.js',
     '/assets/practice.js',
     '/assets/study-hub.js'
   ])await loadScript(path);
+  if(document.body.dataset.portal==='library')await loadScript('/assets/public-explorer.js');
   if(document.body.dataset.portal==='student')await import('./pdf-tools.js');
-  if(document.body.dataset.portal==='student'&&'serviceWorker' in navigator&&location.protocol==='https:'){
+  if(['student','library'].includes(document.body.dataset.portal)&&'serviceWorker' in navigator&&location.protocol==='https:'){
     navigator.serviceWorker.register('/service-worker.js').catch(error=>console.warn('Offline mode unavailable',error));
   }
 }

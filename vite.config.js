@@ -14,9 +14,9 @@ const classicAssets = [
   'assets/education-model.js',
   'assets/subject-taxonomy.js',
   'assets/subject-organizer.js',
-  'assets/student-launchpad.js',
   'assets/weekly-planner.js',
   'assets/weekly-planner.css',
+  'assets/library-flow.css',
   'assets/admin-library.js',
   'assets/chapters.js',
   'assets/ai-format.js',
@@ -55,6 +55,7 @@ export default defineConfig({
       // A genuine multi-page app: each role has an independent HTML build.
       input:{
         landing:resolve('index.html'),
+        library:resolve('library/index.html'),
         discover:resolve('discover/index.html'),
         login:resolve('login/index.html'),
         student:resolve('student/index.html'),

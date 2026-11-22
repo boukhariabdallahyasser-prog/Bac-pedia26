@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "library/**"
       - "login/**"
       - "student/**"
       - "contributor/**"
@@ -85,6 +86,11 @@ jobs:
             done
             echo "Cloudflare route /$ROLE/ -> HTTP 200, no redirect loop"
           done
+          CODE=$(curl -sS -L --max-redirs 3 --max-time 10 -o /tmp/bac-worker-library.html -w "%{http_code}" http://127.0.0.1:8787/library/)
+          test "$CODE" = "200" || { echo "Cloudflare routing failed: /library/ -> $CODE"; cat /tmp/bacpedia-wrangler.log; exit 1; }
+          grep -q 'data-portal="library"' /tmp/bac-worker-library.html
+          grep -q 'id="publicBranchGrid"' /tmp/bac-worker-library.html
+          echo "Cloudflare route /library/ -> HTTP 200, guided subject browser present"
           CODE=$(curl -sS -L --max-redirs 3 --max-time 10 -o /tmp/bac-worker-root.html -w "%{http_code}" http://127.0.0.1:8787/)
           test "$CODE" = "200"
           grep -q 'id="publicLanding"' /tmp/bac-worker-root.html
@@ -92,7 +98,7 @@ jobs:
         continue-on-error: true
         run: |
           SITE="https://bac-pedia26.boukhariabdallahyasser.workers.dev"
-          for PATH_TO_CHECK in "/" "/login/" "/student/" "/contributor/" "/admin/" "/api/ai"; do
+          for PATH_TO_CHECK in "/" "/library/" "/login/" "/student/" "/contributor/" "/admin/" "/api/ai"; do
             HTTP_STATUS=$(curl --silent --show-error --location --max-redirs 3 --max-time 12 -o /tmp/bac-site-check.txt -w "%{http_code}" "$SITE$PATH_TO_CHECK" || true)
             echo "Cloudflare route $PATH_TO_CHECK: HTTP ${HTTP_STATUS:-unreachable}"
             if [ "$PATH_TO_CHECK" = "/api/ai" ] && [ -s /tmp/bac-site-check.txt ]; then
@@ -125,6 +131,11 @@ jobs:
           curl -fsS http://127.0.0.1:4173/discover/ > /tmp/bac-discover.html
           grep -q 'id="discoveryForm"' /tmp/bac-discover.html
           grep -q 'data-portal="discover"' /tmp/bac-discover.html
+          curl -fsS http://127.0.0.1:4173/library/ > /tmp/bac-library.html
+          grep -q 'id="publicBranchGrid"' /tmp/bac-library.html
+          grep -q 'id="publicExplorerDetail"' /tmp/bac-library.html
+          grep -q 'كل مادة واضحة' <(curl -fsS http://127.0.0.1:4173/)
+          ! grep -q 'id="publicBranchGrid"' <(curl -fsS http://127.0.0.1:4173/)
           if command -v google-chrome >/dev/null 2>&1; then
             google-chrome --headless --no-sandbox --disable-gpu --virtual-time-budget=5000 --dump-dom http://127.0.0.1:4173/login/ > login-rendered.html
             grep -q 'data-portal="login"' login-rendered.html
@@ -140,6 +151,10 @@ jobs:
             test -s landing-desktop.png
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=landing-mobile.png http://127.0.0.1:4173/
             test -s landing-mobile.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1000 --virtual-time-budget=6500 --screenshot=library-desktop.png http://127.0.0.1:4173/library/
+            test -s library-desktop.png
+            google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=6500 --screenshot=library-mobile.png http://127.0.0.1:4173/library/
+            test -s library-mobile.png
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1024 --virtual-time-budget=5000 --screenshot=login-desktop.png http://127.0.0.1:4173/login/
             test -s login-desktop.png
             google-chrome --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=5000 --screenshot=login-mobile.png http://127.0.0.1:4173/login/
@@ -162,6 +177,8 @@ jobs:
           path: |
             landing-desktop.png
             landing-mobile.png
+            library-desktop.png
+            library-mobile.png
             login-desktop.png
             login-mobile.png
             signup-mobile.png
