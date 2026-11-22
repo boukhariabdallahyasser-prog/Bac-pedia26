@@ -318,6 +318,7 @@ window.BacSubjectOrganizer={
  setPendingKind(value){
   const allowed=new Set(['all',...(BacSubjectCatalog?.types||[]).map(x=>x.id)]);
   pendingKind=allowed.has(value)?value:'all';
+  selected='';kind='all';opened=null;query='';itemQuery='';sortOrder='default';expandedGroups.clear();
  }
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>void refresh(),{once:true});
