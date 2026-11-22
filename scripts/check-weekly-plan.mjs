@@ -30,8 +30,16 @@ for(const day of long)for(const task of day.tasks){
 }
 assert.equal(new Set(long.flatMap(day=>day.tasks.map(x=>x.id))).size,21,'Duplicate planner tasks');
 const html=read('student/index.html');
-assert.match(html,/id="weeklyStudioDisclosure"/);
-assert.match(html,/id="weeklyStudio"/);
+const planner=html.slice(html.indexOf('id="page-planner"'),html.indexOf('id="page-practice"'));
+const home=html.slice(html.indexOf('id="page-home"'),html.indexOf('id="page-chapters"'));
+assert.match(planner,/id="weeklyStudio"/);
+assert.match(planner,/weekly-studio-page/);
+assert.doesNotMatch(planner,/weeklyStudioDisclosure|weekly-choice/);
+assert.match(home,/كل مادة واضحة/);
+assert.doesNotMatch(home,/weeklyStudio|studyLaunchpad|study-launcher-subject/);
+assert.match(read('assets/weekly-planner.js'),/id='weeklySubject'/);
+assert.match(read('assets/weekly-planner.js'),/التناوب بين مواد شعبتي المتاحة/);
+assert.doesNotMatch(read('assets/weekly-planner.js'),/weekly-choice|type='checkbox'/);
 assert.match(html,/assets\/weekly-planner\.css/);
 assert.match(read('src/main.js'),/assets\/weekly-planner\.js/);
 assert.match(read('vite.config.js'),/assets\/weekly-planner\.css/);
