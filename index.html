@@ -27,7 +27,7 @@
     <header class="lp-header">
       <a class="lp-brand" href="#welcome" aria-label="Bac-pedia home"><span class="lp-brand-mark">B<span>+</span></span><span>BAC<span>PEDIA</span><small>ALGERIA 2027</small></span></a>
       <nav class="lp-nav" aria-label="الأقسام">
-        <a href="#welcome">الرئيسية</a><a href="/discover/">ابحث عن مورد</a><a href="#divisions">الشعب</a><a href="#collaborate">المساهمة</a>
+        <a href="#welcome">الرئيسية</a><a href="/library/">المكتبة</a><a href="/discover/">البحث الشامل</a><a href="/login/?tab=signup&role=collaborator">للمساهمين</a>
       </nav>
       <div class="lp-header-actions"><button class="lp-text-btn" type="button" onclick="openAuthModal('login','student')">دخول</button><button class="lp-btn lp-btn-primary" type="button" onclick="openAuthModal('signup','student')">ابدأ الآن <i class="fa-solid fa-arrow-left"></i></button></div>
     </header>
@@ -37,11 +37,11 @@
         <div class="lp-hero-inner">
           <div class="lp-hero-copy">
             <span class="lp-pill"><i class="fa-solid fa-sparkles"></i> منصة مراجعة جزائرية • BAC 2027</span>
-            <h1 id="lpHeroTitle">طريقك نحو <span>البكالوريا</span><br>يبدأ <em>من هنا.</em></h1>
-            <p>دروس منظمة حسب شعبتك، ملفات موثقة، ومخطط مراجعة يساعدك على متابعة تقدمك في مكان واحد. تجربة هادئة صُمّمت لتذاكر بوضوح وثقة.</p>
+            <h1 id="lpHeroTitle">كل مادة واضحة.<br>وكل مورد في مكانه.</h1>
+            <p>ابدأ باختيار شعبتك، ثم المادة التي تريد مراجعتها، ثم الدروس أو التمارين أو مواضيع البكالوريا. لا حاجة للبحث بين قوائم مختلطة.</p>
             <div class="lp-hero-actions">
-              <button type="button" class="lp-btn lp-btn-primary lp-btn-lg" onclick="openAuthModal('signup','student')">ابدأ رحلتك مجاناً <i class="fa-solid fa-arrow-left"></i></button>
-              <a class="lp-btn lp-btn-outline lp-btn-lg" href="/discover/">ابحث في المكتبة <i class="fa-solid fa-magnifying-glass"></i></a>
+              <a class="lp-btn lp-btn-primary lp-btn-lg" href="/library/">ابدأ باختيار شعبتك <i class="fa-solid fa-arrow-left"></i></a>
+              <a class="lp-btn lp-btn-outline lp-btn-lg" href="/discover/">ابحث عن مورد مباشرة <i class="fa-solid fa-magnifying-glass"></i></a>
             </div>
             <div class="lp-proof"><div class="lp-avatars"><span>3AS</span><span>BAC</span></div><p>تصفّح محتوى مفهرساً حسب الشعبة والمادة، وتحقّق من المصادر قبل استخدامها.</p></div>
           </div>
@@ -56,60 +56,13 @@
                 <li><span class="lp-step-no">02</span><div><strong>افتح المادة</strong><p>تصفّح المواد المناسبة لشعبتك دون خلط.</p></div><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></li>
                 <li><span class="lp-step-no">03</span><div><strong>ابدأ المراجعة</strong><p>اختر الدروس، التمارين أو مواضيع البكالوريا المتوفرة.</p></div><i class="fa-solid fa-check" aria-hidden="true"></i></li>
               </ol>
-              <a href="#divisions" class="lp-simple-link">استكشف المواد المتاحة الآن <i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a>
+              <a href="/library/" class="lp-simple-link">انتقل إلى المكتبة <i class="fa-solid fa-arrow-left" aria-hidden="true"></i></a>
               <p class="lp-simple-disclaimer">عرض للمحتوى الموجود فعلاً في الفهرس، وليس نموذج بيانات افتراضياً.</p>
             </div>
           </div>
         </div>
         <div class="lp-hero-bottom"><span><i class="fa-solid fa-lock"></i> حساب شخصي محمي</span><span><i class="fa-solid fa-mobile-screen"></i> هاتف، حاسوب، جهاز لوحي</span><span><i class="fa-solid fa-book-open"></i> حسب الشعبة والمواد</span></div>
       </section>
-      <section id="why-us" class="lp-section lp-features">
-        <div class="lp-section-heading"><span class="lp-kicker">مساحتك الدراسية</span><h2>كل شيء تحتاجه،<br><span>بدون تشتيت.</span></h2><p>ليس مجرد أرشيف ملفات. أدوات واضحة لتنظيم المراجعة من البداية إلى النهاية.</p></div>
-        <div class="lp-feature-grid">
-          <article class="lp-feature"><span class="lp-feature-icon purple"><i class="fa-solid fa-folder-tree"></i></span><h3>مكتبة مرتبة</h3><p>تصفّح المادة ثم الوحدة ثم الملفات، مع بحث بالعربية والفرنسية.</p><span>01 / EXPLORE</span></article>
-          <article class="lp-feature"><span class="lp-feature-icon green"><i class="fa-solid fa-layer-group"></i></span><h3>المخطط الدراسي</h3><p>رتّب مهام المراجعة وحدّد أهداف اليوم وتابع تقدّمك.</p><span>02 / REMEMBER</span></article>
-          <article class="lp-feature"><span class="lp-feature-icon orange"><i class="fa-solid fa-chart-line"></i></span><h3>تابع تقدمك</h3><p>خطط مهامك، سجّل نقاطك واحتفظ بملاحظاتك في حسابك.</p><span>03 / IMPROVE</span></article>
-          <article class="lp-feature"><span class="lp-feature-icon blue"><i class="fa-solid fa-users"></i></span><h3>مجتمع المساهمين</h3><p>يمكن للأساتذة والنوادي والطلبة طلب الانضمام وإرسال موارد للمراجعة.</p><span>04 / TOGETHER</span></article>
-        </div>
-      </section>
-      <section id="divisions" class="lp-section lp-divisions" aria-labelledby="publicExploreTitle">
-        <div class="lp-section-heading">
-          <span class="lp-kicker">مكتبة البكالوريا الجزائرية</span>
-          <h2 id="publicExploreTitle">اختر شعبتك، <span>ثم المادة.</span></h2>
-          <p>استكشف المواد والمجلدات المفهرسة قبل إنشاء حساب. التفاصيل تعتمد على الموارد الموجودة فعلاً، وليس على وعود بتغطية كل المنهاج.</p>
-        </div>
-        <div class="public-explorer" id="publicExplorer">
-          <div class="public-explorer-steps" aria-label="خطوات تصفح المكتبة">
-            <span><b>01</b> الشعبة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-            <span><b>02</b> المادة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-            <span><b>03</b> الموارد</span>
-          </div>
-          <div class="public-explorer-toolbar">
-            <label for="publicExplorerSearch"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> ابحث عن مادة أو وحدة</label>
-            <input id="publicExplorerSearch" type="search" placeholder="مثال: الرياضيات، الدوال، الكهرباء..." autocomplete="off" />
-          </div>
-          <div class="lp-division-grid" id="publicBranchGrid" aria-label="اختر شعبة البكالوريا">
-            <button type="button" class="public-branch-card is-selected" data-public-branch="math" aria-pressed="true"><i class="fa-solid fa-square-root-variable"></i><strong>رياضيات</strong><small>عرض المواد المتاحة</small></button>
-            <button type="button" class="public-branch-card" data-public-branch="science" aria-pressed="false"><i class="fa-solid fa-flask"></i><strong>علوم تجريبية</strong><small>عرض المواد المتاحة</small></button>
-            <button type="button" class="public-branch-card" data-public-branch="tech" aria-pressed="false"><i class="fa-solid fa-gears"></i><strong>تقني رياضي</strong><small>حسب التخصص</small></button>
-            <button type="button" class="public-branch-card" data-public-branch="literature" aria-pressed="false"><i class="fa-solid fa-feather"></i><strong>آداب وفلسفة</strong><small>عرض المواد المتاحة</small></button>
-            <button type="button" class="public-branch-card" data-public-branch="languages" aria-pressed="false"><i class="fa-solid fa-language"></i><strong>لغات أجنبية</strong><small>حسب اللغة الثالثة</small></button>
-            <button type="button" class="public-branch-card" data-public-branch="economy" aria-pressed="false"><i class="fa-solid fa-chart-line"></i><strong>تسيير واقتصاد</strong><small>عرض المواد المتاحة</small></button>
-          </div>
-          <div class="public-explorer-detail" id="publicExplorerDetail" aria-live="polite">
-            <p class="public-explorer-loading">تُعرض هنا مواد الشعبة ومصادرها بعد تحميل الفهرس.</p>
-          </div>
-          <div class="public-explorer-footer">
-            <p><i class="fa-solid fa-circle-info" aria-hidden="true"></i> قد تتطلب ملفات Google Drive صلاحيات للوصول إليها؛ لا يشير عدد الروابط إلى اكتمال الدروس.</p>
-            <button type="button" class="lp-btn lp-btn-primary" onclick="openAuthModal('signup','student')">ابدأ المراجعة بحساب مجاني <i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
-          </div>
-        </div>
-      </section>
-      <section id="collaborate" class="lp-section lp-collab-callout">
-        <div class="lp-collab-spark"><i class="fa-solid fa-people-group"></i></div><div><span class="lp-kicker">دعنا نبنيها معاً</span><h2>عندك موارد تفيد طلبة الباك؟</h2><p>طالب متفوّق، أستاذ، نادي أو مؤسسة؟ قدّم طلب تعاون، وبعد مراجعته يمكنك اقتراح مصادر للمكتبة.</p></div>
-        <button type="button" class="lp-btn lp-btn-white" onclick="openAuthModal('signup','collaborator')">انضم كمساهم <i class="fa-solid fa-arrow-left"></i></button>
-      </section>
-      <section class="lp-section lp-final-cta"><span class="lp-kicker">مستقبلك يبدأ بخطوة</span><h2>جاهز تبدأ رحلة BAC 2027؟</h2><p>أنشئ حساباً، اختر شعبتك، وابدأ بمحتوى منظّم حسب مستواك.</p><button type="button" class="lp-btn lp-btn-primary lp-btn-lg" onclick="openAuthModal('signup','student')">ابدأ مجاناً <i class="fa-solid fa-arrow-left"></i></button></section>
     </main>
     <footer class="lp-footer"><span>BAC<span>PEDIA</span> © 2026</span><p>منصة مراجعة مستقلة لطلبة البكالوريا في الجزائر.</p><a href="mailto:boukhariabdallahyasser@gmail.com">تواصل معنا</a></footer>
   </div>
