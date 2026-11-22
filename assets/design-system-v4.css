@@ -564,8 +564,7 @@ body[data-portal="login"] :is(.login-field,.login-tabs){border-color:rgba(176,19
   scroll-behavior:auto!important;
   animation-duration:.01ms!important;
   animation-iteration-count:1!important;
-  transition-duration:.01ms!important;
-  transform:none
+  transition-duration:.01ms!important
  }
 }
 
