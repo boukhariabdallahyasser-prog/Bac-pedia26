@@ -193,6 +193,28 @@ function renderContributor(){
  if(request?.status==='rejected')panel.append(button('إعادة تقديم الطلب',()=>void resubmitContributorApplication(),'portal-action success'));
  apply.classList.toggle('hidden',!!request&&!profileEditing);
  submit.classList.toggle('hidden',!active);
+ const action=$('contributorNextAction');
+ if(action){
+  action.replaceChildren();
+  const info=el('div','contributor-next-copy');
+  info.append(el('strong','',!request?'ابدأ بطلب المساهمة':
+    active?'أضف مورداً موثوقاً إلى المادة الصحيحة':
+    request.status==='pending'?'طلبك قيد المراجعة':'حدّث بياناتك قبل إعادة التقديم'));
+  info.append(el('p','',!request?'قدّم بيانات مختصرة ليتمكن المشرف من مراجعة طلبك.':
+    active?'اختر الشعبة، ثم المادة والوحدة. ستظهر الموارد للطالب بعد موافقة الإدارة.':
+    request.status==='pending'?'لا يمكنك النشر قبل اعتماد الحساب، ويمكنك متابعة الحالة هنا.':
+    'راجع ملفك وأعد تقديم الطلب إذا كان ذلك متاحاً.'));
+  const actions=el('div','contributor-next-buttons');
+  const target=active?'collabSubmitPanel':!request?'collaboratorApplyPanel':'collaboratorStatusPanel';
+  actions.append(button(active?'إضافة مورد جديد':!request?'تقديم طلب':'متابعة حالتي',()=>{
+   $(target)?.scrollIntoView({behavior:'smooth',block:'start'});
+  },'portal-action success'));
+  if(active){
+   actions.append(button('مواردي',()=>$('#contributorMyResources')?.scrollIntoView({behavior:'smooth'})));
+   actions.append(button('مسوداتي',()=>$('#contributorMyDrafts')?.scrollIntoView({behavior:'smooth'})));
+  }
+  action.append(info,actions);
+ }
  panel.append(el('p','muted','نقاط السمعة: '+approvedReputation+' (10 نقاط لكل مورد منشور، دون تقييم ذاتي).'));
  metric('contributorMetrics',[
    resources.length,
