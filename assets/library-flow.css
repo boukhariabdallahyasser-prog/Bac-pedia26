@@ -1,0 +1,54 @@
+/* One clear entry point; the only subject catalogue lives in the library page. */
+.student-home-welcome{
+ position:relative;isolation:isolate;overflow:hidden;max-width:1050px;min-height:min(65vh,620px);
+ margin:clamp(12px,4vh,42px) auto 0;padding:clamp(28px,6vw,70px);
+ display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:0;
+ border:1px solid var(--border);border-radius:25px;
+ background:radial-gradient(ellipse at 90% 15%,rgba(119,113,230,.18),transparent 45%),
+ linear-gradient(135deg,var(--bg-card),var(--bg-glass));
+ box-shadow:var(--shadow)
+}
+.student-home-welcome:after{content:"";position:absolute;z-index:-1;width:310px;height:310px;left:-115px;bottom:-180px;border-radius:50%;background:rgba(117,129,232,.12);filter:blur(12px)}
+.student-home-kicker{display:inline-flex;align-items:center;gap:9px;color:var(--primary-light);font-size:.8rem;font-weight:800;letter-spacing:.02em}
+.student-home-welcome h1{font:900 clamp(2.2rem,5.6vw,4.2rem)/1.42 Cairo,Tajawal,sans-serif;color:var(--text-main);letter-spacing:-.035em;margin:20px 0 13px}
+.student-home-welcome h1 span{color:var(--primary-light)}
+.student-home-welcome>p{max-width:700px;color:var(--text-sub);font-size:clamp(.98rem,1.4vw,1.12rem);line-height:2.1;margin:0}
+.student-home-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:52px;padding:12px 23px;margin-top:28px;border:1px solid var(--primary-dark);border-radius:12px;background:var(--primary-dark);color:#fff!important;text-decoration:none;font-weight:900;font-size:.95rem;box-shadow:0 8px 24px rgba(66,75,190,.2);transition:transform .18s,filter .18s}
+.student-home-primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.student-home-flow{display:flex;align-items:center;gap:clamp(8px,2vw,20px);flex-wrap:wrap;margin-top:clamp(32px,6vh,55px);padding-top:20px;border-top:1px solid var(--border);width:100%;color:var(--text-sub);font-size:.83rem;font-weight:700}
+.student-home-flow span{display:inline-flex;align-items:center;gap:8px}
+.student-home-flow b{font:800 .76rem Inter,sans-serif;color:var(--primary-light)}
+.student-home-flow>i{font-size:.7rem;color:var(--text-muted)}
+.library-flow-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.95fr);align-items:center;gap:clamp(18px,4vw,45px);padding:clamp(18px,3vw,28px);margin:4px 0 20px;border:1px solid var(--border);border-radius:20px;background:var(--bg-card)}
+.library-flow-copy{max-width:560px}
+.library-flow-kicker{font-size:.76rem;font-weight:800;color:var(--primary-light)}
+.library-flow-copy h1{font:900 clamp(1.45rem,3vw,2.15rem)/1.45 Cairo,Tajawal,sans-serif;margin:8px 0;color:var(--text-main)}
+.library-flow-copy p{color:var(--text-sub);font-size:.9rem;line-height:1.9;margin:0}
+.library-branch-picker{min-width:0}
+.library-branch-title{display:flex;align-items:center;gap:9px;font-size:.88rem;font-weight:900;color:var(--text-main);margin-bottom:11px}
+.library-branch-title i{color:var(--primary-light)}
+.library-branch-picker .branch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.library-branch-picker .branch-btn{display:flex;align-items:center;justify-content:center;gap:7px;min-height:58px;padding:9px 6px;border:1px solid var(--border);border-radius:11px;background:var(--bg-glass);color:var(--text-sub);font:800 .79rem/1.4 Tajawal,Cairo,sans-serif;text-align:center}
+.library-branch-picker .branch-btn i{width:auto;font-size:1rem;color:var(--primary-light)}
+.library-branch-picker .branch-btn:hover{transform:translateY(-1px)}
+.library-branch-picker .branch-btn.active{background:rgba(112,119,225,.17);border-color:var(--primary);color:var(--text-main);box-shadow:none}
+.library-specializations{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.library-specializations:empty{display:none}
+.library-specializations .chip{font-size:.77rem;padding:7px 12px;margin:0}
+.library-branch-picker .sub-branch-note{margin-top:9px}
+#page-chapters>.subject-ui{scroll-margin-top:90px}
+@media(max-width:850px){
+ .library-flow-header{grid-template-columns:1fr;gap:18px}
+ .library-branch-picker .branch-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:540px){
+ .student-home-welcome{min-height:0;margin:8px 0 0;padding:25px 19px;border-radius:18px}
+ .student-home-welcome h1{font-size:clamp(2rem,9vw,2.7rem);margin-top:16px}
+ .student-home-welcome>p{font-size:.91rem}
+ .student-home-flow{gap:9px;font-size:.75rem;margin-top:30px}
+ .student-home-flow>i{font-size:.6rem}
+ .library-flow-header{padding:16px 13px;border-radius:15px}
+ .library-branch-picker .branch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .library-branch-picker .branch-btn{min-height:52px}
+}
+@media(prefers-reduced-motion:reduce){.student-home-primary{transition:none}}
