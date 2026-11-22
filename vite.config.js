@@ -18,6 +18,7 @@ const classicAssets = [
   'assets/chapters.js',
   'assets/ai-format.js',
   'assets/landing.js',
+  'assets/contributor-guide.js',
   'assets/community.js',
   'assets/practice.js',
   'assets/study-hub.js'
