@@ -88,7 +88,7 @@ jobs:
           done
           CODE=$(curl -sS -L --max-redirs 3 --max-time 10 -o /tmp/bac-worker-library.html -w "%{http_code}" http://127.0.0.1:8787/library/)
           test "$CODE" = "200" || { echo "Cloudflare routing failed: /library/ -> $CODE"; cat /tmp/bacpedia-wrangler.log; exit 1; }
-          grep -q 'data-portal="landing"' /tmp/bac-worker-library.html
+          grep -q 'data-portal="library"' /tmp/bac-worker-library.html
           grep -q 'id="publicBranchGrid"' /tmp/bac-worker-library.html
           echo "Cloudflare route /library/ -> HTTP 200, guided subject browser present"
           CODE=$(curl -sS -L --max-redirs 3 --max-time 10 -o /tmp/bac-worker-root.html -w "%{http_code}" http://127.0.0.1:8787/)
