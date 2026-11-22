@@ -35,6 +35,14 @@ create policy "Verified owner inserts published academic resources"
      where p.user_id=(select auth.uid()) and p.role='admin')
  );
 
+drop policy if exists "Verified owner edits own published resource" on public.collaborator_resources;
+create policy "Verified owner edits own published resource"
+ on public.collaborator_resources for update to authenticated
+ using (contributor_id=(select auth.uid()) and
+   exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'))
+ with check (contributor_id=(select auth.uid()) and status='approved' and
+   exists(select 1 from public.platform_roles p where p.user_id=(select auth.uid()) and p.role='admin'));
+
 create table if not exists public.bac_curriculum_units(
  id uuid primary key default gen_random_uuid(),
  branch_code text not null check(branch_code in ('math','science','tech','literature','languages','economy')),
