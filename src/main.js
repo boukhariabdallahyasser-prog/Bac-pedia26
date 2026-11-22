@@ -39,6 +39,7 @@ async function start(){
     '/assets/chapters.js',
     '/assets/ai-format.js',
     '/assets/landing.js',
+    '/assets/public-explorer.js',
     '/assets/contributor-guide.js',
     '/assets/community.js',
     '/assets/practice.js',
