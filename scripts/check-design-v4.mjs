@@ -92,4 +92,4 @@ for(const branch of branchIds){
  assert.ok(subjects.length>0,'No subjects for '+branch);
  assert.ok(items.every(i=>subjects.some(s=>s.id===i.id)),'Cross-branch subject leak: '+branch);
 }
-console.log('All five public and private routes share the visual system; public explorer, responsive and navigation regression checks passed.');
+console.log('All role routes share the visual system; the dedicated public library, responsive and navigation regression checks passed.');
