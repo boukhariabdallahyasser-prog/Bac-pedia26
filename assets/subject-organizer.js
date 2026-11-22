@@ -12,6 +12,7 @@ const branchNames={math:'رياضيات',science:'علوم تجريبية',tech:
 let manifest=null,models=[],branchKey='',selected='',kind='all',opened=null,query='',loading=null;
 let itemQuery='',sortOrder='default',expandedGroups=new Set();
 let availablePdfPaths=new Map();
+let refreshFlight=null,cachedOverlay={key:null,expires:0,published:[],units:[],attachments:[]};
 function isStudent(){return document.body?.dataset.portal==='student'}
 function button(label,fn,className){
  const el=h('button',className||'subject-ui-btn',label);el.type='button';el.addEventListener('click',fn);return el;
@@ -254,7 +255,15 @@ function render(){
  note.textContent='المواد المعروضة تعتمد على الشعبة المختارة. ظهور المادة لا يعني أن ملفاتها مكتملة أو متاحة للجميع.';
  host.append(note);
 }
-async function refresh(){
+function refresh(){
+ const key=currentBranch()+':'+(typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest');
+ if(refreshFlight?.key===key)return refreshFlight.promise;
+ const task=performRefresh();
+ const promise=task.finally(()=>{if(refreshFlight?.promise===promise)refreshFlight=null});
+ refreshFlight={key,promise};
+ return promise;
+}
+async function performRefresh(){
  const host=$('subjectOrganized');
  if(!isStudent()||!host)return;
  const next=currentBranch();
@@ -273,20 +282,27 @@ async function refresh(){
  const client=typeof getStudentAuth==='function'?getStudentAuth():null;
  if(client&&window.BacEducation){
    const branchName=window.BacEducation.branches[state.branch]?.name||'جميع الشعب';
-   const [published,extraUnits,attachments]=await Promise.all([
-     client.from('collaborator_resources')
-       .select('id,title,subject,subject_key,specialization_code,academic_branch,resource_kind,content_group,unit_title,resource_url,exam_year,status')
-       .eq('status','approved').in('academic_branch',[branchName,'جميع الشعب']).limit(1000),
-     client.from('bac_curriculum_units')
-       .select('id,title,subject_key,specialization_code,branch_code,is_published')
-       .eq('branch_code',state.branch).eq('is_published',true).limit(400),
-     client.from('resource_pdf_attachments').select('resource_id,storage_path').limit(1000)
-   ]);
-   if(next!==currentBranch())return;
-   if(published.error||extraUnits.error)console.warn('Academic content overlay unavailable',published.error||extraUnits.error);
-   models=window.BacEducation.overlay(models,published.error?[]:published.data||[],
-      extraUnits.error?[]:extraUnits.data||[],state.branch,state.subBranch);
-   availablePdfPaths=new Map((attachments.error?[]:attachments.data||[]).map(x=>[x.resource_id,x.storage_path]));
+   const uid=typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest';
+   const identity=next+':'+uid;
+   if(cachedOverlay.key!==identity||Date.now()>cachedOverlay.expires){
+     const [published,extraUnits,attachments]=await Promise.all([
+       client.from('collaborator_resources')
+         .select('id,title,subject,subject_key,specialization_code,academic_branch,resource_kind,content_group,unit_title,resource_url,exam_year,status')
+         .eq('status','approved').in('academic_branch',[branchName,'جميع الشعب']).limit(1000),
+       client.from('bac_curriculum_units')
+         .select('id,title,subject_key,specialization_code,branch_code,is_published')
+         .eq('branch_code',state.branch).eq('is_published',true).limit(400),
+       client.from('resource_pdf_attachments').select('resource_id,storage_path').limit(1000)
+     ]);
+     if(next!==currentBranch()||uid!==(typeof studentAuthUser!=='undefined'?studentAuthUser?.id||'guest':'guest'))return;
+     if(published.error||extraUnits.error)console.warn('Academic content overlay unavailable',published.error||extraUnits.error);
+     cachedOverlay={key:identity,expires:Date.now()+90000,
+       published:published.error?[]:published.data||[],
+       units:extraUnits.error?[]:extraUnits.data||[],
+       attachments:attachments.error?[]:attachments.data||[]};
+   }
+   models=window.BacEducation.overlay(models,cachedOverlay.published,cachedOverlay.units,state.branch,state.subBranch);
+   availablePdfPaths=new Map(cachedOverlay.attachments.map(x=>[x.resource_id,x.storage_path]));
  }
  if(selected&&!models.some(x=>x.id===selected)){selected='';opened=null;kind='all'}
  render();
