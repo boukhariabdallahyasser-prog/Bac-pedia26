@@ -6,6 +6,7 @@ import vm from 'node:vm';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const docs=[
  ['index.html','landing','welcome'],
+ ['library/index.html','landing','mainContent'],
  ['login/index.html','login','loginGate'],
  ['student/index.html','student','mainContent'],
  ['contributor/index.html','contributor','mainContent'],
@@ -42,11 +43,18 @@ for(const [path,role,target] of docs){
  assert.equal(assets.filter(x=>x==='/assets/design-system-v4.css').length,1,'Duplicate visual CSS '+path);
 }
 const landing=read('index.html');
-const branchIds=[...landing.matchAll(/data-public-branch="([^"]+)"/g)].map(x=>x[1]);
+const library=read('library/index.html');
+assert.doesNotMatch(landing,/data-public-branch=|id="publicBranchGrid"|id="publicExplorerDetail"/,
+ 'The public homepage must not repeat the subject catalogue');
+assert.match(landing,/كل مادة واضحة/);
+assert.match(landing,/وكل مورد في مكانه/);
+assert.match(landing,/href="\/library\/"/);
+const branchIds=[...library.matchAll(/data-public-branch="([^"]+)"/g)].map(x=>x[1]);
 assert.deepEqual(branchIds,['math','science','tech','literature','languages','economy']);
-assert.match(landing,/id="publicExplorerSearch"/);
-assert.match(landing,/id="publicExplorerDetail"/);
-assert.match(landing,/id="publicBranchGrid"/);
+assert.match(library,/id="publicExplorerSearch"/);
+assert.match(library,/id="publicExplorerDetail"/);
+assert.match(library,/id="publicBranchGrid"/);
+assert.match(library,/data-portal="landing"/);
 assert.match(landing,/lp-simple-steps/);
 assert.doesNotMatch(landing,/lp-mini-metrics|lp-mini-dashboard/);
 const boot=read('src/main.js');
