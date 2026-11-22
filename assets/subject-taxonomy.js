@@ -22,7 +22,7 @@ const family={
  english_sci:'english',english_lit:'english',
  history_sci:'history',history_lit:'history',
  islamic:'islamic',philo_sci:'philo',philo_lit:'philo',philo_lang:'philo',philo_tech:'philo',
- tech_subject:'tech',third_lang:'third',economy_subject:'economy',accounting_3as:'accounting',computer_science_3as:'computer_science',law:'law'
+ tech_subject:'tech',third_lang:'third',economy_subject:'economy',law:'law'
 };
 function normalize(value){
  return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
