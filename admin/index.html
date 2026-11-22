@@ -52,10 +52,25 @@
         </div>
       </div>
       <section class="page active" id="page-admin">
-        <div class="portal-heading"><div><span class="portal-eyebrow"><i class="fa-solid fa-shield-halved"></i> OWNER CONTROL CENTER</span><h2>لوحة إدارة Bac-pedia</h2><p>مساحة خاصة بالمالك: راجع طلبات المساهمة والملفات وحالة المجتمع.</p></div><button id="adminReload" type="button" class="btn"><i class="fa-solid fa-rotate"></i> تحديث البيانات</button></div>
+        <div class="portal-heading"><div><span class="portal-eyebrow"><i class="fa-solid fa-shield-halved"></i> OWNER CONTROL CENTER</span><h2>لوحة إدارة Bac-pedia</h2><p>إدارة محتوى الطلاب، مراجعة الموارد، متابعة الحسابات والبلاغات، في لوحة واحدة واضحة.</p></div><button id="adminReload" type="button" class="btn"><i class="fa-solid fa-rotate"></i> تحديث البيانات</button></div>
         <div id="adminStatusNote" class="portal-notice" role="status" aria-live="polite"></div>
         <div id="adminMetrics" class="portal-metrics"><div><strong>—</strong><span>الطلاب</span></div><div><strong>—</strong><span>طلبات المساهمة</span></div><div><strong>—</strong><span>المساهمون المقبولون</span></div><div><strong>—</strong><span>موارد قيد المراجعة</span></div></div>
-        <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة"><button type="button" data-admin-tab="applications" class="active">طلبات المساهمين</button><button type="button" data-admin-tab="library"><i class="fa-solid fa-book-open"></i> مكتبة الطالب وإضافة المحتوى</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button id="adminNotificationsTab" type="button" data-admin-tab="notifications"><i class="fa-solid fa-bell"></i> الإشعارات <span id="adminNotificationsBadge" class="portal-notification-count" hidden>0</span></button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button><button type="button" data-admin-tab="analytics"><i class="fa-solid fa-chart-column"></i> التحليلات</button><button type="button" data-admin-tab="reports"><i class="fa-solid fa-flag"></i> بلاغات الطلاب</button><button type="button" data-admin-tab="ai"><i class="fa-solid fa-robot"></i> فحص الذكاء الاصطناعي</button></div>
+        <section class="admin-action-hub" aria-label="مهام الإدارة">
+  <div class="admin-action-heading">
+    <div><span class="study-launcher-eyebrow">مساحة العمل</span><h3>ماذا تريد أن تدير؟</h3><p>ثلاث خطوات واضحة: تصفّح المحتوى، أضف أو راجع، ثم تابع النتائج.</p></div>
+    <span id="adminCurrentTask" class="admin-current-task">مكتبة المحتوى</span>
+  </div>
+  <div class="admin-action-grid">
+    <button type="button" class="admin-action-card" data-admin-shortcut="library"><i class="fa-solid fa-book-open" aria-hidden="true"></i><strong>مكتبة المواد</strong><small>نفس محتوى الطالب + إضافة الدروس والملفات</small></button>
+    <button type="button" class="admin-action-card" data-admin-shortcut="resources"><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i><strong>مراجعة الملفات</strong><small>قبول موارد المساهمين أو رفضها</small><span class="admin-action-counter" data-admin-count="resources"></span></button>
+    <button type="button" class="admin-action-card" data-admin-shortcut="applications"><i class="fa-solid fa-users" aria-hidden="true"></i><strong>طلبات المساهمين</strong><small>مراجعة حسابات المتقدمين</small><span class="admin-action-counter" data-admin-count="applications"></span></button>
+    <button type="button" class="admin-action-card" data-admin-shortcut="reports"><i class="fa-solid fa-flag" aria-hidden="true"></i><strong>البلاغات والمشكلات</strong><small>الروابط المعطّلة والملاحظات الطلابية</small><span class="admin-action-counter" data-admin-count="reports"></span></button>
+  </div>
+</section>
+<details class="admin-more-sections" id="adminMoreSections">
+  <summary><i class="fa-solid fa-ellipsis"></i> جميع أقسام الإدارة والإحصائيات</summary>
+  <div class="portal-tabs" role="tablist" aria-label="قسم الإدارة">
+<button type="button" data-admin-tab="applications">طلبات المساهمين</button><button type="button" data-admin-tab="library" class="active"><i class="fa-solid fa-book-open"></i> مكتبة الطالب وإضافة المحتوى</button><button type="button" data-admin-tab="resources">مراجعة الموارد</button><button id="adminNotificationsTab" type="button" data-admin-tab="notifications"><i class="fa-solid fa-bell"></i> الإشعارات <span id="adminNotificationsBadge" class="portal-notification-count" hidden>0</span></button><button type="button" data-admin-tab="students">حسابات الطلاب</button><button type="button" data-admin-tab="audit">سجل الإجراءات</button><button type="button" data-admin-tab="analytics"><i class="fa-solid fa-chart-column"></i> التحليلات</button><button type="button" data-admin-tab="reports"><i class="fa-solid fa-flag"></i> بلاغات الطلاب</button><button type="button" data-admin-tab="ai"><i class="fa-solid fa-robot"></i> فحص الذكاء الاصطناعي</button></div></details>
         <div class="portal-panel">
           <div class="portal-filters" id="adminFilters">
             <label><i class="fa-solid fa-magnifying-glass"></i><input id="adminSearch" type="search" placeholder="ابحث عن مساهم أو رابط أو مادة..." autocomplete="off" aria-label="ابحث في الإدارة"></label>
