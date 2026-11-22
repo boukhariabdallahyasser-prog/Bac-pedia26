@@ -12,12 +12,15 @@
   <link rel="stylesheet" href="/assets/landing.css" />
   <link rel="stylesheet" href="/assets/community.css" />
   <link rel="stylesheet" href="/assets/portals.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <link rel="stylesheet" href="/assets/design-system-v4.css" />
 </head>
 <body class="public-mode" data-portal="landing">
+  <a class="skip-link" href="#welcome">تجاوز القائمة إلى المحتوى الرئيسي</a>
 
   <!-- Public first experience: students can explore before creating an account. -->
   <div id="publicLanding" class="landing" aria-label="Bac-pedia 2027">
@@ -28,7 +31,7 @@
       </nav>
       <div class="lp-header-actions"><button class="lp-text-btn" type="button" onclick="openAuthModal('login','student')">دخول</button><button class="lp-btn lp-btn-primary" type="button" onclick="openAuthModal('signup','student')">ابدأ الآن <i class="fa-solid fa-arrow-left"></i></button></div>
     </header>
-    <main id="welcome">
+    <main id="welcome" tabindex="-1">
       <section class="lp-hero" aria-labelledby="lpHeroTitle">
         <div class="lp-aura lp-aura-one"></div><div class="lp-aura lp-aura-two"></div>
         <div class="lp-hero-inner">
