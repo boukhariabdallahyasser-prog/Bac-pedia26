@@ -44,7 +44,7 @@ const timer=setInterval(()=>{
  clearInterval(timer);
 },250);
 setTimeout(()=>finish(false,{type,reason:'timed out before interactive content loaded'}),9000);
-</script></body></html>\`;
+</script></body></html>`;
 writeFileSync(file,html,'utf8');
 const browser=process.env.CHROME_BIN||'google-chrome';
 try{
