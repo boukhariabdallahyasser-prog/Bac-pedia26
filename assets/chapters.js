@@ -67,7 +67,7 @@
   }
   function rebuild(){
     subjects=[];flat=[];
-    for(const subject of getSubjects()){
+    for(const subject of getNormalSubjects()){
       const root={id:subject.id,title:subject.name,type:'subject',subjectId:subject.id,
         subjectName:subject.name,categoryName:'',path:[],url:valid(subject.url)?subject.url:null,
         desc:subject.desc||'',icon:subject.icon||'fa-solid fa-book',children:[]};

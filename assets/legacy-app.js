@@ -11,16 +11,16 @@
     };
     const pages = [
       ['home','fa-solid fa-house','الرئيسية','واجهة بسيطة بدون تشتيت'],
-      ['files','fa-solid fa-folder-open','الملفات','مواد وروابط Drive حسب الشعبة'],
-       ['chapters','fa-solid fa-layer-group','الدروس والوحدات','بحث ذكي في المواد والملفات والوحدات'],
+      ['files','fa-solid fa-folder-open','مجلدات Drive','المجلدات الأصلية حسب المادة'],
+       ['chapters','fa-solid fa-layer-group','موادي الدراسية','الشعبة، المادة، الوحدات، ثم نوع الملف'],
       
       ['collaborate','fa-solid fa-briefcase','لوحة المساهم','إدارة مواردي ومقترحاتي'],
       ['admin','fa-solid fa-shield-halved','لوحة الإدارة','الطلبات والموارد والحسابات'],
       ['ai','fa-solid fa-robot','المساعد','شرح وتخطيط وتدريب'],
       ['planner','fa-solid fa-calendar-check','المخطط','مهام وجلسات تركيز'],
       ['practice','fa-solid fa-hourglass-half','اختبار بالوقت','جلسة تدريب ومتابعة الوقت'],
-      ['papers','fa-solid fa-file-lines','مواضيع البكالوريا','استكشف المواضيع المتاحة'],
-      ['exercises','fa-solid fa-pen-ruler','تمارين حسب الوحدة','تصفّح تمارين الفهرس'],
+      ['papers','fa-solid fa-file-lines','مواضيع البكالوريا','مرتبة حسب المادة والشعبة'],
+      ['exercises','fa-solid fa-pen-ruler','التمارين','تمارين المواد حسب الشعبة'],
       ['collections','fa-solid fa-bookmark','مجموعتي','مواردك المحفوظة'],
       ['quiz','fa-solid fa-list-check','أسئلة من ملاحظاتي','اختبارات ملء الفراغات'],
       ['pdf','fa-solid fa-file-pdf','ملخص PDF','استخراج نص الملفات وتلخيصها'],
@@ -184,7 +184,7 @@
     }
     async function loadResourceManifest(){
       try{
-        const response=await fetch('./resources.json',{cache:'no-store'});
+        const response=await fetch('/resources.json',{cache:'no-store'});
         if(!response.ok)throw new Error('HTTP '+response.status);
         const data=await response.json();
         if(data.schemaVersion!==1||!data.subjects||typeof data.subjects!=='object')throw new Error('Invalid resource manifest');
@@ -240,6 +240,7 @@
       if(id==='resources')renderResources();
       if(['papers','exercises','collections','coverage'].includes(id))void window.BacStudyHub?.render(id);
        if(id==='chapters' && typeof window.renderChapters==='function')window.renderChapters();
+       if(id==='chapters' && typeof window.renderSubjectOrganizer==='function')window.renderSubjectOrganizer();
       if(id==='ai'){renderAiSelectors();renderAgents();}
       
       if(id==='collaborate')window.renderCommunity?.();
@@ -270,8 +271,22 @@
       const visible=pages.filter(item=>allowed.includes(item[0]));
       const action=p=>p[0]==='files'?'openFilesAll()':`showPage('${p[0]}')`;
       const make=p=>`<button class="nav-btn ${state.page===p[0]?'active':''}" onclick="${action(p)}" aria-current="${state.page===p[0]?'page':'false'}"><span class="nav-icon"><i class="${p[1]}"></i></span><span class="nav-label"><strong>${p[2]}</strong><small>${p[3]}</small></span><i class="fa-solid fa-chevron-left nav-chevron"></i></button>`;
-      $('#sideNav').innerHTML=visible.map(make).join('');
-      const bottom=role==='student'?visible.filter(p=>['home','chapters','files','ai'].includes(p[0])):visible;
+      if(role==='student'){
+        const grouped=[
+          ['ابدأ من هنا',['home','chapters','files']],
+          ['التدريب والامتحانات',['papers','exercises','practice']],
+          ['خطة تقدمي',['planner','grades','progress','collections']],
+          ['الأدوات الذكية',['ai','pdf','quiz']],
+          ['معلومات إضافية',['resources','coverage','help']]
+        ];
+        $('#sideNav').innerHTML=grouped.map(([heading,ids])=>{
+          const groupItems=visible.filter(p=>ids.includes(p[0]));
+          const active=groupItems.some(p=>p[0]===state.page);
+          return '<details class="sidebar-nav-group" '+(active?'open':'')+'><summary>'+
+            escapeHtml(heading)+'</summary><div class="sidebar-nav-items">'+groupItems.map(make).join('')+'</div></details>';
+        }).join('');
+      }else $('#sideNav').innerHTML=visible.map(make).join('');
+      const bottom=role==='student'?visible.filter(p=>['home','chapters','papers','ai'].includes(p[0])):visible;
       $('#bottomNav').innerHTML=bottom.map(p=>`<button class="${state.page===p[0]?'active':''}" onclick="${action(p)}"><i class="${p[1]}"></i><span>${p[2]}</span></button>`).join('')+
         `<button onclick="openSidebar()"><i class="fa-solid fa-bars"></i><span>المزيد</span></button>`;
       const nonStudent=role!=='student';
@@ -361,13 +376,13 @@
     }
     function selectBranch(id){state.branch=id;state.subBranch=branches[id].subs?(branches[id].defaultSub||Object.keys(branches[id].subs)[0]):null;state.grades=coefTemplates[id].map(([name,coef])=>({name,coef,mark:10}));saveState();renderAll();showToast('تم اختيار '+branches[id].name,'success');if(!branches[id].subs || window.matchMedia('(max-width:980px)').matches)closeSidebar();}
     function selectSubBranch(id){state.subBranch=id;saveState();renderAll();showToast('تم اختيار '+(branches[state.branch].subs?.[id]||''),'success');closeSidebar();}
-    function renderFilters(){const filters=[['all','الكل'],['available','متاحة'],['preparing','قيد التحضير'],['favorites','المفضلة'],['special','موارد عامة']];$('#fileFilters').innerHTML=filters.map(f=>`<button class="chip ${state.filter===f[0]?'active':''}" onclick="state.filter='${f[0]}';saveState();renderSubjects();renderFilters()">${f[1]}</button>`).join('');$('#sortSelect').value=state.sort||'default';}
-    function renderSubjects(){const q=normalize($('#searchInput')?.value||'');let list=getSubjects().filter(s=>!q||normalize(s.name+' '+s.desc+' '+s.id).includes(q));if(state.filter==='available')list=list.filter(s=>!!s.url);if(state.filter==='preparing')list=list.filter(s=>!s.url);if(state.filter==='favorites')list=list.filter(s=>state.favorites.includes(s.id));if(state.filter==='special')list=list.filter(s=>s.special);if(state.sort==='available')list.sort((a,b)=>(!!b.url)-(!!a.url));if(state.sort==='progress')list.sort((a,b)=>((a.special?1:0)-(b.special?1:0)) || ((state.progress[a.id]||0)-(state.progress[b.id]||0)));if(state.sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));$('#subjectsGrid').innerHTML=list.map(subjectCard).join('');$('#noResults').classList.toggle('hide',!!list.length);renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();}
+    function renderFilters(){if(state.filter==='special')state.filter='all';const filters=[['all','كل المواد'],['available','لها رابط'],['preparing','غير مفهرسة'],['favorites','مفضلتي']];$('#fileFilters').innerHTML=filters.map(f=>`<button class="chip ${state.filter===f[0]?'active':''}" onclick="state.filter='${f[0]}';saveState();renderSubjects();renderFilters()">${f[1]}</button>`).join('');$('#sortSelect').value=state.sort||'default';}
+    function renderSubjects(){const q=normalize($('#searchInput')?.value||'');let list=getNormalSubjects().filter(s=>!q||normalize(s.name+' '+s.desc+' '+s.id).includes(q));if(state.filter==='available')list=list.filter(s=>!!s.url);if(state.filter==='preparing')list=list.filter(s=>!s.url);if(state.filter==='favorites')list=list.filter(s=>state.favorites.includes(s.id));if(state.sort==='available')list.sort((a,b)=>(!!b.url)-(!!a.url));if(state.sort==='progress')list.sort((a,b)=>((a.special?1:0)-(b.special?1:0)) || ((state.progress[a.id]||0)-(state.progress[b.id]||0)));if(state.sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));$('#subjectsGrid').innerHTML=list.map(subjectCard).join('');$('#noResults').classList.toggle('hide',!!list.length);renderStats();renderAiSelectors();renderFavoritesMini();updateFilesSubtitle();}
     function subjectCard(s){
       const fav=state.favorites.includes(s.id),ok=!!s.url,isResource=!!s.special,prog=isResource?0:(state.progress[s.id]||0);
       const progressHtml=isResource?'':`<div class="year-progress" style="margin:0 0 12px"><span style="width:${prog}%"></span></div>`;
       const typeText=isResource?'مورد عام':`${prog}% تقدم`;
-      return`<article class="card subject-card ${isResource?'resource-card':''}" style="--accent-grad:${s.color}" onclick="openSubjectById('${s.id}')"><div class="subject-top"><div class="subject-icon"><i class="${s.icon}"></i></div><div class="subject-actions"><button class="round-btn ${fav?'active':''}" onclick="event.stopPropagation();toggleFavorite('${s.id}')"><i class="${fav?'fa-solid':'fa-regular'} fa-heart"></i></button><button class="round-btn" onclick="event.stopPropagation();shareSubject('${s.id}')"><i class="fa-solid fa-share-nodes"></i></button></div></div><div class="subject-name">${escapeHtml(s.name)}</div><p class="subject-desc">${escapeHtml(s.desc)}</p>${progressHtml}<div class="subject-footer"><span class="badge ${ok?'ok':'wait'}">${ok?'متاحة':'قيد التحضير'}</span><span class="soft">${typeText}</span></div></article>`;
+      return`<article class="card subject-card ${isResource?'resource-card':''}" style="--accent-grad:${s.color}" onclick="openSubjectById('${s.id}')"><div class="subject-top"><div class="subject-icon"><i class="${s.icon}"></i></div><div class="subject-actions"><button class="round-btn ${fav?'active':''}" onclick="event.stopPropagation();toggleFavorite('${s.id}')"><i class="${fav?'fa-solid':'fa-regular'} fa-heart"></i></button><button class="round-btn" onclick="event.stopPropagation();shareSubject('${s.id}')"><i class="fa-solid fa-share-nodes"></i></button></div></div><div class="subject-name">${escapeHtml(s.name)}</div><p class="subject-desc">${escapeHtml(s.desc)}</p>${progressHtml}<div class="subject-footer"><span class="badge ${ok?'ok':'wait'}">${ok?'رابط مفهرس':'دون رابط مفهرس'}</span><span class="soft">${typeText}</span></div></article>`;
     }
     const canonicalDriveFolders={"math_math":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"french_sci":["1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",[["دروس","11UjJzruGDNXKoPMwnBV31O23x3CZ70CM"],["مواضيع وتمارين","16EFEC71B81BpRy1nrazmGk32s8PFEMJH"],["مصطلحات","1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q"],["المراجعة النهائية","10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB"]]],"arabic_sci":["19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",[["المراجعة النهائية","1nmG088y658tdbXtLpsjMt79lRK-dRdbs"],["دروس","1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk"],["تطبيقات ومواضيع","1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM"]]],"english_sci":["1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",[["Paragraphs","1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y"],["مصطلحات","1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO"],["مواضيع وتمارين","12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7"],["دروس","18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM"]]],"natural_math":["1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",[["نصوص علمية وملفات","13M7tPzxRcng3c1XpO-BXG_ti_zlmV481"],["المراجعة النهائية","10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn"],["منهجية","1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY"],["تمارين + بكالوريات","19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5"]]],"philo_sci":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"islamic":["1ZR_c-30rYN_OJMkQALbBSikj5Ha4X_Pk",[["المراجعة النهائية","1WNSLXbprV__yMqqNLHdMWcO2e7r67QIT"],["ملخصات ودروس PDF","1_MVnd4jCdHutVO5YhYXc_JNTdwA3vOMT"],["الدروس","1OHMj2ks5L3ZRXSrP09SDYBIpbLXcMK1A"],["التطبيقات والتمارين","19hdtiqy_sNvkcB--i-L8073ZzPVQK55p"]]],"history_sci":["1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",[["المراجعة النهائية","1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A"],["منهجية","1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY"],["ملخصات ودروس PDF","1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo"],["الدروس","1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9"],["التطبيقات والتمارين","1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh"]]],"bac_math":["1SjNXx1mCJu0thDcpO-6IIMc1s40pEeIi",[["الرياضيات","1Tq_St4xP9sa3tvn7qqbgGQ_MH-dw5K6B"],["الاجتماعيات","1Hw4lukCZLjY0PmBKMqMDFV9MkL-fSrkc"],["الإنجليزية","1HJqOCkG1vWZl7BUOAmhJQH1uWbsZePqv"],["الشريعة","1j1kAsuGwZ1LXUzyHPLs5LbyqZQxKx-fH"],["العربية","1BjjCIrgKwKti3da2yvrFdPPjujEdGbyW"],["الفيزياء","1D49IbxTn4Nd30P9KyCvnaNNSloJjtgTy"],["العلوم الطبيعية","1rBv00DEbiItKvMmTHTvIxAvWsRLKak0-"],["الفلسفة","14lfwEt77v9r4uZKuaNPeKTh1Bp_fk5LB"],["الفرنسية","1do-6Da-JyJNWqCvzYhltjK_bQNBG13xY"]]],"exams":["1c4M8-KO3nlfXQpUP1OH1r06QTT3sKcnT",[]],"math_science":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_tech":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_lit":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"math_eco":["1h17a3knJEm7tCtge6hKsEJUSLjjL9_Yn",[["مواضيع مراقبة المستوى","1EZ-Zkw3vgmB5vhxpECNmkCEjU3-RTy4g"],["مواضيع فصلية","1-fHMd5uhzr-KH_6Mtz75_Qn1MKAzI6iW"],["المراجعة النهائية","1cJNP4XumNHXqSN2sGLn3Oz3fnC_0zl60"],["المكتسبات القبلية","1XU50VMyN922zQTHGbA6yBNH6JeTwo5jk"],["المتتاليات","1Yu0rLOV3gnMOARG45iiNMSfIvwAw9Aiz"],["القسمة في زاد","1Q20aTa4ux6VK-CPWUmSjQgZ1mEmBEpfo"],["الدوال","1UsAaU7MGp8XKy1rae3fjeuKmEmW4_BOp"],["الاحتمالات","1ktdbUzujqY8mDLIwDYO7MwXB6LI5lZUu"],["الأعداد المركبة","1ex4wJN74-Mvyx6Y4JkJcNJCJbdPJztEh"]]],"natural_science":["1I8pHfNKXnKGHSinpfcBW6d15EBH1t_Y5",[["نصوص علمية وملفات","13M7tPzxRcng3c1XpO-BXG_ti_zlmV481"],["المراجعة النهائية","10A7kMdypYonqfTIzzzom6ZfTOQKYWXBn"],["منهجية","1SoRGUTqSoGMtAXEFO47iDhJNms8wwCzY"],["تمارين + بكالوريات","19ygI6EN2AKOgNVKtalp7y7tKKUXRqLs5"]]],"arabic_lit":["19AivMFVhb1OQ-nh0VtlcgUdJXBkfXzgQ",[["المراجعة النهائية","1nmG088y658tdbXtLpsjMt79lRK-dRdbs"],["دروس","1slZlL_kRKQd8fEP53wN6W4DfpwJPZ3mk"],["تطبيقات ومواضيع","1MEC1tGDzysM9kCAOBO6boC8tsKZkY0pM"]]],"french_lit":["1tQj-slGIMVtKZunffDMyurGJTkr5zMsN",[["دروس","11UjJzruGDNXKoPMwnBV31O23x3CZ70CM"],["مواضيع وتمارين","16EFEC71B81BpRy1nrazmGk32s8PFEMJH"],["مصطلحات","1romBTaen8j1T7CvPPgp-xDIV8yG2AD3q"],["المراجعة النهائية","10YWG5icnEK7Um4iIlnh5xNrggRLUOJsB"]]],"english_lit":["1WJ1PaXDzYSltJ-NrKQ1qCwiJww-val7C",[["Paragraphs","1qwB0TkFMSAOj5C__4jxuUmF827vUnU7Y"],["مصطلحات","1lXEz-oKTOGaSND5ihJ5na1DsDCC44lgO"],["مواضيع وتمارين","12uxtTP4Vl6AYuwM6s49Sbvb71pAj2fl7"],["دروس","18Wv7u5XWQHgUpVaqZsDO7OyGZAgVd2RM"]]],"history_lit":["1tLu0szIITFfyR5PKPRWDgpgudsYVQf8f",[["المراجعة النهائية","1rrTYVzlFu9l0CL0avHyicAVTI0jS0c8A"],["منهجية","1wsQ-etobu9RD2Nhn2OmRl_MM_3ER5wVY"],["ملخصات ودروس PDF","1Af7xDwzpoS0kL192-9v_o_UuddQo3pvo"],["الدروس","1U6mM8O7Uu06fTnax_IMTXuVXPWVrD5T9"],["التطبيقات والتمارين","1feuHg5KVM2Pb8xy21KkKfcUp-g6AYiUh"]]],"philo_lit":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"philo_lang":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]],"philo_tech":["1L75LG5nmNI2Ymktq3N2fqo2CAkTof9ZA",[["مقالات فلسفية","1dXQhrcFALjqCkql3OuahzexX5yFzGHuK"],["الدروس","1-NjNZcWC0hZkoLLzUq23cgEXrfYH7q1T"]]]};
     function applyCanonicalDriveLinks(){for(const [id,[folderId]] of Object.entries(canonicalDriveFolders)){if(allSubjects[id])allSubjects[id].url='https://drive.google.com/drive/folders/'+folderId;}}
@@ -396,6 +411,7 @@
       }
     }
     function openSubjectById(id){
+      if(!allSubjects[id]?.special&&typeof window.openOrganizedSubject==='function'){window.openOrganizedSubject(id);return;}
       const subject=allSubjects[id];
       if(!subject||!subject.branches.includes(state.branch)|| (Array.isArray(subject.subBranches)&&!subject.subBranches.includes(state.subBranch))){showToast('لا توجد موارد موثقة لهذا التخصص حالياً','warning');return;}
       const s={id,...subject,name:subjectLabel(id),desc:subjectDesc(id)};
@@ -758,6 +774,9 @@
       if(document.body.dataset.portal!=='student'){applyTheme();return;}
       cleanSpecialProgress();
       if(typeof window.renderChapters==='function')window.renderChapters();
+      if(typeof window.renderSubjectOrganizer==='function')window.renderSubjectOrganizer();
+      if(['papers','exercises','collections','coverage'].includes(state.page)&&window.BacStudyHub)
+        void window.BacStudyHub.render(state.page);
       renderNavs();renderBranches();renderFilters();renderSubjects();
       renderAgents();renderTasks();renderGrades();renderProgress();renderResources();
       applyTheme();renderHomeSummary();updateAIModeIndicator();

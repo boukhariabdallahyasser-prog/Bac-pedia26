@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/assets/landing.css" />
   <link rel="stylesheet" href="/assets/community.css" />
   <link rel="stylesheet" href="/assets/portals.css" />
+  <link rel="stylesheet" href="/assets/subject-organizer.css" />
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
@@ -69,8 +70,8 @@
         <div class="hero">
           <div class="hero-content">
             <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="homeBranchKicker">شعبة رياضيات</span></div>
-            <h1>مساحتك للنجاح.<br>كل شيء في مكان واحد.</h1>
-            <p>دروس وملفات منظّمة، خطة يومية، متابعة التقدم وأدوات مراجعة ذكية — صُمّمت خصيصاً لتلميذ البكالوريا الجزائرية.</p>
+            <h1>كل مادة واضحة.<br>وكل مورد في مكانه.</h1>
+            <p>ابدأ باختيار شعبتك، ثم المادة التي تريد مراجعتها، ثم الدروس أو التمارين أو مواضيع البكالوريا. لا حاجة للبحث بين قوائم مختلطة.</p>
             <div class="countdown">
               <div class="time-box"><strong id="cdDays">000</strong><span>يوم</span></div>
               <div class="time-box"><strong id="cdHours">00</strong><span>ساعة</span></div>
@@ -79,14 +80,14 @@
             </div>
             <div class="year-progress"><span id="yearProgress"></span></div>
             <div class="hero-actions">
-              <button class="btn primary" onclick="showPage('chapters')"><i class="fa-solid fa-layer-group"></i> الدروس والوحدات</button><button class="btn" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> الملفات</button>
+              <button class="btn primary" onclick="showPage('chapters')"><i class="fa-solid fa-layer-group"></i> اختر مادة وابدأ</button><button class="btn" onclick="openFilesAll()"><i class="fa-solid fa-folder-open"></i> مجلدات Drive</button>
               <button class="btn success" onclick="showPage('ai'); runAgent('daily_plan')"><i class="fa-solid fa-wand-magic-sparkles"></i> خطة اليوم</button>
               <button class="btn" onclick="showPage('planner')"><i class="fa-solid fa-stopwatch"></i> جلسة تركيز</button>
             </div>
           </div>
         </div>
         <div class="signature-strip" aria-label="ابدأ مراجعتك">
-          <div class="signature-tile" role="button" tabindex="0" onclick="openFilesAll()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openFilesAll()}"><i class="fa-solid fa-book-open-reader"></i><div><strong>مكتبة المراجعة</strong><small>الدروس والملفات مرتّبة حسب شعبتك</small></div></div>
+          <div class="signature-tile" role="button" tabindex="0" onclick="showPage('chapters')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('chapters')}"><i class="fa-solid fa-book-open-reader"></i><div><strong>مواد شعبتك</strong><small>المادة، ثم نوع المحتوى، ثم الوحدة أو الملف</small></div></div>
           <div class="signature-tile" role="button" tabindex="0" onclick="showPage('planner')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('planner')}"><i class="fa-solid fa-calendar-check"></i><div><strong>نظّم يومك</strong><small>مهام واضحة وجلسات تركيز فعّالة</small></div></div>
           <div class="signature-tile" role="button" tabindex="0" onclick="showPage('ai')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('ai')}"><i class="fa-solid fa-wand-magic-sparkles"></i><div><strong>مساعد المراجعة</strong><small>أدوات ذكية وخطط دراسة شخصية</small></div></div>
         </div>
@@ -108,11 +109,16 @@
         <div class="section-head"><div><h2>اختصارات مفيدة</h2><p>اختر مسارك بسرعة، واترك التفاصيل داخل الصفحات.</p></div></div>
         <div class="grid-3">
           <div class="card quick-card" onclick="openSidebar(true)"><div class="quick-icon"><i class="fa-solid fa-layer-group"></i></div><div><h3>اختر الشعبة</h3><p class="muted">غير شعبتك من القائمة الجانبية.</p></div></div>
-          <div class="card quick-card" onclick="openFilesAll()"><div class="quick-icon"><i class="fa-solid fa-book-open"></i></div><div><h3>افتح الملفات</h3><p class="muted">روابط Google Drive جاهزة وتُحدّث تلقائياً بدون تشتيت.</p></div></div>
+          <div class="card quick-card" onclick="showPage('chapters')"><div class="quick-icon"><i class="fa-solid fa-book-open"></i></div><div><h3>استكشف مواد شعبتك</h3><p class="muted">انطلق من المادة، ثم افتح قسم الدروس أو التمارين أو البكالوريا.</p></div></div>
           <div class="card quick-card" onclick="showPage('ai')"><div class="quick-icon"><i class="fa-solid fa-robot"></i></div><div><h3>المساعد</h3><p class="muted">شرح، تلخيص، اختبارات وخطط باستعمال بياناتك.</p></div></div>
         </div>
       </section>
       <section class="page" id="page-chapters">
+  <div id="subjectOrganized" class="subject-ui" aria-live="polite"><p class="subject-ui-notice">جار تحميل المواد المرتبطة بشعبتك...</p></div>
+  <details id="chapterAdvancedSearch" class="subject-ui-advanced">
+    <summary><i class="fa-solid fa-magnifying-glass"></i> البحث المتقدم في جميع أسماء المجلدات والملفات</summary>
+    <p class="subject-ui-notice">استخدمه إذا لم تجد الملف ضمن أقسام المادة. يمكنه البحث بأسماء الملفات كما هي، دون اعتبارها أسماء مواد.</p>
+
   <div class="chapters-hero"><div>
     <div class="chapters-eyebrow"><i class="fa-solid fa-layer-group"></i> BAC-PEDIA · CHAPTERS STUDIO</div>
     <h1>كل دروسك ووحداتك.<br>بحث واحد، نتائج أوضح.</h1>
@@ -142,9 +148,10 @@
   <div class="chapter-results-title"><h2 id="chapterSectionTitle">اختر مادة للبدء</h2><small id="chapterCount" aria-live="polite">جاري تجهيز الفهرس</small></div>
   <div class="chapter-results" id="chapterResults" aria-live="polite"></div>
   <p class="chapter-source-note"><i class="fa-solid fa-circle-info"></i> النتائج مبنية على فهرس الموارد المتاحة لشعبتك. الروابط تفتح في Google Drive؛ قد تتطلب بعض الملفات صلاحية وصول.</p>
+  </details>
 </section>
 <section class="page" id="page-files">
-        <div class="section-head"><div><h2>ملفات المواد</h2><p id="filesSubtitle">الكل حسب الشعبة الحالية.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
+        <div class="section-head"><div><h2>مجلدات المواد الأصلية</h2><p id="filesSubtitle">افتح المادة للاطلاع على أقسامها، أو استخدم البحث المتقدم.</p></div><button class="btn" onclick="refreshFromDatabase(true)"><i class="fa-solid fa-rotate"></i> تحديث</button></div>
         <div class="card">
           <div class="grid-2">
             <div class="search-box"><i class="fa-solid fa-search"></i><input id="searchInput" type="search" aria-label="البحث عن المواد والموارد" class="input" placeholder="ابحث عن مادة، ملخصات، بكالوريات..." oninput="renderSubjects()"></div>
@@ -153,6 +160,15 @@
           <div class="pill-row" id="fileFilters" style="margin-top:12px"></div>
         </div>
         <div class="grid-auto" id="subjectsGrid" aria-live="polite" style="margin-top:14px"></div>
+<div class="card" id="specialResourceShortcuts">
+  <h3>تبحث عن نوع معين من الموارد؟</h3>
+  <p class="muted">المواضيع والتمارين والمراجعات ليست مواد مستقلة. اخترها من الأقسام الواضحة التالية.</p>
+  <div class="actions">
+    <button class="btn" onclick="showPage('papers')">مواضيع البكالوريا</button>
+    <button class="btn" onclick="showPage('exercises')">التمارين</button>
+    <button class="btn" onclick="showPage('chapters')">مكتبة المواد المنظّمة</button>
+  </div>
+</div>
         <div class="no-results hide" id="noResults"><i class="fa-solid fa-magnifying-glass" style="font-size:3rem;opacity:.4"></i><h3>لا توجد نتائج</h3><p>جرّب كلمة أخرى أو غيّر الفلتر.</p></div>
         <section id="approvedResourcesSection" class="approved-resources">
           <div class="portal-heading"><div><span class="portal-eyebrow">CURATED MATERIALS</span><h2>موارد تعليمية إضافية</h2><p>ملفات راجعتها إدارة الموقع قبل نشرها، مرتبة حسب المادة والوحدة.</p></div></div>

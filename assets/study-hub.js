@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const clean=s=>String(s??'').trim();
 const norm=s=>root.BacSearch?.normalize(s)||clean(s).toLowerCase();
 const currentUser=()=>typeof studentAuthUser!=='undefined'?studentAuthUser:null;
-let catalog=[],loaded=false;
+let catalog=[],loaded=false,rawManifest=null,catalogKey='';
 const bookmarkClient=()=>typeof getStudentAuth==='function'?getStudentAuth():null;
 const hubKey=k=>'hub:'+k;
 async function syncSaved(){
@@ -55,7 +55,7 @@ function addRow(container,item,showBookmark=true){
   const row=document.createElement('article');row.className='resource-item';row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
   const info=document.createElement('div');info.style.flex='1';
   const title=document.createElement('strong');title.textContent=item.title;info.appendChild(title);
-  const hint=document.createElement('p');hint.className='muted';hint.textContent=item.subject+' · '+(item.parent||'مورد')+(item.type==='folder'?' · مجلد':'');info.appendChild(hint);row.appendChild(info);
+  const hint=document.createElement('p');hint.className='muted';hint.textContent=item.subject+' · '+(item.parent||'مورد')+(item.year?' · '+item.year:'')+(item.type==='folder'?' · مجلد':'');info.appendChild(hint);row.appendChild(info);
   const link=document.createElement('a');link.className='btn';link.target='_blank';link.rel='noopener noreferrer';link.href=item.url;link.textContent='فتح المورد';row.appendChild(link);
   if(showBookmark){
     const btn=document.createElement('button');btn.type='button';btn.className='btn';btn.textContent=readSaved().includes(item.key)?'إزالة من مجموعتي':'حفظ';
@@ -70,7 +70,32 @@ function addRow(container,item,showBookmark=true){
   container.appendChild(row);
 }
 const validUrl=u=>{try{const x=new URL(u);return x.protocol==='https:'&&!!x.hostname}catch{return false}};
-function flatten(manifest){
+function flatten(manifest,settings){
+  if(settings?.subjects&&root.BacSubjectCatalog){
+    const entries=root.BacSubjectCatalog.build({
+      manifest,branch:settings.branch,subBranch:settings.subBranch,subjects:settings.subjects
+    });
+    const collected=[],seen=new Set();
+    function add(model,item,source){
+      if(!validUrl(source.url))return;
+      const u=new URL(source.url);
+      const key=source.id||model.id+':'+u.pathname;
+      const canonical=model.id+'|'+source.url;
+      if(seen.has(canonical))return;
+      seen.add(canonical);
+      const parent=item.title===source.title?item.context:(item.title+' · '+item.context);
+      const rec={key,title:source.title,subject:model.name,subjectId:model.id,
+        parent,url:source.url,type:source.type,group:item.group,year:source.year||null,
+        text:norm([model.name,source.title,parent].join(' '))};
+      collected.push(rec);
+    }
+    for(const model of entries)for(const item of model.items){
+      if(item.group==='bac'&&item.children.length){
+        for(const child of item.children)add(model,item,child);
+      }else add(model,item,item);
+    }
+    return collected;
+  }
   const result=[],seen=new Set();
   function visit(obj,subject,parent,depth=0){
     if(!obj||typeof obj!=='object'||depth>8)return;
@@ -88,12 +113,19 @@ function flatten(manifest){
   return result;
 }
 async function load(){
-  if(loaded)return catalog;
+  const branch=typeof state!=='undefined'?state.branch:'math';
+  const subBranch=typeof state!=='undefined'?state.subBranch:null;
+  const stamp=branch+':'+subBranch;
+  if(loaded&&stamp===catalogKey)return catalog;
   try{
-    const response=await fetch('/resources.json',{cache:'no-store'});
-    if(!response.ok)throw Error('catalog HTTP '+response.status);
-    const json=await response.json();if(json.schemaVersion!==1||!json.subjects)throw Error('Invalid catalog');
-    catalog=flatten(json);loaded=true;
+    if(!rawManifest){
+      const response=await fetch('/resources.json',{cache:'no-store'});
+      if(!response.ok)throw Error('catalog HTTP '+response.status);
+      rawManifest=await response.json();
+      if(rawManifest.schemaVersion!==1||!rawManifest.subjects)throw Error('Invalid catalog');
+    }
+    const subjects=typeof getNormalSubjects==='function'?getNormalSubjects():[];
+    catalog=flatten(rawManifest,{branch,subBranch,subjects});loaded=true;catalogKey=stamp;
   }catch(error){
     console.warn('Study catalog unavailable:',error);catalog=[];loaded=false;
   }
@@ -101,6 +133,10 @@ async function load(){
 }
 const matching=(item,query)=>!query||item.text.includes(norm(query))||(root.BacSearch?.score({title:item.title,subjectName:item.subject,categoryName:item.parent},query)>0);
 function classify(item,mode){
+  if(item.group){
+    if(mode==='papers')return item.group==='bac';
+    if(mode==='exercises')return item.group==='exercises';
+  }
   const text=item.text;
   if(mode==='papers')return /بكالوريا|مواضيع|اختبار|امتحان|bac|annale|sujet|examen|exam/.test(text);
   if(mode==='exercises')return /تمرين|تمارين|تطبيق|تدريب|exercise|exercice|serie|سلسلة/.test(text);
@@ -124,8 +160,14 @@ async function renderList(mode){
   const filtered=items.filter(item=>(!subject||item.subject===subject)&&matching(item,query));
   dest.replaceChildren();
   const status=$(mode==='papers'?'studyPapersStatus':'studyExercisesStatus');
-  if(status)status.textContent=filtered.length+' مورد مطابق من الفهرس الحالي. التصنيف يعتمد على عناوين الملفات وقد يتطلب مراجعة.';
+  if(status)status.textContent=filtered.length+' مورد مطابق لشعبة '+(typeof state!=='undefined'?state.branch:'')+'. التصنيف يعتمد على العناوين وفهرس المصادر.';
   filtered.slice(0,80).forEach(item=>addRow(dest,item));
+  if(!filtered.length){
+    const empty=document.createElement('p');empty.className='muted';
+    empty.textContent=mode==='papers'?'لم نجد مواضيع بكالوريا مفهرسة لهذه المادة في شعبتك. جرّب مادة أخرى؛ لا نعرض مواضيع شعبة مختلفة.':
+      'لم نجد تمارين مصنفة لهذا البحث في شعبتك. ابحث عن وحدة داخل «موادي الدراسية».';
+    dest.appendChild(empty);
+  }
   if(filtered.length>80){const note=document.createElement('p');note.textContent='عرض أول 80 نتيجة. ضيّق البحث للحصول على نتائج أدق.';dest.appendChild(note)}
 }
 async function renderCollections(){
