@@ -3,7 +3,8 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const manifest=JSON.parse(fs.readFileSync('resources.json','utf8'));
-const listed=Object.entries(manifest.subjects).map(([id,item])=>({
+const aggregate=new Set(['exams','bac_math','mock_bac','summaries_math','summaries_tech']);
+const listed=Object.entries(manifest.subjects).filter(([id])=>!aggregate.has(id)).map(([id,item])=>({
   id,name:item.title,desc:'',url:item.url,icon:'fa-solid fa-book',special:false
 }));
 const location={hash:'#/chapters'};
@@ -12,6 +13,7 @@ const doc={getElementById(){return null},querySelectorAll(){return []},addEventL
 const globals={
   window:win,document:doc,location,studentAuthUser:null,
   getSubjects:()=>listed,
+  getNormalSubjects:()=>listed,
   resourceManifest:manifest,
   canonicalDriveFolders:{},
   isDriveResourceUrl:url=>{try{const p=new URL(url);return p.protocol==='https:'&&p.hostname==='drive.google.com'}catch{return false}},
@@ -50,8 +52,5 @@ assert.equal(explorer.resolveCurrent().node.id,'math_math');
 location.hash='#/chapters';
 assert.equal(explorer.resolveCurrent().node,null);
 assert.ok(explorer.flat().length>listed.length);
-const bac=subjects.find(x=>x.id==='bac_math');
-assert.ok(bac?.children.some(x=>x.children.length>0),'Exam categories must include indexed PDF files');
-const firstExam=bac.children.find(x=>x.children.length>0);
-assert.ok(firstExam.children[0].url.startsWith('https://drive.google.com/'));
+assert.ok(!subjects.some(x=>aggregate.has(x.id)),'Exam and summary aggregates must not masquerade as academic subjects');
 console.log('Nested chapter navigation checks passed: '+subjects.length+' subjects, '+explorer.flat().length+' indexed entries.');
