@@ -23,7 +23,7 @@
     <header class="lp-header">
       <a class="lp-brand" href="#welcome" aria-label="Bac-pedia home"><span class="lp-brand-mark">B<span>+</span></span><span>BAC<span>PEDIA</span><small>ALGERIA 2027</small></span></a>
       <nav class="lp-nav" aria-label="الأقسام">
-        <a href="#why-us">المنصة</a><a href="#divisions">الشعب</a><a href="#why-us">المميزات</a><a href="#collaborate">المساهمة</a>
+        <a href="#welcome">الرئيسية</a><a href="#divisions">المواد</a><a href="#why-us">كيف تعمل؟</a><a href="#collaborate">المساهمة</a>
       </nav>
       <div class="lp-header-actions"><button class="lp-text-btn" type="button" onclick="openAuthModal('login','student')">دخول</button><button class="lp-btn lp-btn-primary" type="button" onclick="openAuthModal('signup','student')">ابدأ الآن <i class="fa-solid fa-arrow-left"></i></button></div>
     </header>
@@ -39,12 +39,12 @@
               <button type="button" class="lp-btn lp-btn-primary lp-btn-lg" onclick="openAuthModal('signup','student')">ابدأ رحلتك مجاناً <i class="fa-solid fa-arrow-left"></i></button>
               <a class="lp-btn lp-btn-outline lp-btn-lg" href="#divisions">اكتشف المواد <i class="fa-solid fa-arrow-down"></i></a>
             </div>
-            <div class="lp-proof"><div class="lp-avatars"><span>27</span><span>PDF</span><span>+BAC</span></div><p>محتوى مفهرس من مكتبة الدراسة الحالية، بدون وعود أو أرقام وهمية.</p></div>
+            <div class="lp-proof"><div class="lp-avatars"><span>3AS</span><span>BAC</span></div><p>تصفّح محتوى مفهرساً حسب الشعبة والمادة، وتحقّق من المصادر قبل استخدامها.</p></div>
           </div>
           <div class="lp-showcase" aria-label="عرض توضيحي للوحة المراجعة">
             <div class="lp-floating lp-floating-top"><i class="fa-solid fa-circle-check"></i><span>مراجعة منظمة <b>كل يوم، خطوة صغيرة</b></span></div>
             <div class="lp-preview-window">
-              <div class="lp-window-top"><span class="lp-window-dots"><i></i><i></i><i></i></span><span>bac-pedia · student space</span><span class="lp-online-dot"></span></div>
+              <div class="lp-window-top"><span class="lp-window-dots"><i></i><i></i><i></i></span><span>نموذج واجهة توضيحي · student space</span><span class="lp-online-dot"></span></div>
               <div class="lp-mini-dashboard">
                 <div class="lp-mini-head"><div><span>لوحة التحكم</span><h3>صباح الخير، يا بطل!</h3><small>اختر مادة، وابدأ جلسة جديدة.</small></div><div class="lp-mini-avatar"><i class="fa-solid fa-user-graduate"></i></div></div>
                 <div class="lp-mini-metrics"><div><span>موادك</span><strong>03</strong><small>رياضيات · فيزياء · علوم</small></div><div><span>هدف اليوم</span><strong>45 <small>دقيقة</small></strong><small>نموذج توضيحي</small></div></div>
@@ -69,12 +69,37 @@
           <article class="lp-feature"><span class="lp-feature-icon blue"><i class="fa-solid fa-users"></i></span><h3>مجتمع المساهمين</h3><p>يمكن للأساتذة والنوادي والطلبة طلب الانضمام وإرسال موارد للمراجعة.</p><span>04 / TOGETHER</span></article>
         </div>
       </section>
-      <section id="divisions" class="lp-section lp-divisions">
-        <div class="lp-section-heading"><span class="lp-kicker">اختر مسارك</span><h2>شعبتك. <span>محتواك.</span></h2><p>تظهر الموارد المتاحة لكل شعبة بعد تسجيل الدخول.</p></div>
-        <div class="lp-division-grid">
-          <article class="lp-division math"><div class="lp-division-top"><i class="fa-solid fa-square-root-variable"></i><span>01</span></div><h3>رياضيات</h3><p>دوال، متتاليات، احتمالات والمزيد من الموارد المفهرسة.</p><button type="button" onclick="openAuthModal('signup','student')">ابدأ الاستكشاف <i class="fa-solid fa-arrow-left"></i></button></article>
-          <article class="lp-division science"><div class="lp-division-top"><i class="fa-solid fa-flask"></i><span>02</span></div><h3>علوم تجريبية</h3><p>مكتبة علوم ورياضيات وفيزياء بموارد متاحة حسب الشعبة.</p><button type="button" onclick="openAuthModal('signup','student')">ابدأ الاستكشاف <i class="fa-solid fa-arrow-left"></i></button></article>
-          <article class="lp-division tech"><div class="lp-division-top"><i class="fa-solid fa-gears"></i><span>03</span></div><h3>تقني رياضي</h3><p>الرياضيات والفيزياء وموارد التكنولوجيا المتحقَّق من وجودها.</p><button type="button" onclick="openAuthModal('signup','student')">ابدأ الاستكشاف <i class="fa-solid fa-arrow-left"></i></button></article>
+      <section id="divisions" class="lp-section lp-divisions" aria-labelledby="publicExploreTitle">
+        <div class="lp-section-heading">
+          <span class="lp-kicker">مكتبة البكالوريا الجزائرية</span>
+          <h2 id="publicExploreTitle">اختر شعبتك، <span>ثم المادة.</span></h2>
+          <p>استكشف المواد والمجلدات المفهرسة قبل إنشاء حساب. التفاصيل تعتمد على الموارد الموجودة فعلاً، وليس على وعود بتغطية كل المنهاج.</p>
+        </div>
+        <div class="public-explorer" id="publicExplorer">
+          <div class="public-explorer-steps" aria-label="خطوات تصفح المكتبة">
+            <span><b>01</b> الشعبة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            <span><b>02</b> المادة</span><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            <span><b>03</b> الموارد</span>
+          </div>
+          <div class="public-explorer-toolbar">
+            <label for="publicExplorerSearch"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> ابحث عن مادة أو وحدة</label>
+            <input id="publicExplorerSearch" type="search" placeholder="مثال: الرياضيات، الدوال، الكهرباء..." autocomplete="off" />
+          </div>
+          <div class="lp-division-grid" id="publicBranchGrid" aria-label="اختر شعبة البكالوريا">
+            <button type="button" class="public-branch-card is-selected" data-public-branch="math" aria-pressed="true"><i class="fa-solid fa-square-root-variable"></i><strong>رياضيات</strong><small>عرض المواد المتاحة</small></button>
+            <button type="button" class="public-branch-card" data-public-branch="science" aria-pressed="false"><i class="fa-solid fa-flask"></i><strong>علوم تجريبية</strong><small>عرض المواد المتاحة</small></button>
+            <button type="button" class="public-branch-card" data-public-branch="tech" aria-pressed="false"><i class="fa-solid fa-gears"></i><strong>تقني رياضي</strong><small>حسب التخصص</small></button>
+            <button type="button" class="public-branch-card" data-public-branch="literature" aria-pressed="false"><i class="fa-solid fa-feather"></i><strong>آداب وفلسفة</strong><small>عرض المواد المتاحة</small></button>
+            <button type="button" class="public-branch-card" data-public-branch="languages" aria-pressed="false"><i class="fa-solid fa-language"></i><strong>لغات أجنبية</strong><small>حسب اللغة الثالثة</small></button>
+            <button type="button" class="public-branch-card" data-public-branch="economy" aria-pressed="false"><i class="fa-solid fa-chart-line"></i><strong>تسيير واقتصاد</strong><small>عرض المواد المتاحة</small></button>
+          </div>
+          <div class="public-explorer-detail" id="publicExplorerDetail" aria-live="polite">
+            <p class="public-explorer-loading">تُعرض هنا مواد الشعبة ومصادرها بعد تحميل الفهرس.</p>
+          </div>
+          <div class="public-explorer-footer">
+            <p><i class="fa-solid fa-circle-info" aria-hidden="true"></i> قد تتطلب ملفات Google Drive صلاحيات للوصول إليها؛ لا يشير عدد الروابط إلى اكتمال الدروس.</p>
+            <button type="button" class="lp-btn lp-btn-primary" onclick="openAuthModal('signup','student')">ابدأ المراجعة بحساب مجاني <i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+          </div>
         </div>
       </section>
       <section id="collaborate" class="lp-section lp-collab-callout">
