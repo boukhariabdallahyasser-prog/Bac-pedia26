@@ -1,0 +1,32 @@
+/* Calm, goal-led student start screen; every existing tool stays accessible. */
+.study-launchpad{padding:4px 0 16px}
+.study-launcher-top{padding:17px 3px 19px;max-width:850px}
+.study-launcher-eyebrow{display:block;color:var(--text-muted);font-size:.78rem;font-weight:800;letter-spacing:.015em;margin-bottom:8px}
+.study-launcher-top h1{font:900 clamp(1.75rem,4vw,2.8rem)/1.35 Cairo,Tajawal,sans-serif;color:var(--text-main);margin:0 0 10px}
+.study-launcher-top p,.study-launcher-heading p{max-width:650px;line-height:1.8;color:var(--text-sub);font-size:.94rem}
+.study-launcher-goals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:8px 0 17px}
+.study-launcher-goal{border:1px solid rgba(143,153,203,.2);border-radius:16px;background:var(--card-bg,rgba(30,33,52,.7));color:var(--text-main);min-height:58px;cursor:pointer;padding:11px 9px;font:800 .96rem/1.55 Tajawal,Cairo,sans-serif;text-align:center}
+.study-launcher-goal.active{background:rgba(120,111,215,.15);border-color:#8174d6;box-shadow:inset 0 0 0 1px rgba(125,110,217,.2)}
+.study-launcher-panel{border:1px solid rgba(144,151,193,.18);border-radius:22px;padding:24px;background:var(--card-bg,rgba(27,33,51,.8))}
+.study-launcher-heading{margin:0 0 16px}.study-launcher-heading h2{font:900 clamp(1.2rem,2.4vw,1.55rem)/1.5 Cairo,Tajawal,sans-serif;margin:0 0 5px}
+.study-launcher-heading p{margin:0}
+.study-launcher-branch-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.study-launcher-label{flex:1 1 210px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;font-weight:800;color:var(--text-main)}
+.study-launcher-select{border:1px solid rgba(140,150,192,.29);background:var(--card-bg,rgba(30,33,53,.85));color:var(--text-main);min-height:47px;border-radius:11px;padding:9px 13px;font:700 .95rem Tajawal,Cairo,sans-serif}
+.study-launcher-subjects{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
+.study-launcher-subject{display:flex;align-items:center;gap:12px;min-height:60px;border:1px solid rgba(143,153,195,.2);border-radius:13px;background:rgba(127,139,185,.055);color:var(--text-main);text-align:right;padding:12px 13px;font:800 .91rem/1.5 Tajawal,Cairo,sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+.study-launcher-subject:hover{background:rgba(132,126,219,.14);border-color:rgba(133,123,215,.49)}
+.study-launcher-subject i{width:23px;text-align:center;color:#aaa4ff;flex-shrink:0}
+body.light-mode .study-launcher-subject i{color:#574fb2}
+.study-launcher-shortcuts{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 5px}
+.launch-action{border:1px solid rgba(135,145,195,.25);min-height:40px;padding:8px 13px;border-radius:11px;cursor:pointer;font:800 .84rem Tajawal,Cairo,sans-serif;background:#645ac2;color:white}
+.launch-action.outlined{background:transparent;color:var(--text-main)}
+.study-launcher-resume{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(118,116,196,.09);border:1px solid rgba(139,128,207,.21);border-radius:12px;padding:12px;margin-bottom:17px;font-size:.86rem}
+.study-launcher-footnote,.study-launcher-empty{font-size:.83rem;color:var(--text-muted);line-height:1.7;margin-top:12px}
+.home-more-tools{border:1px solid rgba(137,144,193,.16);border-radius:15px;margin:14px 0 26px;padding:14px}
+.home-more-tools>summary{cursor:pointer;font-weight:800;font-size:.86rem;color:var(--text-sub);list-style:none}
+.home-more-tools>summary::-webkit-details-marker{display:none}
+.home-more-tools-content{padding-top:18px}
+.study-launchpad button:focus-visible,.study-launchpad select:focus-visible,.home-more-tools>summary:focus-visible{outline:3px solid #8174d6;outline-offset:3px}
+@media(max-width:740px){.study-launcher-goals{grid-template-columns:1fr}.study-launcher-panel{padding:15px}.study-launcher-subjects{grid-template-columns:repeat(2,minmax(0,1fr))}.study-launcher-subject{min-height:55px;padding:11px}.study-launcher-top{padding-top:10px}.study-launcher-shortcuts>*{flex:1 1 145px}}
+@media(max-width:420px){.study-launcher-subjects{grid-template-columns:1fr 1fr}.study-launcher-subject{font-size:.82rem}}
