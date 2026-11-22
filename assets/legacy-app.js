@@ -775,6 +775,8 @@
       cleanSpecialProgress();
       if(typeof window.renderChapters==='function')window.renderChapters();
       if(typeof window.renderSubjectOrganizer==='function')window.renderSubjectOrganizer();
+      if(['papers','exercises','collections','coverage'].includes(state.page)&&window.BacStudyHub)
+        void window.BacStudyHub.render(state.page);
       renderNavs();renderBranches();renderFilters();renderSubjects();
       renderAgents();renderTasks();renderGrades();renderProgress();renderResources();
       applyTheme();renderHomeSummary();updateAIModeIndicator();
