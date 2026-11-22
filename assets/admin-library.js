@@ -58,14 +58,14 @@ function nav(host){
  const track=branchModel();
  const nav=E('div','admin-library-filters');
  nav.append(labelSelect('الشعبة',Object.entries(track.branches).map(([code,b])=>[code,b.name]),state.branch,val=>{
-  state.branch=val;state.specialization='';state.subjectId='';state.group='all';state.editing=null;draw(host);
+  state.branch=val;state.specialization='';state.subjectId='';state.group='all';state.editing=null;state.view='library';draw(host);
  }));
  const subs=track.branches[state.branch]?.subspecialties||{};
  if(Object.keys(subs).length){
   if(state.branch==='tech'&&!state.specialization)state.specialization='electrical';
   if(state.branch==='languages'&&!state.specialization)state.specialization=Object.keys(subs)[0];
   nav.append(labelSelect('التخصص / اللغة الثالثة',Object.entries(subs),state.specialization,val=>{
-   state.specialization=val;state.subjectId='';state.group='all';state.editing=null;draw(host);
+   state.specialization=val;state.subjectId='';state.group='all';state.editing=null;state.view='library';draw(host);
   }));
  }
  const model=models().find(x=>x.id===state.subjectId);
@@ -85,7 +85,7 @@ function drawCards(host,subjects){
   if(!item.items.length)tags.append(E('span','subject-ui-pill is-empty','بانتظار موارد'));
   card.append(tags);
   card.append(btn('فتح المادة وإدارتها',()=>{
-   state.subjectId=item.id;state.group='all';state.editing=null;draw(host);
+   state.subjectId=item.id;state.group='all';state.editing=null;state.view='library';draw(host);
   },'subject-ui-btn primary'));
   grid.append(card);
  }
@@ -230,9 +230,11 @@ async function saveResource(host,model,data){
     .insert({...payload,contributor_id:user.id,status:'approved'}).select('id').single();
    if(error)throw error;saved=rows;
   }
-  if(data.file)await uploadPdf(client,user.id,saved.id,data.file);
+  let pdfError=null;
+  if(data.file){try{await uploadPdf(client,user.id,saved.id,data.file)}catch(error){pdfError=error;console.warn('PDF attachment failed after resource saved',error)}}
   state.editing=null;state.view='library';await refresh(host);
-  message(host,'تم حفظ المورد. سيظهر مع موارد المادة بعد تحميل الفهرس.','success');
+  message(host,pdfError?'حُفظ المورد بنجاح لكن فشل إرفاق PDF. يمكنك إعادة إرفاقه بعد فحص الملف.':
+   'تم حفظ المورد. سيظهر مع موارد المادة بعد تحميل الفهرس.',pdfError?'error':'success');
  }catch(error){console.warn('Admin resource update failed',error);message(host,'تعذر حفظ العملية أو إرفاق الملف. تحقق من الصلاحيات ورابط الملف.','error')}
 }
 async function uploadPdf(client,userId,resourceId,file){
