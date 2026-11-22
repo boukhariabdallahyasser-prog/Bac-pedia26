@@ -35,7 +35,7 @@ assert.match(planner,/id="weeklyStudio"/);
 assert.doesNotMatch(planner,/weeklyStudioDisclosure/);
 const legacy=read('assets/legacy-app.js');
 assert.match(legacy,/libraryAliases=\{files:'all',papers:'bac',exercises:'exercises'\}/);
-assert.match(legacy,/function openFilesAll\(\)\{\s*showPage\('chapters'\)/);
+assert.match(legacy,/function openFilesAll\(\)\{\s*window\.BacSubjectOrganizer\?\.setPendingKind\?\.\('all'\);\s*showPage\('chapters'\)/);
 assert.match(legacy,/function renderNavs/);
 const nav=legacy.slice(legacy.indexOf('function renderNavs'),legacy.indexOf('function isMobileSidebar'));
 assert.doesNotMatch(nav,/\['home','chapters','files'\]/);
