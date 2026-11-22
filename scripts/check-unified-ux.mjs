@@ -99,6 +99,8 @@ assert.equal(ctx.window.BacContributorGuide.data().content_group,'exercises');
 elements.collabResourceBranch.value='تقني رياضي';
 ctx.window.BacContributorGuide.refresh();
 elements.collabResourceSpecialization.value='civil';
-ctx.window.BacContributorGuide.refresh();
+// The real browser triggers the specialization change handler, not a branch reset.
+assert.equal(typeof elements.collabResourceSpecialization.listeners.change,'function');
+elements.collabResourceSpecialization.listeners.change();
 assert.ok(!elements.collabResourceSubject.options.some(x=>x.dataset.subjectKey==='tech_subject'));
 console.log('Unified UX, contributor taxonomy, student goals and saved-resource safety checks passed.');
