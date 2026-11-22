@@ -129,7 +129,7 @@ function renderSelected(host,selected){
 }
 function render(){
  const container=$('publicExplorerDetail');
- if(!container||document.body.dataset.portal!=='landing')return;
+ if(!container||!['landing','library'].includes(document.body.dataset.portal))return;
  const branches=model()?.branches||{};
  for(const b of document.querySelectorAll('[data-public-branch]')){
   const active=b.dataset.publicBranch===state.branch;
