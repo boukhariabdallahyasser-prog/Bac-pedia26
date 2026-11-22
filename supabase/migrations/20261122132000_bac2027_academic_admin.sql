@@ -1,5 +1,5 @@
 -- BAC 2027 academic administration: additive schema, existing resources untouched.
--- Verified track names are editorial mappings, not a legally definitive 2027 coefficient table.
+-- Subject IDs follow the preexisting Bac-pedia educational fields. No new ministerial subject changes assumed.
 alter table public.collaborator_resources
   add column if not exists subject_key text,
   add column if not exists specialization_code text,
@@ -20,7 +20,7 @@ alter table public.collaborator_resources
     'math_math','math_science','math_lit','math_eco','physics_math','physics_science',
     'natural_math','arabic_sci','arabic_lit','french_sci','french_lit','english_sci','english_lit',
     'history_sci','history_lit','islamic','philo_sci','philo_lit','philo_lang',
-    'tech_subject','third_lang','economy_subject','accounting_3as','law','computer_science_3as'
+    'tech_subject','third_lang','economy_subject','law'
   ));
 create index if not exists bac2027_resource_scope_idx
  on public.collaborator_resources (status,academic_branch,subject_key,specialization_code,content_group);
@@ -100,4 +100,4 @@ create policy "Admin attaches approved resource PDF"
    where r.id=resource_id and r.contributor_id=(select auth.uid()) and r.status='approved')
  );
 
-comment on table public.bac_curriculum_units is 'Owner-curated 3AS sections. School curriculum official status requires a cited source, and historical 2026 timetable coefficients were withdrawn by a later order.';
+comment on table public.bac_curriculum_units is 'Owner-curated 3AS sections. Owner-curated educational sections require a cited source to be called official.';
